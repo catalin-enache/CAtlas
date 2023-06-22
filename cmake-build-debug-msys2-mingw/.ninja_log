@@ -1,0 +1,7 @@
+# ninja log v5
+7	91	7089783717480516	CMakeFiles/Atlas.dir/src/extract_config.c.obj	481318879f1b035f
+4	264	7089783719217179	CMakeFiles/Atlas.dir/atlas.c.obj	5378706050d41d64
+4	85	7089653668208641	CMakeFiles/Atlas.dir/src/dir_files_utils.c.obj	b92bd4edaf8a27ed
+8	357	7088587750759656	CMakeFiles/Atlas.dir/src/img_manip.c.obj	aba34391e1dbd098
+264	363	7089783720165005	Atlas.exe	5a245f5b7259413f
+2	112	7091146752247339	build.ninja	22e3d8857fd5b3ec

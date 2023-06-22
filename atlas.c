@@ -23,6 +23,9 @@ main( int argc, char **argv )
     if(VIPS_INIT(argv[0]))
         return exit_with_error("Could not initialize VIPS");
 
+    const char *lines[] = {"shrink 0.92\n", "cols 2\n", "compression 6\n"};
+    write_lines(ATLAS_CONFIG_FILE, lines, sizeof(lines)/sizeof(lines[0]), true);
+
     int num_entries;
     KeyValue* kv_arr = extract_config(ATLAS_CONFIG_FILE, &num_entries);
     if (kv_arr == NULL)
@@ -39,7 +42,7 @@ main( int argc, char **argv )
     int cols = config_find(kv_arr, num_entries, "cols")->value.i;
     int compression = config_find(kv_arr, num_entries, "compression")->value.i;
     free(kv_arr);
-    printf("Extracted values: shrink: %lf, cols %d, compression %d \n", shrink, cols, compression);
+    printf("Config values: shrink: %lf, cols %d, compression %d \n", shrink, cols, compression);
 
     int num_paths;
     char **paths = list_files(IMAGES_DIR, &num_paths, true);

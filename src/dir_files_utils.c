@@ -28,6 +28,27 @@ int should_keep(const char *fileName) {
     return keep;
 }
 
+bool file_exists(const char *file_name) {
+    FILE *file = fopen(file_name, "r");
+    if (file != NULL) {
+        fclose(file);
+        return true;
+    }
+    return false;
+}
+
+bool write_lines(const char *file_name, const char **lines, int lines_num, bool cancel_if_file_exists) {
+    if(cancel_if_file_exists && file_exists(file_name)) return false;
+    FILE *file = fopen(file_name, "w");
+    if (file == NULL) return false;
+    for (int i = 0; i < lines_num; i++) {
+        char *line = lines[i];
+        fputs(line, file);
+    }
+    fclose(file);
+}
+
+
 
 char** list_files(const char* dir_name, int* num_files, bool concat_path) {
     DIR *dir;

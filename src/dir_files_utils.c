@@ -2,9 +2,9 @@
 #include <stdlib.h>
 #include <string.h>
 #include <dirent.h>
-#include "dir_files_utils.h"
 
-#define MAX_LINE_LENGTH 1024
+#include "dir_files_utils.h"
+#include "definitions.h"
 
 const char *extensions[] = {".png", ".apng", ".jpg", ".jpeg", ".webp", ".tif", ".tiff", ".bmp", ".gif", ".tga"};
 const int extensions_length = sizeof(extensions) / sizeof(extensions[0]);
@@ -29,7 +29,7 @@ int should_keep(const char *fileName) {
 }
 
 
-char** list_files(const char* dir_name, int* num_files, int concat_path) {
+char** list_files(const char* dir_name, int* num_files, bool concat_path) {
     DIR *dir;
     struct dirent *entry;
     char **files;

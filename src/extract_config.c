@@ -1,9 +1,19 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <math.h>
 #include <string.h>
+
 #include "extract_config.h"
-#include "./dir_files_utils.h"
+#include "dir_files_utils.h"
+
+void print_key_value(KeyValue kv) {
+    if(kv.value.type == 'i') {
+        printf("%s %d (int)\n", kv.key, kv.value.i);
+    } else if(kv.value.type == 'd') {
+        printf("%s %lf (double)\n", kv.key, kv.value.d);
+    } else {
+        printf("%s %s (string)\n", kv.key, kv.value.s);
+    }
+}
 
 DoubleResult get_double(const char *str) {
     DoubleResult result = {.value = 0, .err = 1};
@@ -49,16 +59,6 @@ Value get_value(const char *str) {
     return value;
 }
 
-void printKeyValue(KeyValue kv) {
-    if(kv.value.type == 'i') {
-        printf("%s %d (int)\n", kv.key, kv.value.i);
-    } else if(kv.value.type == 'd') {
-        printf("%s %lf (double)\n", kv.key, kv.value.d);
-    } else {
-        printf("%s %s (string)\n", kv.key, kv.value.s);
-    }
-}
-
 KeyValue extract_line(const char *line) {
     char key[MAX_LINE_LENGTH];
     char val[MAX_LINE_LENGTH];
@@ -70,29 +70,34 @@ KeyValue extract_line(const char *line) {
     return kv;
 }
 
-KeyValue* extract_config(const char *fileName, int *num_entries, int *err) {
+KeyValue* extract_config(const char *fileName, int *num_entries) {
     char** lines = read_lines(fileName, num_entries);
 
     if (lines == NULL) {
-        printf("lines == NULL\n");
-        *err = 1;
+        printf("extract_config could not read config lines\n");
+        return NULL;
     }
 
     KeyValue* kvArr = malloc(*num_entries * sizeof(KeyValue));
+    if (kvArr == NULL) {
+        printf("extract_config could not allocate kvArr\n");
+        return NULL;
+    }
+
     for (int i = 0; i < *num_entries; i++) {
         kvArr[i] = extract_line(lines[i]);
         free(lines[i]);
     }
+
     free(lines);
     return kvArr;
 }
 
-int config_find(KeyValue *kvArr, int kvArrLength, const char *needle, KeyValue **kvOut) {
+KeyValue*  config_find(KeyValue *kvArr, int kvArrLength, const char *needle) {
     for (int i = 0; i < kvArrLength; i++) {
         if(strcmp(kvArr[i].key, needle) == 0) {
-            *kvOut = &kvArr[i];
-            return 0;
+            return &kvArr[i];
         }
     }
-    return 1;
+    return NULL;
 }

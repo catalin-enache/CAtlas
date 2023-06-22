@@ -2,7 +2,7 @@
 #ifndef ATLAS_EXTRACT_CONFIG_H
 #define ATLAS_EXTRACT_CONFIG_H
 
-#define MAX_LINE_LENGTH 1024
+#include "definitions.h"
 
 typedef struct {
     int value;
@@ -27,8 +27,8 @@ typedef struct {
     Value value;
 } KeyValue;
 
-KeyValue* extract_config(const char *fileName, int *num_entries, int *err);
-void printKeyValue(KeyValue kv);
-int config_find(KeyValue *kvArr, int length, const char *needle, KeyValue **kvOut);
+void print_key_value(KeyValue kv);
+KeyValue* extract_config(const char *fileName, int *num_entries);
+KeyValue* config_find(KeyValue *kvArr, int length, const char *needle);
 
 #endif //ATLAS_EXTRACT_CONFIG_H

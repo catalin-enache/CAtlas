@@ -1,7 +1,8 @@
 # ninja log v5
-7	91	7089783717480516	CMakeFiles/Atlas.dir/src/extract_config.c.obj	481318879f1b035f
-4	264	7089783719217179	CMakeFiles/Atlas.dir/atlas.c.obj	5378706050d41d64
-4	85	7089653668208641	CMakeFiles/Atlas.dir/src/dir_files_utils.c.obj	b92bd4edaf8a27ed
-8	357	7088587750759656	CMakeFiles/Atlas.dir/src/img_manip.c.obj	aba34391e1dbd098
-264	363	7089783720165005	Atlas.exe	5a245f5b7259413f
-2	112	7091146752247339	build.ninja	22e3d8857fd5b3ec
+4	163	7091381067190294	build.ninja	a94b9c73b0a06156
+265	371	7091380964624154	Atlas.exe	3e6fae74a4e32c1a
+4	246	7091363117854134	CMakeFiles/Atlas.dir/src/img_manip.c.obj	32c73e984091431b
+8	94	7091380961890326	CMakeFiles/Atlas.dir/src/dir_files_utils.c.obj	d92249f4dc642995
+4	265	7091380963601678	CMakeFiles/Atlas.dir/atlas.c.obj	f2dd3d0f2e960ebd
+11	318	7091351010938452	CMakeFiles/Atlas.dir/src/errors.c.obj	b20a53df692e6c49
+10	110	7091380962053997	CMakeFiles/Atlas.dir/src/extract_config.c.obj	2c8aa3879638beb3

@@ -1,9 +1,11 @@
 #include <stdio.h>
 #include <vips/vips.h>
 #include <string.h>
+
+#include "./src/extract_config.h"
+#include "./src/errors.h"
 #include "./src/img_manip.h"
 #include "./src/dir_files_utils.h"
-#include "./src/extract_config.h"
 
 #define IMAGES_DIR "./atlas/"
 #define ATLAS_FILE "./atlas/atlas.png"
@@ -12,49 +14,35 @@
 int
 main( int argc, char **argv )
 {
+//    if( argc != 3 )
+//        vips_error_exit( "usage: %s infile outfile", argv[0] );
 //    for (int i = 0; i < argc; i++) {
 //        printf("argc[%d] = %s\n", i, argv[i]);
 //    }
-    if( VIPS_INIT( argv[0] ) )
-        vips_error_exit( NULL );
 
-//    int num_lines;
-//    char** lines = read_lines(ATLAS_CONFIG_FILE, &num_lines);
-//    if (lines == NULL) {
-//        printf("Could not read lines\n");
-//        return 1;
-//    }
+    if(VIPS_INIT(argv[0]))
+        return exit_with_error("Could not initialize VIPS");
 
-    int kvErr;
     int num_entries;
-    KeyValue* kvArr = extract_config(ATLAS_CONFIG_FILE, &num_entries, &kvErr);
-    printf("num_entries %d\n", num_entries);
+    KeyValue* kv_arr = extract_config(ATLAS_CONFIG_FILE, &num_entries);
+    if (kv_arr == NULL)
+        return exit_with_error("Could not extract kv_arr config\n");
 
-    if (kvErr) {
-        printf("kvErr %d\n", kvErr); // TODO: whyyyyyy ??? kvErr 32758
+    printf("Config lines found: %d\n", num_entries);
+
+    for (int i = 0; i < num_entries; i++) {
+        printf(" - ");
+        print_key_value(kv_arr[i]);
     }
 
-//    for (int i = 0; i < num_entries; i++) {
-//        printKeyValue(kvArr[i]);
-//    }
-
-    KeyValue *shrinkKV;
-    if(config_find(kvArr, num_entries, "shrink", &shrinkKV) != 0) {
-        printf("Could not find shrinkKV");
-        return 1;
-    }
-    double shrink = shrinkKV->value.d;
-    free(shrinkKV);
-    printf("shrink: %lf\n", shrink);
-
-//    free(kvArr);
-
-
-//    if( argc != 3 )
-//        vips_error_exit( "usage: %s infile outfile", argv[0] );
+    double shrink = config_find(kv_arr, num_entries, "shrink")->value.d;
+    int cols = config_find(kv_arr, num_entries, "cols")->value.i;
+    int compression = config_find(kv_arr, num_entries, "compression")->value.i;
+    free(kv_arr);
+    printf("Extracted values: shrink: %lf, cols %d, compression %d \n", shrink, cols, compression);
 
     int num_paths;
-    char **paths = list_files(IMAGES_DIR, &num_paths, 1);
+    char **paths = list_files(IMAGES_DIR, &num_paths, true);
     if (paths == NULL) {
         printf("Could not list files\n");
         return 1;
@@ -64,27 +52,31 @@ main( int argc, char **argv )
     VipsImage *out_array[num_paths];
 
     for(int i = 0; i < num_paths; i++) {
-        printf("new image from %s\n", paths[i]);
         if( !(in_array[i] = vips_image_new_from_file( paths[i], NULL )) )
             vips_error_exit( NULL );
+        int h_shrinked, v_shrinked;
+        zoom_out(in_array[i], &(out_array[i]), shrink, shrink, &h_shrinked, &v_shrinked);
+        printf("Found image: %s [%d * %d] => [%d * %d]\n", paths[i], in_array[i]->Xsize, in_array[i]->Ysize, h_shrinked, v_shrinked);
         free(paths[i]);
-        zoom_out(in_array[i], &(out_array[i]), 0.92, 0.92);
         g_object_unref(in_array[i]);
     }
     free(paths);
 
     VipsImage *atlas = NULL;
-    if (vips_arrayjoin(out_array, &atlas,  num_paths, "across", 2, NULL))
+    if (vips_arrayjoin(out_array, &atlas,  num_paths, "across", cols, NULL))
         vips_error_exit(NULL);
 
     for(int i = 0; i < num_paths; i++) g_object_unref(out_array[i]);
 
-    if (vips_pngsave(atlas, ATLAS_FILE, "compression", 6, NULL))
+    if (vips_pngsave(atlas, ATLAS_FILE, "compression", compression, NULL))
         vips_error_exit(NULL);
 
     g_object_unref(atlas);
 
     vips_shutdown();
-//    getchar();
+    printf("\n\n\n");
+    printf("====================== DONE ===========================\n");
+    printf("Type something then press enter\n");
+    getchar();
     return 0;
 }

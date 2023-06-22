@@ -19,7 +19,7 @@ project(Atlas C)
 
 set(CMAKE_C_STANDARD 11)
 
-add_executable(Atlas atlas.c src/img_manip.c src/img_manip.h src/dir_files_utils.c src/dir_files_utils.h src/extract_config.c src/extract_config.h)
+add_executable(Atlas atlas.c src/img_manip.c src/img_manip.h src/dir_files_utils.c src/dir_files_utils.h src/extract_config.c src/extract_config.h src/errors.c src/errors.h src/definitions.h)
 
 ############ Manual Setup ############
 

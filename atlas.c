@@ -56,10 +56,9 @@ main( int argc, char **argv )
     int num_paths = 0;
     char **paths = list_files(IMAGES_DIR, &num_paths, true);
     if (paths == NULL)
-        return exit_with_error("Could not list files\n");
+        return exit_with_error("Could not list files.\n");
     if (num_paths == 0) {
-        printf("No image found\n");
-        return 0;
+        return exit_with_error("No image found.\n");
     }
 
     VipsImage *in_array[num_paths];
@@ -101,7 +100,7 @@ main( int argc, char **argv )
     vips_shutdown();
     printf("\n\n\n");
     printf("====================== DONE ===========================\n");
-    printf("Type something then press enter\n");
+    printf("Type something then press enter ...\n");
     getchar();
     return 0;
 }

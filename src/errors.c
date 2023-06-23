@@ -23,7 +23,7 @@ int exit_with_error(const char* format, ...) {
     va_end(args);
     // << variadic args flow
 
-    printf("Type something then press enter\n");
+    printf("Type something then press enter ...\n");
     getchar();
     return -1;
 }

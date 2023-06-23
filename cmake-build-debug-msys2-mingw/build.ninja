@@ -89,6 +89,22 @@ build CMakeFiles/Atlas.dir/src/errors.c.obj: C_COMPILER__Atlas_unscanned_Debug D
   OBJECT_DIR = CMakeFiles\Atlas.dir
   OBJECT_FILE_DIR = CMakeFiles\Atlas.dir\src
 
+build CMakeFiles/Atlas.dir/src/calculations.c.obj: C_COMPILER__Atlas_unscanned_Debug D$:/Projects/CAtlas/src/calculations.c || cmake_object_order_depends_target_Atlas
+  DEFINES = -DLIBDEFLATE_DLL
+  DEP_FILE = CMakeFiles\Atlas.dir\src\calculations.c.obj.d
+  FLAGS = -g -std=gnu11 -fdiagnostics-color=always -pthread
+  INCLUDES = -IC:/z/msys64/mingw64/bin/../include/glib-2.0 -IC:/z/msys64/mingw64/bin/../lib/glib-2.0/include -IC:/z/msys64/mingw64/bin/../include/libgsf-1 -IC:/z/msys64/mingw64/bin/../include/libxml2 -IC:/z/msys64/mingw64/bin/../include/libpng16 -IC:/z/msys64/mingw64/bin/../include/webp -IC:/z/msys64/mingw64/bin/../include/pango-1.0 -IC:/z/msys64/mingw64/bin/../include/harfbuzz -IC:/z/msys64/mingw64/bin/../include/freetype2 -IC:/z/msys64/mingw64/bin/../include/fribidi -IC:/z/msys64/mingw64/bin/../include/cairo -IC:/z/msys64/mingw64/bin/../include/pixman-1 -IC:/z/msys64/mingw64/bin/../include/librsvg-2.0 -IC:/z/msys64/mingw64/bin/../include/gdk-pixbuf-2.0 -IC:/z/msys64/mingw64/bin/../include/OpenEXR -IC:/z/msys64/mingw64/bin/../include/Imath -IC:/z/msys64/mingw64/bin/../include/openjpeg-2.5 -IC:/z/msys64/mingw64/bin/../include/orc-0.4
+  OBJECT_DIR = CMakeFiles\Atlas.dir
+  OBJECT_FILE_DIR = CMakeFiles\Atlas.dir\src
+
+build CMakeFiles/Atlas.dir/src/utils.c.obj: C_COMPILER__Atlas_unscanned_Debug D$:/Projects/CAtlas/src/utils.c || cmake_object_order_depends_target_Atlas
+  DEFINES = -DLIBDEFLATE_DLL
+  DEP_FILE = CMakeFiles\Atlas.dir\src\utils.c.obj.d
+  FLAGS = -g -std=gnu11 -fdiagnostics-color=always -pthread
+  INCLUDES = -IC:/z/msys64/mingw64/bin/../include/glib-2.0 -IC:/z/msys64/mingw64/bin/../lib/glib-2.0/include -IC:/z/msys64/mingw64/bin/../include/libgsf-1 -IC:/z/msys64/mingw64/bin/../include/libxml2 -IC:/z/msys64/mingw64/bin/../include/libpng16 -IC:/z/msys64/mingw64/bin/../include/webp -IC:/z/msys64/mingw64/bin/../include/pango-1.0 -IC:/z/msys64/mingw64/bin/../include/harfbuzz -IC:/z/msys64/mingw64/bin/../include/freetype2 -IC:/z/msys64/mingw64/bin/../include/fribidi -IC:/z/msys64/mingw64/bin/../include/cairo -IC:/z/msys64/mingw64/bin/../include/pixman-1 -IC:/z/msys64/mingw64/bin/../include/librsvg-2.0 -IC:/z/msys64/mingw64/bin/../include/gdk-pixbuf-2.0 -IC:/z/msys64/mingw64/bin/../include/OpenEXR -IC:/z/msys64/mingw64/bin/../include/Imath -IC:/z/msys64/mingw64/bin/../include/openjpeg-2.5 -IC:/z/msys64/mingw64/bin/../include/orc-0.4
+  OBJECT_DIR = CMakeFiles\Atlas.dir
+  OBJECT_FILE_DIR = CMakeFiles\Atlas.dir\src
+
 
 # =============================================================================
 # Link build statements for EXECUTABLE target Atlas
@@ -97,7 +113,7 @@ build CMakeFiles/Atlas.dir/src/errors.c.obj: C_COMPILER__Atlas_unscanned_Debug D
 #############################################
 # Link the executable Atlas.exe
 
-build Atlas.exe: C_EXECUTABLE_LINKER__Atlas_Debug CMakeFiles/Atlas.dir/atlas.c.obj CMakeFiles/Atlas.dir/src/img_manip.c.obj CMakeFiles/Atlas.dir/src/dir_files_utils.c.obj CMakeFiles/Atlas.dir/src/extract_config.c.obj CMakeFiles/Atlas.dir/src/errors.c.obj
+build Atlas.exe: C_EXECUTABLE_LINKER__Atlas_Debug CMakeFiles/Atlas.dir/atlas.c.obj CMakeFiles/Atlas.dir/src/img_manip.c.obj CMakeFiles/Atlas.dir/src/dir_files_utils.c.obj CMakeFiles/Atlas.dir/src/extract_config.c.obj CMakeFiles/Atlas.dir/src/errors.c.obj CMakeFiles/Atlas.dir/src/calculations.c.obj CMakeFiles/Atlas.dir/src/utils.c.obj
   FLAGS = -g
   LINK_LIBRARIES = -lvips  -lgio-2.0  -lgobject-2.0  -lglib-2.0  -lintl  -lkernel32 -luser32 -lgdi32 -lwinspool -lshell32 -lole32 -loleaut32 -luuid -lcomdlg32 -ladvapi32
   OBJECT_DIR = CMakeFiles\Atlas.dir

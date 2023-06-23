@@ -5,6 +5,7 @@
 
 #include "dir_files_utils.h"
 #include "definitions.h"
+#include "utils.h"
 
 const char *extensions[] = {".png", ".apng", ".jpg", ".jpeg", ".webp", ".tif", ".tiff", ".bmp", ".gif", ".tga"};
 const int extensions_length = sizeof(extensions) / sizeof(extensions[0]);
@@ -37,15 +38,22 @@ bool file_exists(const char *file_name) {
     return false;
 }
 
-bool write_lines(const char *file_name, const char **lines, int lines_num, bool cancel_if_file_exists) {
-    if(cancel_if_file_exists && file_exists(file_name)) return false;
+WriteLinesStatus write_lines(const char *file_name, const char **lines, int lines_num, bool cancel_if_file_exists) {
+    if(cancel_if_file_exists && file_exists(file_name)) {
+        printf("Lines not written. File exists: %s.\n", file_name);
+        return WRITE_LINES_FILE_EXIST;
+    }
     FILE *file = fopen(file_name, "w");
-    if (file == NULL) return false;
+    if (file == NULL) {
+        printf("Could not open file for writing %s.\n", file_name);
+        return WRITE_LINES_ERROR;
+    }
     for (int i = 0; i < lines_num; i++) {
-        char *line = lines[i];
+        const char *line = lines[i];
         fputs(line, file);
     }
     fclose(file);
+    return WRITE_LINES_WRITTEN;
 }
 
 
@@ -83,7 +91,7 @@ char** list_files(const char* dir_name, int* num_files, bool concat_path) {
             if (concat_path) {
                 char path[FILENAME_MAX];
                 strncpy(path, dir_name, dir_name_len + 1);
-                strncat(path + dir_name_len, entry->d_name, strlen(entry->d_name));
+                strncat(path + dir_name_len, entry->d_name, FILENAME_MAX - dir_name_len + 1);
                 files[count] = strdup(path);
             } else {
                 files[count] = strdup(entry->d_name);
@@ -100,7 +108,7 @@ char** list_files(const char* dir_name, int* num_files, bool concat_path) {
 char** read_lines(const char* filename, int* num_lines) {
     FILE* file = fopen(filename, "r");
     if (file == NULL) {
-        printf("Error opening file.\n");
+        printf("Error opening file %s.\n", filename);
         return NULL;
     }
 
@@ -116,6 +124,8 @@ char** read_lines(const char* filename, int* num_lines) {
     *num_lines = 0;
 
     while (fgets(line, MAX_LINE_LENGTH, file)) {
+        strcpy(line,trim(line));
+        if(!line[0]) continue;
         // Resize the array if necessary
         if (*num_lines >= capacity) {
             capacity *= 2;

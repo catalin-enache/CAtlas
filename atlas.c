@@ -6,6 +6,7 @@
 #include "./src/errors.h"
 #include "./src/img_manip.h"
 #include "./src/dir_files_utils.h"
+#include "./src/calculations.h"
 
 #define IMAGES_DIR "./atlas/"
 #define ATLAS_FILE "./atlas/atlas.png"
@@ -19,19 +20,27 @@ main( int argc, char **argv )
 //    for (int i = 0; i < argc; i++) {
 //        printf("argc[%d] = %s\n", i, argv[i]);
 //    }
+//    printf("argv[0] = %s\n", argv[0]);
+
+//    RowCol row_col = get_row_col(3, 2);
+//    printf("get_row_col: row => %d, col => %d\n", row_col.row, row_col.col);
+
 
     if(VIPS_INIT(argv[0]))
         return exit_with_error("Could not initialize VIPS");
 
     const char *lines[] = {"shrink 0.92\n", "cols 2\n", "compression 6\n"};
-    write_lines(ATLAS_CONFIG_FILE, lines, sizeof(lines)/sizeof(lines[0]), true);
+    int config_lines_length = sizeof(lines)/sizeof(lines[0]);
+    WriteLinesStatus status = write_lines(ATLAS_CONFIG_FILE, lines, config_lines_length, true);
+    if (status == WRITE_LINES_ERROR) return exit_with_error("Could not write config.\n");
 
-    int num_entries;
+    int num_entries = 0;
     KeyValue* kv_arr = extract_config(ATLAS_CONFIG_FILE, &num_entries);
     if (kv_arr == NULL)
         return exit_with_error("Could not extract kv_arr config\n");
 
-    printf("\nConfig lines found: %d\n", num_entries);
+    printf("\nConfig lines found: %d (from %d)\n", num_entries, config_lines_length);
+    if (num_entries != config_lines_length) return exit_with_error("Invalid number of config entries\n");
 
     for (int i = 0; i < num_entries; i++) {
         printf(" - ");
@@ -44,17 +53,19 @@ main( int argc, char **argv )
     free(kv_arr);
     printf("\nConfig values: shrink: %lf, cols %d, compression %d \n\n", shrink, cols, compression);
 
-    int num_paths;
+    int num_paths = 0;
     char **paths = list_files(IMAGES_DIR, &num_paths, true);
-    if (paths == NULL) {
-        printf("Could not list files\n");
-        return 1;
+    if (paths == NULL)
+        return exit_with_error("Could not list files\n");
+    if (num_paths == 0) {
+        printf("No image found\n");
+        return 0;
     }
 
     VipsImage *in_array[num_paths];
     VipsImage *out_array[num_paths];
 
-    int last_image_width, last_image_height, warning_for_different_size_emitted;
+    int last_image_width = 0, last_image_height = 0, warning_for_different_size_emitted = 0;
     for(int i = 0; i < num_paths; i++) {
         if(!(in_array[i] = vips_image_new_from_file( paths[i], NULL )))
             return exit_with_error("Could not create image from file %s.\n", paths[i]);

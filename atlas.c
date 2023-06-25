@@ -33,10 +33,13 @@ main( int argc, char **argv )
     if(VIPS_INIT(argv[0]))
         return exit_with_error("Could not initialize VIPS");
 
+    if(MAKE_DIR_ERROR == make_dir_if_not_exists(IMAGES_DIR))
+        return exit_with_error("Dir %s does not exist.\n", IMAGES_DIR);
+
     const char *lines[] = {"shrink 0.92\n", "cols 2\n", "compression 6\n"};
     int config_lines_length = sizeof(lines)/sizeof(lines[0]);
-    WriteLinesStatus status = write_lines(ATLAS_CONFIG_FILE, lines, config_lines_length, true);
-    if (status == WRITE_LINES_ERROR) return exit_with_error("Could not write config.\n");
+    if (WRITE_LINES_ERROR == write_lines(ATLAS_CONFIG_FILE, lines, config_lines_length, true))
+        return exit_with_error("Could not write config.\n");
 
     int num_entries = 0;
     KeyValue* kv_arr = extract_config(ATLAS_CONFIG_FILE, &num_entries);

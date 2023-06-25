@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <dirent.h>
+#include <sys/stat.h>
 
 #include "dir_files_utils.h"
 #include "definitions.h"
@@ -27,6 +28,25 @@ int should_keep(const char *fileName) {
         }
     }
     return keep;
+}
+
+MakeDirStatus make_dir_if_not_exists(const char *dir_name) {
+    struct stat st;
+    if (stat(dir_name, &st) == -1) {
+        // Directory does not exist, create it
+        if (mkdir(dir_name) == -1) {
+            printf("Failed to create the directory.\n");
+            return MAKE_DIR_ERROR;
+        }
+        printf("Directory created.\n");
+        return MAKE_DIR_DONE;
+    } else if (S_ISDIR(st.st_mode)) {
+        printf("Directory already exists.\n");
+        return MAKE_DIR_EXIST;
+    } else {
+        printf("A file with the same name already exists.\n");
+        return MAKE_DIR_EXIST;
+    }
 }
 
 bool file_exists(const char *file_name) {

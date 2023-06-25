@@ -12,11 +12,15 @@
 #define ATLAS_FILE "./atlas/atlas.png"
 #define ATLAS_CONFIG_FILE "./atlas/config.txt"
 
+int len(char *s) {
+    return strlen(s);
+}
+
 int
 main( int argc, char **argv )
 {
 //    if( argc != 3 )
-//        vips_error_exit( "usage: %s infile outfile", argv[0] );
+//        return exit_with_error("usage: %s infile outfile", argv[0]);
 //    for (int i = 0; i < argc; i++) {
 //        printf("argc[%d] = %s\n", i, argv[i]);
 //    }
@@ -75,7 +79,7 @@ main( int argc, char **argv )
         }
         last_image_width = in_array[i]->Xsize;
         last_image_height = in_array[i]->Ysize;
-        int h_shrinked, v_shrinked;
+        int h_shrinked = 0, v_shrinked = 0;
         zoom_out(in_array[i], &(out_array[i]), shrink, shrink, &h_shrinked, &v_shrinked);
         printf("Found image: %s [%d * %d] => [%d * %d]\n", paths[i], in_array[i]->Xsize, in_array[i]->Ysize, h_shrinked, v_shrinked);
         free(paths[i]);
@@ -88,12 +92,12 @@ main( int argc, char **argv )
 
     VipsImage *atlas = NULL;
     if (vips_arrayjoin(out_array, &atlas,  num_paths, "across", cols, NULL))
-        vips_error_exit(NULL);
+        return exit_with_error("vips_arrayjoin failed.\n");
 
     for(int i = 0; i < num_paths; i++) g_object_unref(out_array[i]);
 
     if (vips_pngsave(atlas, ATLAS_FILE, "compression", compression, NULL))
-        vips_error_exit(NULL);
+        return exit_with_error("vips_pngsave failed.\n");
 
     g_object_unref(atlas);
 

@@ -1,3 +1,0 @@
-D:/Projects/CAtlas/cmake-build-debug-msys2-mingw/CMakeFiles/Atlas.dir
-D:/Projects/CAtlas/cmake-build-debug-msys2-mingw/CMakeFiles/edit_cache.dir
-D:/Projects/CAtlas/cmake-build-debug-msys2-mingw/CMakeFiles/rebuild_cache.dir

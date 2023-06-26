@@ -11,24 +11,15 @@
 #define IMAGES_DIR "./atlas/"
 #define ATLAS_FILE "./atlas/atlas.png"
 #define ATLAS_CONFIG_FILE "./atlas/config.txt"
-
-int len(char *s) {
-    return strlen(s);
-}
+#define ATLAS_UV_HELP_FILE "./atlas/uv_help.txt"
 
 int
 main( int argc, char **argv )
 {
-//    if( argc != 3 )
-//        return exit_with_error("usage: %s infile outfile", argv[0]);
 //    for (int i = 0; i < argc; i++) {
 //        printf("argc[%d] = %s\n", i, argv[i]);
 //    }
 //    printf("argv[0] = %s\n", argv[0]);
-
-//    RowCol row_col = get_row_col(3, 2);
-//    printf("get_row_col: row => %d, col => %d\n", row_col.row, row_col.col);
-
 
     if(VIPS_INIT(argv[0]))
         return exit_with_error("Could not initialize VIPS");
@@ -103,6 +94,19 @@ main( int argc, char **argv )
         return exit_with_error("vips_pngsave failed.\n");
 
     g_object_unref(atlas);
+
+    int uv_help_lines_num = 0;
+    char **uv_help_lines = uv_help(num_paths, cols, shrink, &uv_help_lines_num);
+    if (uv_help_lines == NULL) return exit_with_error("Could not get uv_help_lines.\n");
+
+    if (WRITE_LINES_ERROR == write_lines(ATLAS_UV_HELP_FILE, (const char**)uv_help_lines, uv_help_lines_num, false))
+        return exit_with_error("Could not write UV help lines.\n");
+
+    for (int i = 0; i < uv_help_lines_num; i++) {
+        printf(uv_help_lines[i]);
+        free(uv_help_lines[i]);
+    }
+    free(uv_help_lines);
 
     vips_shutdown();
     printf("\n\n\n");

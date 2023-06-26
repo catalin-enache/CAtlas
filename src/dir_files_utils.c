@@ -30,6 +30,7 @@ int should_keep(const char *fileName) {
     return keep;
 }
 
+// https://stackoverflow.com/questions/18100097/portable-way-to-check-if-directory-exists-windows-linux-c
 MakeDirStatus make_dir_if_not_exists(const char *dir_name) {
     struct stat st;
     if (stat(dir_name, &st) == -1) {

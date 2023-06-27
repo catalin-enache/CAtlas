@@ -11,23 +11,39 @@
 const char *extensions[] = {".png", ".apng", ".jpg", ".jpeg", ".webp", ".tif", ".tiff", ".bmp", ".gif", ".tga"};
 const int extensions_length = sizeof(extensions) / sizeof(extensions[0]);
 
-int ends_with_extension(const char *filename, const char *extension) {
+bool ends_with_extension(const char *filename, const char *extension) {
     size_t len_f = strlen(filename);
     size_t len_e = strlen(extension);
     if (len_f < len_e) return 0;
     return strcmp(filename + len_f - len_e, extension) == 0;
 }
 
-int should_keep(const char *fileName) {
-    int keep = 0;
+bool is_image_file(const char *file_name) {
+    bool keep = false;
     for (int i = 0; i < extensions_length; i++) {
-        // if ends with an img extension and is not the atlas image, keep it
-        if (ends_with_extension(fileName, extensions[i]) && strstr(fileName, "atlas.") == NULL) {
-            keep = 1;
+        if (ends_with_extension(file_name, extensions[i])) {
+            keep = true;
             break;
         }
     }
     return keep;
+}
+
+bool is_image_file_and_not_atlas(const char *file_name) {
+    return is_image_file(file_name) && (strstr(file_name, "atlas.") == NULL);
+}
+
+bool no_filter(const char *file_name) {
+    return true;
+}
+
+bool file_exists(const char *file_name) {
+    FILE *file = fopen(file_name, "r");
+    if (file != NULL) {
+        fclose(file);
+        return true;
+    }
+    return false;
 }
 
 // https://stackoverflow.com/questions/18100097/portable-way-to-check-if-directory-exists-windows-linux-c
@@ -50,15 +66,6 @@ MakeDirStatus make_dir_if_not_exists(const char *dir_name) {
     }
 }
 
-bool file_exists(const char *file_name) {
-    FILE *file = fopen(file_name, "r");
-    if (file != NULL) {
-        fclose(file);
-        return true;
-    }
-    return false;
-}
-
 WriteLinesStatus write_lines(const char *file_name, const char **lines, int lines_num, bool cancel_if_file_exists) {
     if(cancel_if_file_exists && file_exists(file_name)) {
         printf("Lines not written. File exists: %s.\n", file_name);
@@ -79,7 +86,7 @@ WriteLinesStatus write_lines(const char *file_name, const char **lines, int line
 
 
 
-char** list_files(const char* dir_name, int* num_files, bool concat_path) {
+char** list_files_with_filter(const char* dir_name, int* num_files, bool concat_path, AllowString allow_string) {
     DIR *dir;
     struct dirent *entry;
     char **files;
@@ -93,9 +100,8 @@ char** list_files(const char* dir_name, int* num_files, bool concat_path) {
     }
 
     while((entry = readdir(dir)) != NULL) {
-        if(should_keep(entry->d_name)) {
-            count++;
-        }
+        if (!allow_string(entry->d_name)) continue;
+        count++;
     }
 
     files = malloc(count * sizeof(char*));
@@ -108,22 +114,26 @@ char** list_files(const char* dir_name, int* num_files, bool concat_path) {
     count = 0;
 
     while((entry = readdir(dir)) != NULL) {
-        if(should_keep(entry->d_name)) {
-            if (concat_path) {
-                char path[FILENAME_MAX];
-                strncpy(path, dir_name, dir_name_len + 1);
-                strncat(path + dir_name_len, entry->d_name, FILENAME_MAX - dir_name_len + 1);
-                files[count] = strdup(path);
-            } else {
-                files[count] = strdup(entry->d_name);
-            }
-            count++;
+        if (!allow_string(entry->d_name)) continue;
+        if (concat_path) {
+            char path[FILENAME_MAX];
+            strncpy(path, dir_name, dir_name_len + 1);
+            strncat(path + dir_name_len, entry->d_name, FILENAME_MAX - dir_name_len + 1);
+            files[count] = strdup(path);
+        } else {
+            files[count] = strdup(entry->d_name);
         }
+        count++;
     }
+
 
     closedir(dir);
     *num_files = count;
     return files;
+}
+
+char** list_files(const char* dir_name, int* num_files, bool concat_path) {
+    return list_files_with_filter(dir_name, num_files, concat_path, no_filter);
 }
 
 char** read_lines(const char* filename, int* num_lines) {

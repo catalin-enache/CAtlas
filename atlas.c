@@ -52,7 +52,7 @@ main( int argc, char **argv )
     printf("\nConfig values: shrink: %lf, cols %d, compression %d \n\n", shrink, cols, compression);
 
     int num_paths = 0;
-    char **paths = list_files(IMAGES_DIR, &num_paths, true);
+    char **paths = list_files_with_filter(IMAGES_DIR, &num_paths, true, is_image_file_and_not_atlas);
     if (paths == NULL)
         return exit_with_error("Could not list files.\n");
     if (num_paths == 0) {

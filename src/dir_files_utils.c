@@ -8,7 +8,7 @@
 #include "definitions.h"
 #include "utils.h"
 
-const char *extensions[] = {".png", ".apng", ".jpg", ".jpeg", ".webp", ".tif", ".tiff", ".bmp", ".gif", ".tga"};
+const char *extensions[] = {".png", ".apng", ".jpg", ".jpeg", ".webp", ".tif", ".tiff", ".bmp", ".gif", ".tga", ".exr"};
 const int extensions_length = sizeof(extensions) / sizeof(extensions[0]);
 
 bool ends_with_extension(const char *filename, const char *extension) {

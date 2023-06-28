@@ -9,7 +9,7 @@
 #include "./src/calculations.h"
 
 #define IMAGES_DIR "./atlas/"
-#define ATLAS_FILE "./atlas/atlas.png"
+#define ATLAS_FILE "./atlas/atlas."
 #define ATLAS_CONFIG_FILE "./atlas/config.txt"
 #define ATLAS_UV_HELP_FILE "./atlas/uv_help.txt"
 
@@ -27,7 +27,9 @@ main( int argc, char **argv )
     if(MAKE_DIR_ERROR == make_dir_if_not_exists(IMAGES_DIR))
         return exit_with_error("Dir %s does not exist.\n", IMAGES_DIR);
 
-    const char *lines[] = {"shrink 0.92\n", "cols 2\n", "compression 6\n"};
+    // png_compression: 0-9
+    // jpg_quality: 1-100
+    const char *lines[] = {"shrink 0.92\n", "cols 2\n", "png_compression 6\n", "jpg_quality 100\n", "format png\n"};
     int config_lines_length = sizeof(lines)/sizeof(lines[0]);
     if (WRITE_LINES_ERROR == write_lines(ATLAS_CONFIG_FILE, lines, config_lines_length, true))
         return exit_with_error("Could not write config.\n");
@@ -47,9 +49,12 @@ main( int argc, char **argv )
 
     double shrink = config_find(kv_arr, num_entries, "shrink")->value.d;
     int cols = config_find(kv_arr, num_entries, "cols")->value.i;
-    int compression = config_find(kv_arr, num_entries, "compression")->value.i;
+    int png_compression = config_find(kv_arr, num_entries, "png_compression")->value.i;
+    int jpg_quality = config_find(kv_arr, num_entries, "jpg_quality")->value.i;
+    char format[MAX_LINE_LENGTH]; // png, jpg
+    strcpy(format, config_find(kv_arr, num_entries, "format")->value.s);
     free(kv_arr);
-    printf("\nConfig values: shrink: %lf, cols %d, compression %d \n\n", shrink, cols, compression);
+    printf("\nConfig values: shrink: %lf, cols %d, png_compression %d, jpg_quality %d, format %s \n\n", shrink, cols, png_compression, jpg_quality, format);
 
     int num_paths = 0;
     char **paths = list_files_with_filter(IMAGES_DIR, &num_paths, true, is_image_file_and_not_atlas);
@@ -66,10 +71,15 @@ main( int argc, char **argv )
     for(int i = 0; i < num_paths; i++) {
         if(!(in_array[i] = vips_image_new_from_file( paths[i], NULL )))
             return exit_with_error("Could not create image from file %s.\n", paths[i]);
+
         if (i > 0
         && (in_array[i]->Xsize != last_image_width || in_array[i]->Ysize != last_image_height)
         && !warning_for_different_size_emitted) {
             warning_for_different_size_emitted = 1;
+        }
+        if (false && ends_with_extension(paths[i], ".exr")) {
+            printf("Normalizing %s\n", paths[i]);
+            hdr_to_ldr_naive_linear_processing(in_array[i], &in_array[i]);
         }
         last_image_width = in_array[i]->Xsize;
         last_image_height = in_array[i]->Ysize;
@@ -90,8 +100,26 @@ main( int argc, char **argv )
 
     for(int i = 0; i < num_paths; i++) g_object_unref(out_array[i]);
 
-    if (vips_pngsave(atlas, ATLAS_FILE, "compression", compression, NULL))
-        return exit_with_error("vips_pngsave failed.\n");
+    char atlas_file_name[MAX_LINE_LENGTH];
+    strncpy(atlas_file_name, ATLAS_FILE, sizeof(atlas_file_name) - 1);
+    strncat(atlas_file_name, format, sizeof(atlas_file_name) - strlen(atlas_file_name) - 1);
+
+    printf("Saving atlas to %s\n", atlas_file_name);
+    // TODO: see compression or other flags for each format
+    // https://www.libvips.org/API/current/VipsForeignSave.html#VipsSaveable
+    // https://www.libvips.org/API/current/VipsForeignSave.html
+    // saves tested so far: png jpg tiff
+    if (strcmp(format, "png") == 0) {
+        if (vips_pngsave(atlas, atlas_file_name, "compression", png_compression, NULL))
+            return exit_with_error("vips_pngsave failed.\n");
+    } else if (strcmp(format, "jpg") == 0) {
+        if(vips_jpegsave(atlas, atlas_file_name, "Q", jpg_quality, NULL))
+            return exit_with_error("vips_jpegsave failed.\n");
+    } else {
+        if(vips_image_write_to_file(atlas, atlas_file_name, NULL))
+            return exit_with_error("vips_image_write_to_file failed.\n");
+    }
+
 
     g_object_unref(atlas);
 

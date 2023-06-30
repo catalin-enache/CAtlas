@@ -79,19 +79,30 @@ main( int argc, char **argv )
         if(!(in_array[i] = vips_image_new_from_file( paths[i], NULL )))
             return exit_with_error("Could not create image from file %s.\n", paths[i]);
 
+        double minIn, maxIn;
+        if(vips_min( in_array[i], &minIn, NULL))
+            return exit_with_error("Could not find minIn value for image from file %s.\n", paths[i]);
+        if(vips_max( in_array[i], &maxIn, NULL))
+            return exit_with_error("Could not find maxIn value for image from file %s.\n", paths[i]);
+        VipsInterpretation guessed_interpretation = vips_image_guess_interpretation(in_array[i]);
+
+        if(vips_colourspace(in_array[i], &in_array[i], vips_interpretation, NULL)) {
+            return exit_with_error("Could not set interpretation %d for file %s.\n", vips_interpretation, paths[i]);
+        } // VIPS_INTERPRETATION_sRGB
+
+        double minOut, maxOut;
+        if(vips_min( in_array[i], &minOut, NULL))
+            return exit_with_error("Could not find minOut value for image from file %s.\n", paths[i]);
+        if(vips_max( in_array[i], &maxOut, NULL))
+            return exit_with_error("Could not find maxOut value for image from file %s.\n", paths[i]);
+        VipsInterpretation applied_interpretation = vips_image_guess_interpretation (in_array[i]);
+
         if (i > 0
         && (in_array[i]->Xsize != last_image_width || in_array[i]->Ysize != last_image_height)) {
             warning_for_different_size_emitted = 1;
         }
         last_image_width = in_array[i]->Xsize;
         last_image_height = in_array[i]->Ysize;
-
-        VipsInterpretation guessed_interpretation = vips_image_guess_interpretation(in_array[i]);
-        VipsInterpretation interpretation_to_apply = vips_interpretation;
-
-        if(vips_colourspace(in_array[i], &in_array[i], interpretation_to_apply, NULL)) {
-            return exit_with_error("Could not set interpretation %d for file %s.\n", interpretation_to_apply, paths[i]);
-        } // VIPS_INTERPRETATION_sRGB
 
         if (false && ends_with_extension(paths[i], ".exr")) {
             printf("Normalizing %s\n", paths[i]);
@@ -103,12 +114,17 @@ main( int argc, char **argv )
         if (out_array[i] == NULL)
             return exit_with_error("Could not zoom_out image from file %s.\n", paths[i]);
 
-        VipsInterpretation applied_interpretation = vips_image_guess_interpretation (out_array[i]);
-        printf("Found (%d bands, guessed_interpretation %d, applied_interpretation: %d) image: %s [%d * %d] shrinked to [%d * %d]\n",
-               in_array[i]->Bands,
-               guessed_interpretation, applied_interpretation,
-               paths[i], in_array[i]->Xsize, in_array[i]->Ysize, h_shrinked, v_shrinked
-               );
+        double finalMinOut, finalMaxOut;
+        if(vips_min( out_array[i], &finalMinOut, NULL))
+            return exit_with_error("Could not find finalMinOut value for image from file %s.\n", paths[i]);
+        if(vips_max( out_array[i], &finalMaxOut, NULL))
+            return exit_with_error("Could not find finalMaxOut value for image from file %s.\n", paths[i]);
+
+        printf("Found %d bands image: %s\n", in_array[i]->Bands, paths[i]);
+        printf("guessed_interpretation %d, applied_interpretation: %d\n", guessed_interpretation, applied_interpretation);
+        printf("[%d * %d] shrinked to [%d * %d]\n",in_array[i]->Xsize, in_array[i]->Ysize, h_shrinked, v_shrinked);
+        printf("[minIn %f, maxIn %f], after setting interpretation [minOut %f, maxOut %f], final result [finalMinOut %f, finalMaxOut %f]\n", minIn, maxIn, minOut, maxOut, finalMinOut, finalMaxOut);
+
         free(paths[i]);
         g_object_unref(in_array[i]);
     }

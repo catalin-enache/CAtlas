@@ -32,7 +32,7 @@ char** uv_help(int images_num, int total_cols, double shrink, int *num_lines) {
         return NULL;
     }
 
-    snprintf(lines[0], MAX_UV_HELP_LINE_LENGTH, "\n\ntotal_cols: %d, total_rows: %d, col_width: %.6f, row_height: %.6f, offset_horizontal_unit: %.6f, offset_vertical_unit: %.6f\n\n\n",
+    snprintf(lines[0], MAX_UV_HELP_LINE_LENGTH, "\ntotal_cols: %d, total_rows: %d, col_width: %.6f, row_height: %.6f, offset_horizontal_unit: %.6f, offset_vertical_unit: %.6f\n\n",
              total_cols, total_rows, col_width, row_height, offset_horizontal_unit, offset_vertical_unit);
 
     for (int i = 0; i < images_num; i++) {

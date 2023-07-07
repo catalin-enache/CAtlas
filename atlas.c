@@ -76,6 +76,10 @@ main( int argc, char **argv )
 
     int last_image_width = 0, last_image_height = 0, warning_for_different_size_emitted = 0;
     for(int i = 0; i < num_paths; i++) {
+        // TODO: define these in config
+        int sample_pixel_x = 10;
+        int sample_pixel_y = 10;
+
         if(!(in_array[i] = vips_image_new_from_file( paths[i], NULL )))
             return exit_with_error("Could not create image from file %s.\n", paths[i]);
 
@@ -85,10 +89,14 @@ main( int argc, char **argv )
         if(vips_max( in_array[i], &maxIn, NULL))
             return exit_with_error("Could not find maxIn value for image from file %s.\n", paths[i]);
         VipsInterpretation guessed_interpretation = vips_image_guess_interpretation(in_array[i]);
+        printf("Sample Before Interpretation => "); print_pixel(in_array[i], sample_pixel_x, sample_pixel_y);
 
+        // TODO: make this conditional in config
         if(vips_colourspace(in_array[i], &in_array[i], vips_interpretation, NULL)) {
             return exit_with_error("Could not set interpretation %d for file %s.\n", vips_interpretation, paths[i]);
         } // VIPS_INTERPRETATION_sRGB
+
+        printf("Sample After Interpretation  => "); print_pixel(in_array[i], sample_pixel_x, sample_pixel_y);
 
         double minOut, maxOut;
         if(vips_min( in_array[i], &minOut, NULL))
@@ -120,10 +128,11 @@ main( int argc, char **argv )
         if(vips_max( out_array[i], &finalMaxOut, NULL))
             return exit_with_error("Could not find finalMaxOut value for image from file %s.\n", paths[i]);
 
+        printf("Sample After Processing      => "); print_pixel(out_array[i], sample_pixel_x, sample_pixel_y);
         printf("Found %d bands image: %s\n", in_array[i]->Bands, paths[i]);
-        printf("guessed_interpretation %d, applied_interpretation: %d\n", guessed_interpretation, applied_interpretation);
-        printf("[%d * %d] shrinked to [%d * %d]\n",in_array[i]->Xsize, in_array[i]->Ysize, h_shrinked, v_shrinked);
-        printf("[minIn %f, maxIn %f], after setting interpretation [minOut %f, maxOut %f], final result [finalMinOut %f, finalMaxOut %f]\n", minIn, maxIn, minOut, maxOut, finalMinOut, finalMaxOut);
+        printf("\tguessed_interpretation %d, applied_interpretation: %d\n", guessed_interpretation, applied_interpretation);
+        printf("\t[%d * %d] shrinked to [%d * %d]\n",in_array[i]->Xsize, in_array[i]->Ysize, h_shrinked, v_shrinked);
+        printf("\t[minIn %f, maxIn %f], after setting interpretation [minOut %f, maxOut %f], final result [finalMinOut %f, finalMaxOut %f]\n", minIn, maxIn, minOut, maxOut, finalMinOut, finalMaxOut);
 
         free(paths[i]);
         g_object_unref(in_array[i]);

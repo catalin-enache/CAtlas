@@ -17,6 +17,7 @@ typedef enum {
 bool ends_with_extension(const char *filename, const char *extension);
 bool is_image_file(const char *file_name);
 bool is_image_file_and_not_atlas(const char *file_name);
+bool is_image_file_and_not_extracted(const char *file_name);
 bool no_filter(const char *file_name);
 bool file_exists(const char *file_name);
 MakeDirStatus make_dir_if_not_exists(const char *dir_name);

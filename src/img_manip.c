@@ -77,3 +77,60 @@ void hdr_to_ldr_naive_linear_processing(VipsImage *in, VipsImage **out) {
         return;
     *out = hdr_to_ldr;
 }
+
+double** get_min_max_for_each_band(VipsImage *in) {
+    int bands_num = in->Bands;
+    double **bands_min_max = (double**)malloc(bands_num * sizeof(double*));
+
+    if(bands_min_max == NULL) {
+        printf("Memory allocation failed!\n");
+        return NULL;
+    }
+
+    for (int i = 0; i < bands_num; i++) {
+        bands_min_max[i] = (double*)malloc(2 * sizeof(double));
+        if(bands_min_max[i] == NULL) {
+            printf("Memory allocation failed!\n");
+            return NULL;
+        }
+
+        VipsImage *band = NULL; // band to inspect
+        if (vips_extract_band(in, &band, i, NULL)) {
+            printf("Could not extract band %d from image\n", i);
+            return NULL;
+        }
+
+        double min_value = 0, max_value = 0;
+        if (vips_min(band, &min_value, NULL)) {
+            g_object_unref(band);
+            printf("Could not extract min from image\n");
+            return NULL;
+        }
+
+        if (vips_max(band, &max_value, NULL)) {
+            g_object_unref(band);
+            printf("Could not extract max from image\n");
+            return NULL;
+        }
+
+        bands_min_max[i][0] = min_value;
+        bands_min_max[i][1] = max_value;
+        g_object_unref(band);
+    }
+    return bands_min_max;
+}
+
+void print_pixel(VipsImage *in, int x, int y) {
+    int bands = 0;
+    double *pixel_values = NULL;
+    if(vips_getpoint(in, &pixel_values, &bands, x, y, NULL)) {
+        printf("Could not vips_getpoint.\n");
+    } else {
+        printf("pixel_values[%d, %d]: ", x, y);
+        for (int j = 0; j < bands; j++) {
+            printf("%f  ", pixel_values[j]);
+        }
+        printf("\n");
+    }
+    g_free(pixel_values);
+}

@@ -11,6 +11,9 @@
 const char *extensions[] = {".png", ".apng", ".jpg", ".jpeg", ".webp", ".tif", ".tiff", ".bmp", ".gif", ".tga", ".exr"};
 const int extensions_length = sizeof(extensions) / sizeof(extensions[0]);
 
+char *bands[] = {".0.", ".1.", ".2.", ".3.", ".4.", ".5.", ".6.", ".7.", ".8.", ".9."};
+int bands_size = sizeof(bands) / sizeof(bands[0]);
+
 bool ends_with_extension(const char *filename, const char *extension) {
     size_t len_f = strlen(filename);
     size_t len_e = strlen(extension);
@@ -31,6 +34,14 @@ bool is_image_file(const char *file_name) {
 
 bool is_image_file_and_not_atlas(const char *file_name) {
     return is_image_file(file_name) && (strstr(file_name, "atlas.") == NULL);
+}
+
+bool is_image_file_and_not_extracted(const char *file_name) {
+    if (!is_image_file(file_name)) return false;
+    for (int i = 0; i < bands_size; i++) {
+        if (strstr(file_name, bands[i]) != NULL) return false;
+    }
+    return true;
 }
 
 bool no_filter(const char *file_name) {

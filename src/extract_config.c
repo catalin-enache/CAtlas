@@ -1,9 +1,5 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-
 #include "extract_config.h"
-#include "dir_files_utils.h"
+
 
 void print_key_value(KeyValue kv) {
     if(kv.value.type == 'i') {

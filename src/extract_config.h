@@ -2,7 +2,12 @@
 #ifndef ATLAS_EXTRACT_CONFIG_H
 #define ATLAS_EXTRACT_CONFIG_H
 
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
 #include "definitions.h"
+#include "dir_files_utils.h"
 
 typedef struct {
     int value;

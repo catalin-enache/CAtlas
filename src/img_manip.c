@@ -1,6 +1,4 @@
 
-#include <vips/vips.h>
-
 #include "img_manip.h"
 
 void zoom_out(VipsImage *in, VipsImage **out, double shrink, int *h_shrinked, int *v_shrinked) {

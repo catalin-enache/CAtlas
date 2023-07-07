@@ -6,7 +6,6 @@
 #include "./src/errors.h"
 #include "./src/img_manip.h"
 #include "./src/dir_files_utils.h"
-#include "./src/calculations.h"
 #include "./src/utils.h"
 
 #define IMAGES_DIR "./extract_channels/"
@@ -19,7 +18,7 @@ int main(int argc, char **argv) {
     if(MAKE_DIR_ERROR == make_dir_if_not_exists(IMAGES_DIR))
         return exit_with_error("Dir %s does not exist.\n", IMAGES_DIR);
 
-    const char *lines[] = {"vips_interpretation 22\n"};
+    const char *lines[] = {"extracted_channels_format png\n", "vips_interpretation 22\n", "apply_interpretation 0\n", "sample_pixel_x 10\n", "sample_pixel_y 10\n"};
     int config_lines_length = sizeof(lines)/sizeof(lines[0]);
     if (WRITE_LINES_ERROR == write_lines(ATLAS_CONFIG_FILE, lines, config_lines_length, true))
         return exit_with_error("Could not write config.\n");
@@ -38,6 +37,13 @@ int main(int argc, char **argv) {
     }
 
     int vips_interpretation = config_find(kv_arr, num_entries, "vips_interpretation")->value.i;
+    bool apply_interpretation = (bool)config_find(kv_arr, num_entries, "apply_interpretation")->value.i;
+    int sample_pixel_x = config_find(kv_arr, num_entries, "sample_pixel_x")->value.i;
+    int sample_pixel_y = config_find(kv_arr, num_entries, "sample_pixel_y")->value.i;
+
+    char extracted_channels_format[MAX_LINE_LENGTH]; // png, jpg
+    strcpy(extracted_channels_format, ".");
+    strcat(extracted_channels_format, config_find(kv_arr, num_entries, "extracted_channels_format")->value.s);
 
     free(kv_arr);
 
@@ -52,44 +58,41 @@ int main(int argc, char **argv) {
     VipsImage *in_array[num_paths];
 
     for (int i = 0; i < num_paths; i++) {
-        // TODO: define these in config
-        int sample_pixel_x = 10;
-        int sample_pixel_y = 10;
-
         if(!(in_array[i] = vips_image_new_from_file( paths[i], NULL)))
             return exit_with_error("Could not create image from file %s.\n", paths[i]);
 
-        printf("Sample Before Interpretation => "); print_pixel(in_array[i], sample_pixel_x, sample_pixel_y);
+        printf("\nFound %d bands image: %s\n", in_array[i]->Bands, paths[i]);
 
         VipsInterpretation guessed_interpretation = vips_image_guess_interpretation(in_array[i]);
-        double ** min_max_1 = get_min_max_for_each_band(in_array[i]);
-        if (min_max_1 == NULL) return exit_with_error("Could not get min_max for file before vips interpretation %s.\n", paths[i]);
-        char *info_1 = print_2d_array_of_double(min_max_1, in_array[i]->Bands, 2);
-        for (int j = 0; j < in_array[i]->Bands; j++) free(min_max_1[j]);
-        free(min_max_1);
 
-        // TODO: make this conditional in config
-        if(vips_colourspace(in_array[i], &in_array[i], vips_interpretation, NULL)) {
-            return exit_with_error("Could not set interpretation %d for file %s.\n", vips_interpretation, paths[i]);
-        } // VIPS_INTERPRETATION_sRGB
+        printf("\tSample Before Interpretation => "); print_pixel(in_array[i], sample_pixel_x, sample_pixel_y);
 
-        printf("Sample After Interpretation  => "); print_pixel(in_array[i], sample_pixel_x, sample_pixel_y);
+        char *info_1 = print_min_max_for_each_band(in_array[i]);
+
+        if(apply_interpretation) {
+            if(vips_colourspace(in_array[i], &in_array[i], vips_interpretation, NULL)) {
+                return exit_with_error("Could not set interpretation %d for file %s.\n", vips_interpretation, paths[i]);
+            } // VIPS_INTERPRETATION_sRGB
+        }
+
+        if (apply_interpretation) {
+            printf("\tSample After Interpretation  => ");
+            print_pixel(in_array[i], sample_pixel_x, sample_pixel_y);
+        }
 
         VipsInterpretation applied_interpretation = vips_image_guess_interpretation (in_array[i]);
-        double ** min_max_2 = get_min_max_for_each_band(in_array[i]);
-        if (min_max_2 == NULL) return exit_with_error("Could not get min_max for file after vips interpretation %s.\n", paths[i]);
-        char *info_2 = print_2d_array_of_double(min_max_2, in_array[i]->Bands, 2);
-        for (int j = 0; j < in_array[i]->Bands; j++) free(min_max_2[j]);
-        free(min_max_2);
+        printf("\tGuessed Interpretation: %d\n", guessed_interpretation);
+        apply_interpretation && printf("\tApplied Interpretation: %d\n", applied_interpretation);
 
+        char *info_2 = print_min_max_for_each_band(in_array[i]);
 
-        printf("Found %d bands image: %s\n", in_array[i]->Bands, paths[i]);
-        printf("\tguessed_interpretation %d, applied_interpretation: %d\n", guessed_interpretation, applied_interpretation);
-        printf("\tmin_max before interpretation: %s\n", info_1);
-        printf("\tmin_max after interpretation: %s\n", info_2);
+        printf("\tMin_Max before interpretation: %s\n", info_1);
+        apply_interpretation && printf("\tMin_Max after interpretation:  %s\n", info_2);
 
         free(info_1);
         free(info_2);
+
+        printf("\n");
 
         for (int j = 0; j < in_array[i]->Bands; j++) {
             VipsImage *curr_channel = NULL;
@@ -103,7 +106,7 @@ int main(int argc, char **argv) {
             char channel_file_name_b[MAX_LINE_LENGTH];
             sprintf(channel_file_name_b, "%d", j);
             strncat(channel_file_name, channel_file_name_b, sizeof(channel_file_name) - strlen(channel_file_name) - 1);
-            strncat(channel_file_name, ".jpg", sizeof(channel_file_name) - strlen(channel_file_name) - 1);
+            strncat(channel_file_name, extracted_channels_format, sizeof(channel_file_name) - strlen(channel_file_name) - 1);
             printf("Writing to file: %s\n", channel_file_name);
             if (vips_image_write_to_file(curr_channel, channel_file_name, NULL)) {
                 return exit_with_error("Could not write to file %s.\n", channel_file_name);
@@ -116,4 +119,10 @@ int main(int argc, char **argv) {
     }
 
     free(paths);
+
+    vips_shutdown();
+    printf("\n\n\n");
+    printf("====================== DONE ===========================\n");
+    printf("Type something then press enter ...\n");
+    getchar();
 }

@@ -1,5 +1,4 @@
-#include <stdarg.h>
-#include <vips/vips.h>
+
 #include "errors.h"
 
 // https://stackoverflow.com/questions/205529/passing-variable-number-of-arguments-around

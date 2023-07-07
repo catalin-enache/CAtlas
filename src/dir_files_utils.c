@@ -1,12 +1,6 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <dirent.h>
-#include <sys/stat.h>
 
 #include "dir_files_utils.h"
-#include "definitions.h"
-#include "utils.h"
+
 
 const char *extensions[] = {".png", ".apng", ".jpg", ".jpeg", ".webp", ".tif", ".tiff", ".bmp", ".gif", ".tga", ".exr"};
 const int extensions_length = sizeof(extensions) / sizeof(extensions[0]);

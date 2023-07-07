@@ -2,6 +2,10 @@
 #ifndef ATLAS_CALCULATIONS_H
 #define ATLAS_CALCULATIONS_H
 
+#include <stdio.h>
+#include <stdlib.h>
+#include <math.h>
+
 #define MAX_UV_HELP_LINE_LENGTH 512
 
 typedef struct {

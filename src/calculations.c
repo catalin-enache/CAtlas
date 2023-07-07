@@ -1,6 +1,4 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <math.h>
+
 #include "calculations.h"
 
 RowCol get_row_col(int _index, int predefined_cols) {

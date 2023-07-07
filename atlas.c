@@ -7,6 +7,7 @@
 #include "./src/img_manip.h"
 #include "./src/dir_files_utils.h"
 #include "./src/calculations.h"
+#include "./src/utils.h"
 
 #define IMAGES_DIR "./atlas/"
 #define ATLAS_FILE "./atlas/atlas."
@@ -27,7 +28,7 @@ main( int argc, char **argv )
     if(MAKE_DIR_ERROR == make_dir_if_not_exists(IMAGES_DIR))
         return exit_with_error("Dir %s does not exist.\n", IMAGES_DIR);
 
-    const char *lines[] = {"shrink 0.92\n", "cols 2\n", "png_compression 6\n", "jpg_quality 100\n", "atlas_output_format png\n", "vips_interpretation 22\n"};
+    const char *lines[] = {"shrink 0.92\n", "cols 2\n", "png_compression 6\n", "jpg_quality 100\n", "atlas_output_format png\n", "vips_interpretation 22\n", "apply_interpretation 0\n", "sample_pixel_x 10\n", "sample_pixel_y 10\n"};
     int config_lines_length = sizeof(lines)/sizeof(lines[0]);
     if (WRITE_LINES_ERROR == write_lines(ATLAS_CONFIG_FILE, lines, config_lines_length, true))
         return exit_with_error("Could not write config.\n");
@@ -50,6 +51,10 @@ main( int argc, char **argv )
     int png_compression = config_find(kv_arr, num_entries, "png_compression")->value.i;
     int jpg_quality = config_find(kv_arr, num_entries, "jpg_quality")->value.i;
     int vips_interpretation = config_find(kv_arr, num_entries, "vips_interpretation")->value.i;
+    bool apply_interpretation = (bool)config_find(kv_arr, num_entries, "apply_interpretation")->value.i;
+    int sample_pixel_x = config_find(kv_arr, num_entries, "sample_pixel_x")->value.i;
+    int sample_pixel_y = config_find(kv_arr, num_entries, "sample_pixel_y")->value.i;
+
     char atlas_output_format[MAX_LINE_LENGTH]; // png, jpg
     strcpy(atlas_output_format, config_find(kv_arr, num_entries, "atlas_output_format")->value.s);
 
@@ -59,8 +64,17 @@ main( int argc, char **argv )
 
     free(kv_arr);
 
-    printf("\nConfig values: shrink: %lf, cols %d, png_compression %d, jpg_quality %d, atlas_output_format %s \n\n",
-           shrink, cols, png_compression, jpg_quality, atlas_output_format
+    printf("\nConfig values: \n"
+           "\tshrink: %lf, cols %d, \n"
+           "\tpng_compression %d, jpg_quality %d, \n"
+           "\tvips_interpretation %d, apply_interpretation %d, \n"
+           "\tsample_pixel_x %d, sample_pixel_y %d, \n"
+           "\tatlas_output_format %s \n\n",
+           shrink, cols,
+           png_compression, jpg_quality,
+           vips_interpretation, apply_interpretation,
+           sample_pixel_x, sample_pixel_y,
+           atlas_output_format
            );
 
     int num_paths = 0;
@@ -76,34 +90,28 @@ main( int argc, char **argv )
 
     int last_image_width = 0, last_image_height = 0, warning_for_different_size_emitted = 0;
     for(int i = 0; i < num_paths; i++) {
-        // TODO: define these in config
-        int sample_pixel_x = 10;
-        int sample_pixel_y = 10;
-
         if(!(in_array[i] = vips_image_new_from_file( paths[i], NULL )))
             return exit_with_error("Could not create image from file %s.\n", paths[i]);
 
-        double minIn, maxIn;
-        if(vips_min( in_array[i], &minIn, NULL))
-            return exit_with_error("Could not find minIn value for image from file %s.\n", paths[i]);
-        if(vips_max( in_array[i], &maxIn, NULL))
-            return exit_with_error("Could not find maxIn value for image from file %s.\n", paths[i]);
+        printf("Found %d bands image: %s\n", in_array[i]->Bands, paths[i]);
+
         VipsInterpretation guessed_interpretation = vips_image_guess_interpretation(in_array[i]);
-        printf("Sample Before Interpretation => "); print_pixel(in_array[i], sample_pixel_x, sample_pixel_y);
 
-        // TODO: make this conditional in config
-        if(vips_colourspace(in_array[i], &in_array[i], vips_interpretation, NULL)) {
-            return exit_with_error("Could not set interpretation %d for file %s.\n", vips_interpretation, paths[i]);
-        } // VIPS_INTERPRETATION_sRGB
+        char *info_1 = print_min_max_for_each_band(in_array[i]);
+        printf("\tSample Before Interpretation => "); print_pixel(in_array[i], sample_pixel_x, sample_pixel_y);
 
-        printf("Sample After Interpretation  => "); print_pixel(in_array[i], sample_pixel_x, sample_pixel_y);
+        if (apply_interpretation) {
+            if(vips_colourspace(in_array[i], &in_array[i], vips_interpretation, NULL)) {
+                return exit_with_error("Could not set interpretation %d for file %s.\n", vips_interpretation, paths[i]);
+            } // VIPS_INTERPRETATION_sRGB
+        }
 
-        double minOut, maxOut;
-        if(vips_min( in_array[i], &minOut, NULL))
-            return exit_with_error("Could not find minOut value for image from file %s.\n", paths[i]);
-        if(vips_max( in_array[i], &maxOut, NULL))
-            return exit_with_error("Could not find maxOut value for image from file %s.\n", paths[i]);
         VipsInterpretation applied_interpretation = vips_image_guess_interpretation (in_array[i]);
+
+        if (apply_interpretation) {
+            printf("\tSample After Interpretation  => ");
+            print_pixel(in_array[i], sample_pixel_x, sample_pixel_y);
+        }
 
         if (i > 0
         && (in_array[i]->Xsize != last_image_width || in_array[i]->Ysize != last_image_height)) {
@@ -122,17 +130,19 @@ main( int argc, char **argv )
         if (out_array[i] == NULL)
             return exit_with_error("Could not zoom_out image from file %s.\n", paths[i]);
 
-        double finalMinOut, finalMaxOut;
-        if(vips_min( out_array[i], &finalMinOut, NULL))
-            return exit_with_error("Could not find finalMinOut value for image from file %s.\n", paths[i]);
-        if(vips_max( out_array[i], &finalMaxOut, NULL))
-            return exit_with_error("Could not find finalMaxOut value for image from file %s.\n", paths[i]);
+        char *info_2 = print_min_max_for_each_band(out_array[i]);
 
-        printf("Sample After Processing      => "); print_pixel(out_array[i], sample_pixel_x, sample_pixel_y);
-        printf("Found %d bands image: %s\n", in_array[i]->Bands, paths[i]);
-        printf("\tguessed_interpretation %d, applied_interpretation: %d\n", guessed_interpretation, applied_interpretation);
+        printf("\tSample After Processing      => ");
+        print_pixel(out_array[i], sample_pixel_x, sample_pixel_y);
+
+        printf("\tGuessed Interpretation %d\n", guessed_interpretation);
+        apply_interpretation && printf("\tApplied Interpretation: %d\n", applied_interpretation);
         printf("\t[%d * %d] shrinked to [%d * %d]\n",in_array[i]->Xsize, in_array[i]->Ysize, h_shrinked, v_shrinked);
-        printf("\t[minIn %f, maxIn %f], after setting interpretation [minOut %f, maxOut %f], final result [finalMinOut %f, finalMaxOut %f]\n", minIn, maxIn, minOut, maxOut, finalMinOut, finalMaxOut);
+        printf("\tMin_Max original: %s\n", info_1);
+        printf("\tMin_Max final:    %s\n", info_2);
+
+        free(info_1);
+        free(info_2);
 
         free(paths[i]);
         g_object_unref(in_array[i]);

@@ -4,9 +4,6 @@
 
 #include "./src/extract_config.h"
 #include "./src/errors.h"
-#include "./src/img_manip.h"
-#include "./src/dir_files_utils.h"
-#include "./src/utils.h"
 
 #define IMAGES_DIR "./extract_channels/"
 #define ATLAS_CONFIG_FILE "./extract_channels/config.txt"

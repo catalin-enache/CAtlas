@@ -4,10 +4,7 @@
 
 #include "./src/extract_config.h"
 #include "./src/errors.h"
-#include "./src/img_manip.h"
-#include "./src/dir_files_utils.h"
 #include "./src/calculations.h"
-#include "./src/utils.h"
 
 #define IMAGES_DIR "./atlas/"
 #define ATLAS_FILE "./atlas/atlas."

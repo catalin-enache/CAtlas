@@ -51,6 +51,7 @@ Module.symvers
 Mkfile.old
 dkms.conf
 
+!install.cmd
 
 cmake-build-debug-msys2-mingw/
 cmake-build-release-msys2-mingw/

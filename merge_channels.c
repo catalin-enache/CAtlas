@@ -335,13 +335,17 @@ int main(int argc, char **argv) {
                 default: {
                     // here we copy channels from the target to preserve them when, for example, target has 2 channels and the output cloned from target got changed to have more channels
                     // in which case output's alpha channel (from a Gray/A image type) gets lost. So we copy it from the target.
-                    printf("Copying channel %d from target: %s <= %s \n", i, channelTypeMapping(channels_output_write[i]), channelTypeMapping(channels_target_read[i]));
+                    char * channelTypeOutputWrite = channelTypeAsString(channels_output_write[i]);
+                    char * channelTypeTargetRead = channelTypeAsString(channels_target_read[i]);
+                    printf("Copying channel %d from target: %s <= %s \n", i, channelTypeOutputWrite, channelTypeTargetRead);
+                    free(channelTypeOutputWrite);
+                    free(channelTypeTargetRead);
                     if (channels_target_read[i] == UndefinedChannel) continue;
                     copy_channel(output_wand, target_wand, channels_output_write[i], channels_target_read[i]);
                 }
             }
             if (composite_op == UndefinedCompositeOp) continue;
-            printf("Copying channel %d from source using %s\n", i, compositeOperatorMapping(composite_op));
+            printf("Copying channel %d from source using %s\n", i, compositeOperatorAsString(composite_op));
             MagickCompositeImage(output_wand, final_source_wands[i], composite_op, MagickFalse, 0, 0);
         }
     }

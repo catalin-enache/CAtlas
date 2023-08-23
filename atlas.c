@@ -171,6 +171,7 @@ int main(int argc, char **argv) {
 //        }
 
         // =========================== >> Zoom out ========================================
+        // TODO: add an option to scale down the image (according with smallest image size) before adding it to the atlas
         input_wands[i] = zoom_out(input_wands[i], shrink, shrink_filter); // LanczosFilter
         // =========================== << Zoom out ========================================
 

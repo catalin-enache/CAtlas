@@ -3,7 +3,7 @@
 PixelChannel PIXEL_CHANNELS[] = {RedPixelChannel, GreenPixelChannel, BluePixelChannel, BlackPixelChannel, AlphaPixelChannel};
 int PIXEL_CHANNELS_NUM = sizeof(PIXEL_CHANNELS) / sizeof(PIXEL_CHANNELS[0]);
 
-char* colorSpaceMapping(ColorspaceType colorspace_type) {
+char* colorSpaceAsString(ColorspaceType colorspace_type) {
     int str_size = 50;
     char *str = malloc(str_size * sizeof(char));
     snprintf(str, sizeof(str), "UndefinedColorspace(%d)", colorspace_type);
@@ -31,7 +31,7 @@ char* colorSpaceMapping(ColorspaceType colorspace_type) {
 }
 
 // map ImageType to string
-char* imageTypeMapping(ImageType image_type) {
+char* imageTypeAsString(ImageType image_type) {
     int str_size = 50;
     char *str = malloc(str_size * sizeof(char));
 
@@ -67,7 +67,7 @@ char* imageTypeMapping(ImageType image_type) {
     return str;
 }
 
-char* channelTypeMapping(ChannelType channel) {
+char* channelTypeAsString(ChannelType channel) {
     int str_size = 50;
     char *str = malloc(str_size * sizeof(char));
 
@@ -89,7 +89,7 @@ char* channelTypeMapping(ChannelType channel) {
     return str;
 }
 
-char * compositeOperatorMapping(CompositeOperator op) {
+char * compositeOperatorAsString(CompositeOperator op) {
     int str_size = 50;
     char *str = malloc(str_size * sizeof(char));
     switch(op) {
@@ -264,10 +264,10 @@ void print_info(MagickWand *wand, int sample_pixel_x, int sample_pixel_y) {
         printf("Could not print_min_max_for_each_band (print_info).\n");
         return;
     }
-    char* imageColorspace = colorSpaceMapping(MagickGetImageColorspace(wand));
-    char* colorSpace = colorSpaceMapping(MagickGetColorspace(wand));
-    char* imageType = imageTypeMapping(MagickGetImageType(wand));
-    char* type = imageTypeMapping(MagickGetType(wand));
+    char* imageColorspace = colorSpaceAsString(MagickGetImageColorspace(wand));
+    char* colorSpace = colorSpaceAsString(MagickGetColorspace(wand));
+    char* imageType = imageTypeAsString(MagickGetImageType(wand));
+    char* type = imageTypeAsString(MagickGetType(wand));
 
     printf("\t%s\n", info);
     printf("\t");

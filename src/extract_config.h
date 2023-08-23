@@ -35,5 +35,6 @@ typedef struct {
 void print_key_value(KeyValue kv);
 KeyValue* extract_config(const char *fileName, int *num_entries);
 KeyValue* config_find(KeyValue *kvArr, int length, const char *needle);
+IntResult get_int(const char *str);
 
 #endif //ATLAS_EXTRACT_CONFIG_H

@@ -12,6 +12,27 @@ char *trim(char *s) {
     return s;
 }
 
+int str_concat(char * res, int length, ...) {
+    // variadic args flow >>
+    va_list args;
+    va_start(args, length);
+    res[0] = '\0';
+    char * next = NULL;
+    int total_length = 0;
+    while ((next = va_arg(args, char*)) != NULL) {
+        int next_length = strlen(next);
+        if (total_length + next_length + 1 > length) {
+            printf("String concatenation '%s' would exceed the maximum length of %d.\n", next, length);
+            return -1;
+        }
+        strncat(res, next, length - total_length - 1);
+        total_length += next_length;
+    }
+    va_end(args);
+    // << variadic args flow
+    return total_length;
+}
+
 
 char* print_2d_array_of_double(double **arr, int arr_size, int arr_elem_size) {
     int d_size = 40; // arbitrary size of formatted double including surrounding chars (commas, parenthesis)
@@ -27,7 +48,7 @@ char* print_2d_array_of_double(double **arr, int arr_size, int arr_elem_size) {
         strcat(res, "[");
         for (int j = 0; j < arr_elem_size; j++) {
             char buffer[30];
-            sprintf(buffer, "%.6f", arr[i][j]);
+            sprintf(buffer, "%.8f", arr[i][j]);
             strcat(res, buffer);
             if (j < arr_elem_size - 1) {
                 strcat(res, ", ");
@@ -37,23 +58,6 @@ char* print_2d_array_of_double(double **arr, int arr_size, int arr_elem_size) {
     }
     strcat(res, "]");
     res[strlen(res)] = '\0';
-    return res;
-}
 
-char* print_min_max_for_each_band(VipsImage *in) {
-    double **bands_min_max = get_min_max_for_each_band(in);
-    if (bands_min_max == NULL) {
-        printf("Could not get min max for each band.\n");
-        return NULL;
-    }
-    char *res = print_2d_array_of_double(bands_min_max, in->Bands, 2);
-    if (res == NULL) {
-        printf("Could not print min max for each band.\n");
-        return NULL;
-    }
-    for (int i = 0; i < in->Bands; i++) {
-        free(bands_min_max[i]);
-    }
-    free(bands_min_max);
     return res;
 }

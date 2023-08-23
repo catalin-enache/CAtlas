@@ -5,8 +5,11 @@
 const char *extensions[] = {".png", ".apng", ".jpg", ".jpeg", ".webp", ".tif", ".tiff", ".bmp", ".gif", ".tga", ".exr"};
 const int extensions_length = sizeof(extensions) / sizeof(extensions[0]);
 
-char *bands[] = {".0.", ".1.", ".2.", ".3.", ".4.", ".5.", ".6.", ".7.", ".8.", ".9."};
-int bands_size = sizeof(bands) / sizeof(bands[0]);
+char *extracted_tokens[] = {".0.", ".1.", ".2.", ".3.", ".4.", ".5.", ".6.", ".7.", ".8.", ".9."};
+int extracted_tokens_size = sizeof(extracted_tokens) / sizeof(extracted_tokens[0]);
+
+char *mergeable_tokens[] = {"0.", "1.", "2.", "3."};
+int mergeable_tokens_size = sizeof(mergeable_tokens) / sizeof(mergeable_tokens[0]);
 
 bool ends_with_extension(const char *filename, const char *extension) {
     size_t len_f = strlen(filename);
@@ -30,12 +33,24 @@ bool is_image_file_and_not_atlas(const char *file_name) {
     return is_image_file(file_name) && (strstr(file_name, "atlas.") == NULL);
 }
 
+bool is_image_file_and_is_mergeable_target(const char *file_name) {
+    return is_image_file(file_name) && (strncmp(file_name, "target.", 7) == 0);
+}
+
 bool is_image_file_and_not_extracted(const char *file_name) {
     if (!is_image_file(file_name)) return false;
-    for (int i = 0; i < bands_size; i++) {
-        if (strstr(file_name, bands[i]) != NULL) return false;
+    for (int i = 0; i < extracted_tokens_size; i++) {
+        if (strstr(file_name, extracted_tokens[i]) != NULL) return false;
     }
     return true;
+}
+
+bool is_image_file_and_is_mergeable_source(const char *file_name) {
+    if (!is_image_file(file_name)) return false;
+    for (int i = 0; i < mergeable_tokens_size; i++) {
+        if (strncmp(file_name, mergeable_tokens[i], 2) == 0) return true;
+    }
+    return false;
 }
 
 bool no_filter(const char *file_name) {
@@ -60,10 +75,10 @@ MakeDirStatus make_dir_if_not_exists(const char *dir_name) {
             printf("Failed to create the directory.\n");
             return MAKE_DIR_ERROR;
         }
-        printf("Directory created.\n");
+        printf("Directory %s created.\n", dir_name);
         return MAKE_DIR_DONE;
     } else if (S_ISDIR(st.st_mode)) {
-        printf("Directory already exists.\n");
+        printf("Directory %s already exists.\n", dir_name);
         return MAKE_DIR_EXIST;
     } else {
         printf("A file with the same name already exists.\n");
@@ -73,7 +88,7 @@ MakeDirStatus make_dir_if_not_exists(const char *dir_name) {
 
 WriteLinesStatus write_lines(const char *file_name, const char **lines, int lines_num, bool cancel_if_file_exists) {
     if(cancel_if_file_exists && file_exists(file_name)) {
-        printf("Lines not written. File exists: %s.\n", file_name);
+        printf("File already exists: %s.\n", file_name);
         return WRITE_LINES_FILE_EXIST;
     }
     FILE *file = fopen(file_name, "w");
@@ -86,6 +101,7 @@ WriteLinesStatus write_lines(const char *file_name, const char **lines, int line
         fputs(line, file);
     }
     fclose(file);
+    printf("File written: %s.\n", file_name);
     return WRITE_LINES_WRITTEN;
 }
 
@@ -161,7 +177,7 @@ char** read_lines(const char* filename, int* num_lines) {
 
     while (fgets(line, MAX_LINE_LENGTH, file)) {
         strcpy(line,trim(line));
-        if(!line[0]) continue;
+        if(!line[0] || strstr(line, "##") != NULL) continue; // ## is for comment lines, skipping them
         // Resize the array if necessary
         if (*num_lines >= capacity) {
             capacity *= 2;

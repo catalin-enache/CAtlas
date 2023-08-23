@@ -1,11 +1,21 @@
 #ifndef ATLAS_IMG_MANIP_H
 #define ATLAS_IMG_MANIP_H
 
-#include <vips/vips.h>
-
-void zoom_out(VipsImage *in, VipsImage **out, double shrink, int *h_shrinked, int *v_shrinked);
-void hdr_to_ldr_naive_linear_processing(VipsImage *in, VipsImage **out);
-double** get_min_max_for_each_band(VipsImage *in);
-void print_pixel(VipsImage *in, int x, int y);
-
+//#define MAGICKCORE_QUANTUM_DEPTH 32
+//#define MAGICKCORE_HDRI_ENABLE 1
+#include <ImageMagick-7/MagickWand/MagickWand.h>
+#include "utils.h"
+size_t get_image_depth(MagickWand *wand);
+ChannelType getChannelFromPixelChannel(PixelChannel pixelChannel);
+PixelChannel* get_image_channels(MagickWand *wand, int *size_out);
+double** get_min_max_for_each_band(MagickWand *wand);
+char* print_min_max_for_each_band(MagickWand *wand);
+char* colorSpaceMapping(ColorspaceType colorspace_type);
+char* imageTypeMapping(ImageType image_type);
+char* channelTypeMapping(ChannelType channel);
+char * compositeOperatorMapping(CompositeOperator op);
+void print_pixel(MagickWand *wand, int x, int y);
+void print_info(MagickWand *wand, int sample_pixel_x, int sample_pixel_y);
+MagickWand * zoom_out(MagickWand *wand, double scaleFactor, FilterType filter_type);
+void copy_channel(MagickWand * target_wand, MagickWand * source_wand, ChannelType target_channel_type, ChannelType source_channel_type);
 #endif //ATLAS_IMG_MANIP_H

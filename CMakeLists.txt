@@ -1,18 +1,3 @@
-#https://www.libvips.org/API/current/using-from-c.html#using-C-example
-
-#gcc -g -Wall main.c `pkg-config vips --cflags --libs`
-
-#x86_64-w64-mingw32-gcc-win32 -mms-bitfields \
-#-Ic:/vips-8.6/include \
-#-Ic:/vips-8.6/include/glib-2.0 \
-#-Ic:/vips-8.6/lib/glib-2.0/include \
-#myprog.c \
-#-Lc:/vips-8.6/lib \
-#-lvips -lz -ljpeg -lstdc++ -lxml2 -lfftw3 -lm -lMagickWand -llcms2 \
-#-lopenslide -lcfitsio -lpangoft2-1.0 -ltiff -lpng14 -lexif \
-#-lMagickCore -lpango-1.0 -lfreetype -lfontconfig -lgobject-2.0 \
-#-lgmodule-2.0 -lgthread-2.0 -lglib-2.0 -lintl \
-#-o myprog.exe
 
 cmake_minimum_required(VERSION 3.25)
 project(Atlas C)
@@ -21,87 +6,35 @@ set(CMAKE_C_STANDARD 11)
 
 set(SHARED_SOURCES src/img_manip.c src/img_manip.h src/dir_files_utils.c src/dir_files_utils.h src/extract_config.c src/extract_config.h src/errors.c src/errors.h src/definitions.h src/calculations.c src/calculations.h src/utils.c src/utils.h)
 
-add_executable(Atlas atlas.c ${SHARED_SOURCES})
+############################ Using ImageMagick ###################
+
+# Add your executable
 add_executable(ExtractChannels extract_channels.c ${SHARED_SOURCES})
+add_executable(MergeChannels merge_channels.c ${SHARED_SOURCES})
+add_executable(Atlas atlas.c ${SHARED_SOURCES})
 
-############ Manual Setup ############
-
-# VIPS_INCLUDE_DIRS
-#include_directories(C:/z/msys64/mingw64/include)
-#include_directories(C:/z/msys64/mingw64/include/libgsf-1)
-#include_directories(C:/z/msys64/mingw64/include/libxml2)
-#include_directories(C:/z/msys64/mingw64/include/libpng16)
-#include_directories(C:/z/msys64/mingw64/include/webp)
-#include_directories(C:/z/msys64/mingw64/include/pango-1.0)
-#include_directories(C:/z/msys64/mingw64/include/harfbuzz)
-#include_directories(C:/z/msys64/mingw64/include/freetype)
-#include_directories(C:/z/msys64/mingw64/include/fribidi)
-#include_directories(C:/z/msys64/mingw64/include/cairo)
-#include_directories(C:/z/msys64/mingw64/include/pixman-1)
-#include_directories(C:/z/msys64/mingw64/include/librsvg-2.0)
-#include_directories(C:/z/msys64/mingw64/include/gdk-pixbuf-2.0)
-#include_directories(C:/z/msys64/mingw64/include/OpenEXR)
-#include_directories(C:/z/msys64/mingw64/include/Imath)
-#include_directories(C:/z/msys64/mingw64/include/openjpeg-2.5)
-#include_directories(C:/z/msys64/mingw64/include/orc-0.4)
-#GLIB_INCLUDE_DIRS
-#include_directories(C:/z/msys64/mingw64/include/glib-2.0)
-#include_directories(C:/z/msys64/mingw64/lib/glib-2.0/include)
+# Find ImageMagick
+#find_package(ImageMagick 7 COMPONENTS MagickWand REQUIRED)
+set(ImageMagick_INCLUDE_DIRS ./ImageMagick-7.1.1-Q16-HDRI/include)
+find_library(ImageMagick_LIBRARIES_MagickWand NAMES CORE_RL_MagickWand_ PATHS "./ImageMagick-7.1.1-Q16-HDRI/lib")
+find_library(ImageMagick_LIBRARIES_MagickCore NAMES CORE_RL_MagickCore_ PATHS "./ImageMagick-7.1.1-Q16-HDRI/lib")
 
 
-# LINK DIRECTORIES
-#link_directories(C:/z/msys64/mingw64/lib/vips-modules-8.14) # ???
-#link_directories(C:/z/msys64/mingw64/lib)
 
-# LINK LIBRARIES
-#target_link_libraries(Atlas vips glib-2.0 gobject-2.0 gio-2.0 intl)
+# Include the headers
+target_include_directories(ExtractChannels PUBLIC ${ImageMagick_INCLUDE_DIRS})
+target_include_directories(MergeChannels PUBLIC ${ImageMagick_INCLUDE_DIRS})
+target_include_directories(Atlas PUBLIC ${ImageMagick_INCLUDE_DIRS})
 
-############ Automatic setup based on pkg-config provided by MinGW64 ##########
-# pkg-config vips --libs #=> -lvips -lgio-2.0 -lgobject-2.0 -lglib-2.0 -lintl
-# pkg-config vips --cflags #=> -IC:/z/msys64/mingw64/include/glib-2.0 ... (lots of includes) ...  -DLIBDEFLATE_DLL  -pthread
+# Link the libraries to your project
+#link_directories(${ImageMagick_LIBRARIES})
 
-## https://stackoverflow.com/questions/72913964/libvips-in-c-on-mac
-find_package(PkgConfig REQUIRED)
-pkg_search_module(VIPS REQUIRED vips)
-target_include_directories(Atlas PUBLIC ${VIPS_INCLUDE_DIRS})
-target_include_directories(ExtractChannels PUBLIC ${VIPS_INCLUDE_DIRS})
-# target_link_directories(Atlas PUBLIC ${VIPS_LIBRARY_DIRS}) # optional, not actually needed
-# cos CMake know already where to look for in this context where vips is installed in a standard way in MinGW
+# Link your executable with the libraries
+target_link_libraries(ExtractChannels ${ImageMagick_LIBRARIES_MagickWand})
+target_link_libraries(MergeChannels ${ImageMagick_LIBRARIES_MagickWand})
+target_link_libraries(Atlas ${ImageMagick_LIBRARIES_MagickWand})
+target_link_libraries(Atlas ${ImageMagick_LIBRARIES_MagickCore})
 
-#add_definitions(${VIPS_CFLAGS_OTHER})
-# add_definitions is deprecated but simpler accepting directly VIPS_CFLAGS_OTHER.
-# where VIPS_CFLAGS_OTHER value is: -DLIBDEFLATE_DLL -pthread
-# Using instead target_compile_definitions target_compile_options.
-# -DLIBDEFLATE_DLL is a preprocessor definition (-D) and -pthread is a compiler flag.
-
-# moving from VIPS_CFLAGS_OTHER into VIPS_DEFINITIONS VIPS_COMPILE_OPTIONS,
-# creating them on demand during iteration
-foreach(item ${VIPS_CFLAGS_OTHER})
-    if("${item}" MATCHES "^-D.*")
-        list(APPEND VIPS_DEFINITIONS "${item}")
-    elseif("${item}" MATCHES "^-.*")
-        list(APPEND VIPS_COMPILE_OPTIONS "${item}")
-    endif()
-endforeach()
-
-target_compile_definitions(Atlas PUBLIC ${VIPS_DEFINITIONS})
-target_compile_definitions(ExtractChannels PUBLIC ${VIPS_DEFINITIONS})
-target_compile_options(Atlas PUBLIC ${VIPS_COMPILE_OPTIONS})
-target_compile_options(ExtractChannels PUBLIC ${VIPS_COMPILE_OPTIONS})
-
-target_link_libraries(Atlas ${VIPS_LIBRARIES})
-target_link_libraries(ExtractChannels ${VIPS_LIBRARIES})
-
-### most of the following vars are generated by pkg_search_module(VIPS REQUIRED vips) used before
-#message("VIPS_INCLUDE_DIRS: " ${VIPS_INCLUDE_DIRS})
-#message("VIPS_LIBRARY_DIRS: " ${VIPS_LIBRARY_DIRS})
-#message("VIPS_LIBRARIES: " ${VIPS_LIBRARIES})
-#message("VIPS_LDFLAGS: " ${VIPS_LDFLAGS})
-#message("VIPS_LDFLAGS_OTHER: " ${VIPS_LDFLAGS_OTHER})
-#message("VIPS_CFLAGS: " ${VIPS_CFLAGS})
-#message("VIPS_CFLAGS_OTHER: " ${VIPS_CFLAGS_OTHER})
-#message("VIPS_DEFINITIONS:" ${VIPS_DEFINITIONS})
-#message("VIPS_COMPILE_OPTIONS:" ${VIPS_COMPILE_OPTIONS})
-#message("VIPS_DEFINITIONS:" ${VIPS_DEFINITIONS})
-
-
+message(ImageMagick_INCLUDE_DIRS ${ImageMagick_INCLUDE_DIRS})
+message(ImageMagick_LIBRARIES_MagickWand ${ImageMagick_LIBRARIES_MagickWand})
+message(ImageMagick_LIBRARIES_MagickCore ${ImageMagick_LIBRARIES_MagickCore})

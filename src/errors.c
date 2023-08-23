@@ -11,7 +11,7 @@
 //}
 
 int exit_with_error(const char* format, ...) {
-    vips_shutdown();
+    MagickWandTerminus();
     printf("\n\n\n");
     printf("====================== ERROR ===========================\n");
 

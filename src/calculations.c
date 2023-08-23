@@ -10,8 +10,9 @@ RowCol get_row_col(int _index, int predefined_cols) {
     return (RowCol){.row = row, .col = col};
 }
 
-char** uv_help(int images_num, int total_cols, double shrink, int *num_lines) {
-    int total_rows = images_num / total_cols + (images_num % total_cols > 0);
+char** uv_help(int images_num, int _total_cols, double shrink, int *num_lines) {
+    int total_rows = images_num / _total_cols + (images_num % _total_cols > 0);
+    int total_cols = images_num < _total_cols ? images_num : _total_cols ;
     double offset_horizontal_unit = (1 - shrink) / 2 / total_cols; // 0.02
     double offset_vertical_unit = (1 - shrink) / 2 / total_rows; // 0.02
     double col_width = 1.0 / total_cols;

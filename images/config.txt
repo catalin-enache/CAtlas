@@ -1,3 +1,0 @@
-shrink 0.92
-cols 2
-compression 6

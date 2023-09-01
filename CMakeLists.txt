@@ -12,6 +12,7 @@ set(SHARED_SOURCES src/img_manip.c src/img_manip.h src/dir_files_utils.c src/dir
 add_executable(ExtractChannels extract_channels.c ${SHARED_SOURCES})
 add_executable(MergeChannels merge_channels.c ${SHARED_SOURCES})
 add_executable(Atlas atlas.c ${SHARED_SOURCES})
+add_executable(TestUtils src/utils.test.c ${SHARED_SOURCES})
 
 # Find ImageMagick
 #find_package(ImageMagick 7 COMPONENTS MagickWand REQUIRED)
@@ -25,6 +26,7 @@ find_library(ImageMagick_LIBRARIES_MagickCore NAMES CORE_RL_MagickCore_ PATHS ".
 target_include_directories(ExtractChannels PUBLIC ${ImageMagick_INCLUDE_DIRS})
 target_include_directories(MergeChannels PUBLIC ${ImageMagick_INCLUDE_DIRS})
 target_include_directories(Atlas PUBLIC ${ImageMagick_INCLUDE_DIRS})
+target_include_directories(TestUtils PUBLIC ${ImageMagick_INCLUDE_DIRS})
 
 # Link the libraries to your project
 #link_directories(${ImageMagick_LIBRARIES})
@@ -33,7 +35,7 @@ target_include_directories(Atlas PUBLIC ${ImageMagick_INCLUDE_DIRS})
 target_link_libraries(ExtractChannels ${ImageMagick_LIBRARIES_MagickWand})
 target_link_libraries(MergeChannels ${ImageMagick_LIBRARIES_MagickWand})
 target_link_libraries(Atlas ${ImageMagick_LIBRARIES_MagickWand})
-target_link_libraries(Atlas ${ImageMagick_LIBRARIES_MagickCore})
+target_link_libraries(TestUtils ${ImageMagick_LIBRARIES_MagickWand})
 
 message(ImageMagick_INCLUDE_DIRS ${ImageMagick_INCLUDE_DIRS})
 message(ImageMagick_LIBRARIES_MagickWand ${ImageMagick_LIBRARIES_MagickWand})

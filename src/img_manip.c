@@ -211,7 +211,10 @@ char* print_min_max_for_each_band(MagickWand *wand) {
         printf("Could not get min max for each band (print_min_max_for_each_band_m).\n");
         return NULL;
     }
-    char *res = print_2d_array_of_double(bands_min_max, channels_num, 2);
+    char *res = malloc(1000 * sizeof(char));
+    res[0] = '\0';
+    int bands_min_max_dimensions[] = {channels_num, 2};
+    arrayToString(res, bands_min_max, bands_min_max_dimensions, 2, 0, "double", sizeof(float), "%.8f", 64);
     if (res == NULL) {
         printf("Could not print min max for each band.\n");
         return NULL;
@@ -397,4 +400,43 @@ void copy_channel(MagickWand * target_wand, MagickWand * source_wand, ChannelTyp
 
     DestroyPixelIterator(target_iterator);
     DestroyPixelIterator(source_iterator);
+}
+
+void draw_UVCorners_on_atlas(MagickWand *wand, UVCorners *uvCorners, int num_images, const char* uv_rect_color) {
+    size_t atlas_width = MagickGetImageWidth(wand);
+    size_t atlas_height = MagickGetImageHeight(wand);
+
+    DrawingWand *drawing_wand = NewDrawingWand();
+
+    // Set the fill color
+    PixelWand *fill_color = NewPixelWand();
+    PixelSetColor(fill_color, uv_rect_color);
+    DrawSetFillColor(drawing_wand, fill_color);
+
+    PixelWand *stroke_color = NewPixelWand();
+    PixelSetColor(stroke_color, "black");
+    // DrawSetStrokeColor(drawing_wand, stroke_color);
+    // DrawSetStrokeWidth(drawing_wand, 2);
+
+    for (int i = 0; i < num_images; i++) {
+        UVCorners corners = uvCorners[i];
+        double top_left_x = corners.topLeft[0] * atlas_width;
+        double top_left_y = corners.topLeft[1] * atlas_height;
+        double bottom_left_x = corners.bottomLeft[0] * atlas_width;
+        double bottom_left_y = corners.bottomLeft[1] * atlas_height;
+        double top_right_x = corners.topRight[0] * atlas_width;
+        double top_right_y = corners.topRight[1] * atlas_height;
+        double bottom_right_x = corners.bottomRight[0] * atlas_width;
+        double bottom_right_y = corners.bottomRight[1] * atlas_height;
+        size_t rect_width = top_right_x - top_left_x;
+        size_t rect_height = bottom_left_y - top_left_y;
+        DrawRectangle(drawing_wand, top_left_x, top_left_y, top_left_x + rect_width, top_left_y + rect_height);
+    }
+
+    // Render the drawing onto the image
+    MagickDrawImage(wand, drawing_wand);
+
+    DestroyDrawingWand(drawing_wand);
+    DestroyPixelWand(fill_color);
+    DestroyPixelWand(stroke_color);
 }

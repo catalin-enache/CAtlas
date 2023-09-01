@@ -5,6 +5,8 @@
 //#define MAGICKCORE_HDRI_ENABLE 1
 #include <ImageMagick-7/MagickWand/MagickWand.h>
 #include "utils.h"
+#include "calculations.h"
+
 size_t get_image_depth(MagickWand *wand);
 ChannelType getChannelFromPixelChannel(PixelChannel pixelChannel);
 PixelChannel* get_image_channels(MagickWand *wand, int *size_out);
@@ -18,4 +20,5 @@ void print_pixel(MagickWand *wand, int x, int y);
 void print_info(MagickWand *wand, int sample_pixel_x, int sample_pixel_y);
 MagickWand * zoom_out(MagickWand *wand, double scaleFactor, FilterType filter_type);
 void copy_channel(MagickWand * target_wand, MagickWand * source_wand, ChannelType target_channel_type, ChannelType source_channel_type);
+void draw_UVCorners_on_atlas(MagickWand *wand, UVCorners *uvCorners, int num_images, const char* uv_rect_color);
 #endif //ATLAS_IMG_MANIP_H

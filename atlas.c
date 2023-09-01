@@ -17,18 +17,20 @@
 #define ATLAS_UV_HELP_FILE "./atlas/uv_help.txt"
 
 int main(int argc, char **argv) {
+
     if(MAKE_DIR_ERROR == make_dir_if_not_exists(IMAGES_DIR))
         return exit_with_error("Dir %s does not exist.\n", IMAGES_DIR);
 
     // =========================== >> Write config ========================================
 
-    int config_entries_total = 16;
+    int config_entries_total = 17;
     const char *lines[] = {
             "cols 2\n\n",
             "shrink 0.92\n\n",
             "shrink_filter 22\n\n", // 0 - 31
             "sample_pixel_x 10\n\n",
             "sample_pixel_y 10\n\n",
+            "uv_rect_color #ff000055\n\n",
             "output_bit_depth 0 // 8, 16, 32 \n\n",
             "output_image_type 0\n",
             "## GrayscaleType(2), GrayscaleAlphaType(3), TrueColorType(6), TrueColorAlphaType(7), ColorSeparationType(8), ColorSeparationAlphaType(9)\n\n",
@@ -73,6 +75,10 @@ int main(int argc, char **argv) {
     int shrink_filter = config_find(kv_arr, config_entries, "shrink_filter")->value.i;
     int sample_pixel_x = config_find(kv_arr, config_entries, "sample_pixel_x")->value.i;
     int sample_pixel_y = config_find(kv_arr, config_entries, "sample_pixel_y")->value.i;
+
+    char uv_rect_color[16]; // #ff000055
+    strcpy(uv_rect_color, config_find(kv_arr, config_entries, "uv_rect_color")->value.s);
+
     int output_bit_depth = config_find(kv_arr, config_entries, "output_bit_depth")->value.i;
     int output_image_type = config_find(kv_arr, config_entries, "output_image_type")->value.i;
     int output_colorspace = config_find(kv_arr, config_entries, "output_colorspace")->value.i;
@@ -101,6 +107,7 @@ int main(int argc, char **argv) {
            "\tshrink %f, \n"
            "\tshrink_filter %d, \n"
            "\tsample_pixel_x %d, sample_pixel_y %d, \n"
+           "\tuv_rect_color %s, \n"
            "\toutput_bit_depth %d, \n"
            "\toutput_image_type %d, output_colorspace %d, \n"
            "\toutput_format %s, \n"
@@ -112,6 +119,7 @@ int main(int argc, char **argv) {
            shrink,
            shrink_filter,
            sample_pixel_x, sample_pixel_y,
+           uv_rect_color,
            output_bit_depth,
            output_image_type, output_colorspace,
            output_format, output_quantum_format,
@@ -154,6 +162,7 @@ int main(int argc, char **argv) {
 
 //    MagickWand **input_wands = (MagickWand**)malloc(num_paths * sizeof(MagickWand*));
     MagickWand* input_wands[num_paths];
+    size_t** input_sizes = (size_t**)malloc(num_paths * sizeof(size_t*)); // TODO: free these
 
     for(int i = 0; i < num_paths; i++) {
         // =========================== >> Read each image ========================================
@@ -161,6 +170,10 @@ int main(int argc, char **argv) {
         input_wands[i] = NewMagickWand();
         if(input_wands[i] == NULL) return exit_with_error("Unable to create input_wands[%d]\n", i);
         if (MagickReadImage(input_wands[i], image_paths[i]) == MagickFalse) return exit_with_error("Unable to read image %s \n", image_paths[i]);
+
+        input_sizes[i] = (size_t*)malloc(2 * sizeof(size_t));
+        input_sizes[i][0] = MagickGetImageWidth(input_wands[i]);
+        input_sizes[i][1] = MagickGetImageHeight(input_wands[i]);
 
         printf("Original image[%d] %s\n", i, image_paths[i]);
         print_info(input_wands[i], sample_pixel_x, sample_pixel_y);
@@ -174,7 +187,7 @@ int main(int argc, char **argv) {
         // TODO: add an option to scale down the image (according with smallest image size) before adding it to the atlas
         input_wands[i] = zoom_out(input_wands[i], shrink, shrink_filter); // LanczosFilter
         // =========================== << Zoom out ========================================
-
+        // TODO: add option to insert image to complete the requested rows (if rows are defined in config)
         int curr_row = i / cols;
         printf("Adding image[%d] %s to output_rows[%d]\n", i, image_paths[i], curr_row);
         if(MagickAddImage(output_rows[curr_row], input_wands[i]) == MagickFalse) {
@@ -300,7 +313,8 @@ int main(int argc, char **argv) {
     */
 
     int uv_help_lines_num = 0;
-    char **uv_help_lines = uv_help(num_paths, cols, shrink, &uv_help_lines_num);
+    UVCorners* uvCornersArr = get_uv_corners_arr(num_paths, input_sizes, cols, shrink);
+    char **uv_help_lines = print_UV_help(uvCornersArr, num_paths, cols, &uv_help_lines_num);
     if (uv_help_lines == NULL) return exit_with_error("Could not get uv_help_lines.\n");
 
     if (WRITE_LINES_ERROR == write_lines(ATLAS_UV_HELP_FILE, (const char**)uv_help_lines, uv_help_lines_num, false))
@@ -313,6 +327,17 @@ int main(int argc, char **argv) {
     }
     free(uv_help_lines);
 
+    printf("Drawing UV corners on atlas\n");
+    draw_UVCorners_on_atlas(output_wand, uvCornersArr, num_paths, uv_rect_color);
+
+    char atlas_file_name_uv[512];
+    str_concat(atlas_file_name_uv, sizeof(atlas_file_name),
+               IMAGES_DIR,
+               "uv.atlas",
+               ".", output_format,
+               NULL);
+    printf("Saving output wand (UV) %s\n", atlas_file_name_uv);
+    MagickWriteImage(output_wand, atlas_file_name_uv);
 
     // =========================== >> Remaining cleanup ========================================
     printf("Cleaning up\n");

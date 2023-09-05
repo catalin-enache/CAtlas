@@ -32,9 +32,17 @@ typedef struct {
     Value value;
 } KeyValue;
 
+typedef struct {
+    int position;
+    int width;
+    int height;
+} FillInEntry;
+
 void print_key_value(KeyValue kv);
 KeyValue* extract_config(const char *fileName, int *num_entries);
 KeyValue* config_find(KeyValue *kvArr, int length, const char *needle);
 IntResult get_int(const char *str);
+FillInEntry* extract_fill_in_array(const char* fill_in_value, int* fill_in_array_length);
+FillInEntry* find_fill_in_entry(FillInEntry* fill_in_array, int fill_in_array_length, int position);
 
 #endif //ATLAS_EXTRACT_CONFIG_H

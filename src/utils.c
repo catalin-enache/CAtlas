@@ -2,12 +2,62 @@
 #include "utils.h"
 
 
+void* array_insert(void* array, const void* value, size_t pos, size_t *length, size_t elem_size) {
+    // printf("array_insert length: %d, elem_size: %zu, value: %s\n", *length, elem_size, *(char **)value);
+    if (pos > *length) return NULL;  // Invalid position
+
+    void *new_array = realloc(array, elem_size * (*length + 1));
+    if (!new_array) return NULL;  // Memory allocation failed
+
+    // Shift memory from the position to the end
+    memmove((char *)new_array + elem_size * (pos + 1), (char *)new_array + elem_size * pos, elem_size * (*length - pos));
+
+    // Copy new value to the given position
+    memcpy((char *)new_array + elem_size * pos, value, elem_size);
+
+    (*length)++;
+    return new_array;
+}
+
 int max(int* arr, int size) {
     int max = arr[0];
     for (int i = 1; i < size; i++) {
         if (arr[i] > max) max = arr[i];
     }
     return max;
+}
+
+int count_char(const char *str, char c) {
+    int count = 0;
+    while (*str) {
+        if (*str == c) {
+            count++;
+        }
+        str++;
+    }
+    return count;
+}
+
+char** split_string(const char *str_orig, char *delimiter, int *length) {
+    char *str = strdup(str_orig);
+
+    char *token = strtok(str, delimiter);
+    char **tokens = NULL;
+    int i = 0;
+    while (token != NULL) {
+        tokens = realloc(tokens, sizeof(char *) * (i + 1));
+        if (tokens == NULL) { printf("Could not allocate memory for splitting string.\n"); return NULL; }
+        tokens[i] = strdup(token);
+        token = strtok(NULL, delimiter);
+        i++;
+    }
+    tokens = realloc(tokens, sizeof(char *) * (i + 1));
+    tokens[i] = NULL;
+    if (length != NULL) { *length = i; }
+
+    free(str);
+
+    return tokens;
 }
 
 // https://stackoverflow.com/questions/656542/trim-a-string-in-c
@@ -182,7 +232,7 @@ void _arrayToString(char *output, void *array, int dimensions[], int num_dimensi
         }
 
         if (curr_dimension == num_dimensions - 1) { // last dimension / innermost dimension
-            char *buffer = malloc(buff_size * sizeof(char)); // Adjust buffer size as needed for your data types TODO: make it dynamic
+            char *buffer = malloc(buff_size * sizeof(char));
             void *element;
 
             if (is_contiguous_block_of_memory) {

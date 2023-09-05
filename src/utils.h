@@ -7,7 +7,10 @@
 #include <stdio.h>
 #include <stdarg.h>
 
+void * array_insert(void* array, const void* value, size_t pos, size_t *length, size_t elem_size);
 int max(int* arr, int size);
+int count_char(const char *str, char c);
+char** split_string(const char *str_orig, char *delimiter, int *length);
 char *trim(char *s);
 int str_concat(char * res, int length, ...);
 typedef int int_2x2x2[2][2][2];

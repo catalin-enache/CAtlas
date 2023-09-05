@@ -321,9 +321,54 @@ void test_print_3d_array_of_define_template() {
     }
 }
 
+void test_array_insert() {
+    size_t int_arr_size = 5;
+    int *heap_int_arr = malloc(int_arr_size * sizeof(int));
+    for(int i = 0; i < int_arr_size; i++) {
+        heap_int_arr[i] = i + 1;
+    }
+
+    int insertIntAt0 = 9;
+    int *int_res = array_insert(heap_int_arr, &insertIntAt0, 0, &int_arr_size, sizeof(int));
+    int insertIntAt6 = 11;
+    int_res = array_insert(int_res, &insertIntAt6, 6, &int_arr_size, sizeof(int));
+    int insertIntAt3 = 8;
+    int_res = array_insert(int_res, &insertIntAt3, 3, &int_arr_size, sizeof(int));
+
+    char heapInt1dArrAsString[1024] = "";
+    arrayToString(heapInt1dArrAsString, (void*)int_res, (int[]){int_arr_size}, 1, 0, "int", sizeof(int), "%d", 8);
+    if (strcmp(heapInt1dArrAsString, "[9, 1, 2, 8, 3, 4, 5, 11]") == 0) {
+        printf("array_insert(success) = %s\n", heapInt1dArrAsString);
+    } else {
+        printf("array_insert(failure) = %s\n", heapInt1dArrAsString);
+    }
+
+    size_t str_arr_size = 3;
+    char **str_int_arr = (char**)malloc(int_arr_size * sizeof(char*));
+    str_int_arr[0] = strdup("aa");
+    str_int_arr[1] = strdup("bb");
+    str_int_arr[2] = strdup("cc");
+
+    char *insertStrAt0 = strdup("dd");
+    char **str_res = array_insert(str_int_arr, &insertStrAt0, 0, &str_arr_size, sizeof(char(*)));
+    char *insertStrAt3 = strdup("ee");
+    str_res = array_insert(str_res, &insertStrAt3, 3, &str_arr_size, sizeof(char(*)));
+    char *insertStrAt5 = strdup("ff");
+    str_res = array_insert(str_res, &insertStrAt5, 5, &str_arr_size, sizeof(char(*)));
+
+    char heapStr1dArrAsString[1024] = "";
+    arrayToString(heapStr1dArrAsString, (void*)str_res, (int[]){str_arr_size}, 1, 0, "string", sizeof(char(*)), "%s", 8);
+    if (strcmp(heapStr1dArrAsString, "[dd, aa, bb, ee, cc, ff]") == 0) {
+        printf("array_insert(success) = %s\n", heapStr1dArrAsString);
+    } else {
+        printf("array_insert(failure) = %s\n", heapStr1dArrAsString);
+    }
+}
+
 int main() {
     test_arrayToString();
     test_print_3D_array();
     test_print_3d_array_of_define_template();
+    test_array_insert();
     return 0;
 }

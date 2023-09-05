@@ -20,7 +20,7 @@ vips_interpretation 22
 shrink              => [0.35 - 1.0]  
 cols                => [1 - ...]
 png_compression     => [0 - 9] => 0 is no compression (quality is not affected by compression)  
-jpg_quality         => [1 - 100] => 100 is best quality  
+jpg_quality         => [1 - 100] => 100 is the best quality  
 atlas_output        => [png jpg tiff]  
 vips_interpretation => VipsInterpretation
 

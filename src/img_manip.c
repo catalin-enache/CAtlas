@@ -333,7 +333,18 @@ MagickWand * zoom_out(MagickWand *wand, double scaleFactor, FilterType filter_ty
     MagickWand *resizedWand = CloneMagickWand(wand);
     transform_color_space_and_set_image_depth(resizedWand, temp_colorspace, 32);
 
+    MagickBooleanType hasAlpha = MagickGetImageAlphaChannel(resizedWand);
+    MagickWand *alphaWand = CloneMagickWand(resizedWand);
+
+    hasAlpha && MagickSeparateImage(alphaWand, AlphaChannel);
+
+    // splitting alpha channel from the rest in order to not affect the other channels when resizing and alpha is 0
+    // resizing them separately then combining them back
+    hasAlpha && MagickSetImageAlphaChannel(resizedWand, OffAlphaChannel);
     MagickResizeImage(resizedWand, originalWidth * scaleFactor, originalHeight * scaleFactor, filter_type);
+    hasAlpha && MagickResizeImage(alphaWand, originalWidth * scaleFactor, originalHeight * scaleFactor, filter_type);
+    hasAlpha && MagickCompositeImage(resizedWand, alphaWand, CopyAlphaCompositeOp, 1, 0, 0);
+
     size_t tileWidth = MagickGetImageWidth(resizedWand);
     size_t tileHeight = MagickGetImageHeight(resizedWand);
 
@@ -342,6 +353,7 @@ MagickWand * zoom_out(MagickWand *wand, double scaleFactor, FilterType filter_ty
         MagickAddImage(rowWand, resizedWand);
     }
     DestroyMagickWand(resizedWand);
+    DestroyMagickWand(alphaWand);
     MagickResetIterator(rowWand);
     MagickWand *rowWandAppended = MagickAppendImages(rowWand, MagickFalse); // false => horizontally, true => vertically
     DestroyMagickWand(rowWand);

@@ -97,3 +97,47 @@ KeyValue*  config_find(KeyValue *kvArr, int kvArrLength, const char *needle) {
     }
     return NULL;
 }
+
+FillInEntry* extract_fill_in_array(const char* fill_in_value, int* fill_in_array_length) {
+    if (strcmp(fill_in_value, "none") == 0) {
+        *fill_in_array_length = 0;
+        return NULL;
+    }
+    // int commas_num = count_char(fill_in_value, ',');
+    // *fill_in_array_length = commas_num + 1;
+
+    char **tokens = split_string(fill_in_value, ",", fill_in_array_length);
+    // char tokens_info[256] = "";
+    // arrayToString(tokens_info, (void *)tokens, (int[]){*fill_in_array_length}, 1, 0, "string", sizeof(char*), "%s", 64);
+    // printf("tokens: %s\n", tokens_info);
+
+    FillInEntry* fill_in_array = malloc(*fill_in_array_length * sizeof(FillInEntry));
+    if (fill_in_array == NULL) { printf("extract_fill_in_array could not allocate fill_in_array\n"); return NULL; }
+
+    for (int i = 0; i < *fill_in_array_length; i++) {
+        char **tokens2 = split_string(tokens[i], ":", NULL);
+        fill_in_array[i].position = get_int(tokens2[0]).value;
+
+        char **tokens3 = split_string(tokens2[1], "x", NULL);
+        fill_in_array[i].width = get_int(tokens3[0]).value;
+        fill_in_array[i].height = get_int(tokens3[1]).value;
+
+        free(tokens2[0]);
+        free(tokens2[1]);
+        free(tokens2);
+        free(tokens3[0]);
+        free(tokens3[1]);
+        free(tokens3);
+    }
+
+    return fill_in_array;
+}
+
+FillInEntry* find_fill_in_entry(FillInEntry* fill_in_array, int fill_in_array_length, int position) {
+    for (int i = 0; i < fill_in_array_length; i++) {
+        if (fill_in_array[i].position == position) {
+            return &fill_in_array[i];
+        }
+    }
+    return NULL;
+}

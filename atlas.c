@@ -23,11 +23,15 @@ int main(int argc, char **argv) {
 
     // =========================== >> Write config ========================================
 
-    int config_entries_total = 17;
+    int config_entries_total = 19;
     const char *lines[] = {
             "cols 2\n\n",
             "shrink 0.92\n\n",
             "shrink_filter 22\n\n", // 0 - 31
+            "fill_in none\n",
+            "## none | 0:2048x2048 | 2:2048x2048,4:1024x1024 | e.t.c.\n\n",
+            "fill_in_color #ffffffff\n",
+            "## #ffffffff | #000000FF | #7F7F7FFF (0.5 gray transparent) | #7F7F7F00 (0.5 gray opaque) | e.t.c.\n\n",
             "sample_pixel_x 10\n\n",
             "sample_pixel_y 10\n\n",
             "uv_rect_color #ff000055\n\n",
@@ -73,6 +77,20 @@ int main(int argc, char **argv) {
     int cols = config_find(kv_arr, config_entries, "cols")->value.i;
     double shrink = config_find(kv_arr, config_entries, "shrink")->value.d;
     int shrink_filter = config_find(kv_arr, config_entries, "shrink_filter")->value.i;
+
+    char fill_in[256];
+    strcpy(fill_in, config_find(kv_arr, config_entries, "fill_in")->value.s);
+
+    char fill_in_color[32];
+    strcpy(fill_in_color, config_find(kv_arr, config_entries, "fill_in_color")->value.s);
+
+    // TODO: define fill_in_array here
+    int fill_in_array_length = 0;
+    FillInEntry *fill_in_array = extract_fill_in_array(fill_in, &fill_in_array_length);
+    for (int i = 0; i < fill_in_array_length; i++) {
+        printf("fill_in_array[%d] = {position: %d, width: %d, height: %d}\n", i, fill_in_array[i].position, fill_in_array[i].width, fill_in_array[i].height);
+    }
+
     int sample_pixel_x = config_find(kv_arr, config_entries, "sample_pixel_x")->value.i;
     int sample_pixel_y = config_find(kv_arr, config_entries, "sample_pixel_y")->value.i;
 
@@ -106,6 +124,8 @@ int main(int argc, char **argv) {
            "\tcols %d, \n"
            "\tshrink %f, \n"
            "\tshrink_filter %d, \n"
+           "\tfill_in %s, \n"
+           "\tfill_in_color %s, \n"
            "\tsample_pixel_x %d, sample_pixel_y %d, \n"
            "\tuv_rect_color %s, \n"
            "\toutput_bit_depth %d, \n"
@@ -118,6 +138,7 @@ int main(int argc, char **argv) {
            cols,
            shrink,
            shrink_filter,
+           fill_in, fill_in_color,
            sample_pixel_x, sample_pixel_y,
            uv_rect_color,
            output_bit_depth,
@@ -141,7 +162,24 @@ int main(int argc, char **argv) {
         return exit_with_error("No image found.\n");
     }
 
+    size_t size_t_num_paths = (size_t)num_paths;
+    size_t size_t_num_paths_no_dir = (size_t)num_paths;
+    for (int i = 0; i < fill_in_array_length; i++) {
+        char *memory_filename = strdup("memory_placeholder");
+        char *memory_filename2 = strdup("memory_placeholder"); // needed when freeing later to not free same memory twice
+        // TODO: mem leak here => need to free prev image_paths/image_paths_no_dir
+        image_paths = array_insert(image_paths, &memory_filename, fill_in_array[i].position, &size_t_num_paths, sizeof(char *));
+        image_paths_no_dir = array_insert(image_paths_no_dir, &memory_filename2, fill_in_array[i].position, &size_t_num_paths_no_dir, sizeof(char *));
+    }
+
     printf("\nFound %d files \n", num_paths);
+    num_paths = (int)size_t_num_paths;
+    printf("Using %d entries \n", num_paths);
+
+    // print info about image_paths
+    // char image_paths_info[1000] = "";
+    // arrayToString(image_paths_info, (void *)image_paths, (int[]){num_paths}, 1, 0, "string", sizeof(char *), "%s", 128);
+    // printf("image_paths: %s\n", image_paths_info);
 
     int rows = num_paths / cols + (num_paths % cols == 0 ? 0 : 1);
 
@@ -162,14 +200,24 @@ int main(int argc, char **argv) {
 
 //    MagickWand **input_wands = (MagickWand**)malloc(num_paths * sizeof(MagickWand*));
     MagickWand* input_wands[num_paths];
-    size_t** input_sizes = (size_t**)malloc(num_paths * sizeof(size_t*)); // TODO: free these
+    size_t** input_sizes = (size_t**)malloc(num_paths * sizeof(size_t*));
 
     for(int i = 0; i < num_paths; i++) {
         // =========================== >> Read each image ========================================
-        printf("Reading image path[%d] = %s\n", i, image_paths[i]);
+        FillInEntry *fill_in_entry = find_fill_in_entry(fill_in_array, fill_in_array_length, i);
+
         input_wands[i] = NewMagickWand();
         if(input_wands[i] == NULL) return exit_with_error("Unable to create input_wands[%d]\n", i);
-        if (MagickReadImage(input_wands[i], image_paths[i]) == MagickFalse) return exit_with_error("Unable to read image %s \n", image_paths[i]);
+        if (fill_in_entry) {
+            printf("Creating fill_in_entry[%d] = {position: %d, width: %d, height: %d}\n", i, fill_in_entry->position, fill_in_entry->width, fill_in_entry->height);
+            PixelWand *pixel_wand = NewPixelWand();
+            PixelSetColor(pixel_wand, fill_in_color);
+            MagickNewImage(input_wands[i], fill_in_entry->width, fill_in_entry->height, pixel_wand);
+            DestroyPixelWand(pixel_wand);
+        } else {
+            printf("Reading image path[%d] = %s\n", i, image_paths[i]);
+            if (MagickReadImage(input_wands[i], image_paths[i]) == MagickFalse) return exit_with_error("Unable to read image %s \n", image_paths[i]);
+        }
 
         input_sizes[i] = (size_t*)malloc(2 * sizeof(size_t));
         input_sizes[i][0] = MagickGetImageWidth(input_wands[i]);
@@ -177,17 +225,16 @@ int main(int argc, char **argv) {
 
         printf("Original image[%d] %s\n", i, image_paths[i]);
         print_info(input_wands[i], sample_pixel_x, sample_pixel_y);
-//        used with alternate way to create atlas using MagickMontageImage (see code after)
-//        printf("Adding image[%d] %s to wand\n", i, image_paths[i]);
-//        if(MagickAddImage(wand, input_wands[i]) == MagickFalse) {
-//            return exit_with_error("Unable to add image %s to wand\n", image_paths[i]);
-//        }
+        // used with alternate way to create atlas using MagickMontageImage (see code after)
+        // printf("Adding image[%d] %s to wand\n", i, image_paths[i]);
+        // if(MagickAddImage(wand, input_wands[i]) == MagickFalse) {
+        //    return exit_with_error("Unable to add image %s to wand\n", image_paths[i]);
+        // }
 
         // =========================== >> Zoom out ========================================
         // TODO: add an option to scale down the image (according with smallest image size) before adding it to the atlas
         input_wands[i] = zoom_out(input_wands[i], shrink, shrink_filter); // LanczosFilter
         // =========================== << Zoom out ========================================
-        // TODO: add option to insert image to complete the requested rows (if rows are defined in config)
         int curr_row = i / cols;
         printf("Adding image[%d] %s to output_rows[%d]\n", i, image_paths[i], curr_row);
         if(MagickAddImage(output_rows[curr_row], input_wands[i]) == MagickFalse) {
@@ -351,9 +398,11 @@ int main(int argc, char **argv) {
         DestroyMagickWand(input_wands[i]);
         free(image_paths[i]);
         free(image_paths_no_dir[i]);
+        free(input_sizes[i]);
     }
     free(image_paths);
     free(image_paths_no_dir);
+    free(input_sizes);
 
     MagickWandTerminus();
     // =========================== << Remaining cleanup ========================================

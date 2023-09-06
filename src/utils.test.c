@@ -329,14 +329,14 @@ void test_array_insert() {
     }
 
     int insertIntAt0 = 9;
-    int *int_res = array_insert(heap_int_arr, &insertIntAt0, 0, &int_arr_size, sizeof(int));
+    array_insert((void**)&heap_int_arr, &insertIntAt0, 0, &int_arr_size, sizeof(int));
     int insertIntAt6 = 11;
-    int_res = array_insert(int_res, &insertIntAt6, 6, &int_arr_size, sizeof(int));
+    array_insert((void**)&heap_int_arr, &insertIntAt6, 6, &int_arr_size, sizeof(int));
     int insertIntAt3 = 8;
-    int_res = array_insert(int_res, &insertIntAt3, 3, &int_arr_size, sizeof(int));
+    array_insert((void**)&heap_int_arr, &insertIntAt3, 3, &int_arr_size, sizeof(int));
 
     char heapInt1dArrAsString[1024] = "";
-    arrayToString(heapInt1dArrAsString, (void*)int_res, (int[]){int_arr_size}, 1, 0, "int", sizeof(int), "%d", 8);
+    arrayToString(heapInt1dArrAsString, (void*)heap_int_arr, (int[]){int_arr_size}, 1, 0, "int", sizeof(int), "%d", 8);
     if (strcmp(heapInt1dArrAsString, "[9, 1, 2, 8, 3, 4, 5, 11]") == 0) {
         printf("array_insert(success) = %s\n", heapInt1dArrAsString);
     } else {
@@ -349,15 +349,15 @@ void test_array_insert() {
     str_int_arr[1] = strdup("bb");
     str_int_arr[2] = strdup("cc");
 
-    char *insertStrAt0 = strdup("dd");
-    char **str_res = array_insert(str_int_arr, &insertStrAt0, 0, &str_arr_size, sizeof(char(*)));
-    char *insertStrAt3 = strdup("ee");
-    str_res = array_insert(str_res, &insertStrAt3, 3, &str_arr_size, sizeof(char(*)));
-    char *insertStrAt5 = strdup("ff");
-    str_res = array_insert(str_res, &insertStrAt5, 5, &str_arr_size, sizeof(char(*)));
+    char *insertStrAt0 = "dd";
+    array_insert((void**)&str_int_arr, &insertStrAt0, 0, &str_arr_size, sizeof(char(*)));
+    char *insertStrAt3 = "ee";
+    array_insert((void**)&str_int_arr, &insertStrAt3, 3, &str_arr_size, sizeof(char(*)));
+    char *insertStrAt5 = "ff";
+    array_insert((void**)&str_int_arr, &insertStrAt5, 5, &str_arr_size, sizeof(char(*)));
 
     char heapStr1dArrAsString[1024] = "";
-    arrayToString(heapStr1dArrAsString, (void*)str_res, (int[]){str_arr_size}, 1, 0, "string", sizeof(char(*)), "%s", 8);
+    arrayToString(heapStr1dArrAsString, (void*)str_int_arr, (int[]){str_arr_size}, 1, 0, "string", sizeof(char(*)), "%s", 8);
     if (strcmp(heapStr1dArrAsString, "[dd, aa, bb, ee, cc, ff]") == 0) {
         printf("array_insert(success) = %s\n", heapStr1dArrAsString);
     } else {

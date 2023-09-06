@@ -1,22 +1,23 @@
 #include <stddef.h>
 #include "utils.h"
 
-
-void* array_insert(void* array, const void* value, size_t pos, size_t *length, size_t elem_size) {
+bool array_insert(void** array, const void* value, size_t pos, size_t *length, size_t elem_size) {
     // printf("array_insert length: %d, elem_size: %zu, value: %s\n", *length, elem_size, *(char **)value);
-    if (pos > *length) return NULL;  // Invalid position
+    if (pos > *length) return false;  // Invalid position
 
-    void *new_array = realloc(array, elem_size * (*length + 1));
-    if (!new_array) return NULL;  // Memory allocation failed
+    void *new_array = realloc(*array, elem_size * (*length + 1));
+    if (!new_array) return false;  // Memory allocation failed
 
+    void *insert_position = (char *)new_array + pos * elem_size;
+    void *next_position = (char *)new_array + (pos + 1) * elem_size;
     // Shift memory from the position to the end
-    memmove((char *)new_array + elem_size * (pos + 1), (char *)new_array + elem_size * pos, elem_size * (*length - pos));
-
+    memmove(next_position, insert_position, elem_size * (*length - pos));
     // Copy new value to the given position
-    memcpy((char *)new_array + elem_size * pos, value, elem_size);
+    memcpy(insert_position, value, elem_size);
 
     (*length)++;
-    return new_array;
+    *array = new_array;
+    return true;
 }
 
 int max(int* arr, int size) {

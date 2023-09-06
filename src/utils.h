@@ -6,8 +6,9 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <stdarg.h>
+#include <stdbool.h>
 
-void * array_insert(void* array, const void* value, size_t pos, size_t *length, size_t elem_size);
+bool array_insert(void** array, const void* value, size_t pos, size_t *length, size_t elem_size);
 int max(int* arr, int size);
 int count_char(const char *str, char c);
 char** split_string(const char *str_orig, char *delimiter, int *length);

@@ -163,14 +163,27 @@ int main(int argc, char **argv) {
         return exit_with_error("No image found.\n");
     }
 
+    if (fill_in_array) {
+        if (fill_in_array[fill_in_array_length - 1].position > num_paths + fill_in_array_length - 1) {
+            return exit_with_error("Fill in position %d is greater than number of images + prev fill_in_array entries = %d.\n", fill_in_array[fill_in_array_length - 1].position, num_paths + fill_in_array_length - 1);
+        }
+    }
+
     size_t size_t_num_paths = (size_t)num_paths;
     size_t size_t_num_paths_no_dir = (size_t)num_paths;
     for (int i = 0; i < fill_in_array_length; i++) {
-        char *memory_filename = strdup("memory_placeholder");
-        char *memory_filename2 = strdup("memory_placeholder"); // needed when freeing later to not free same memory twice
-        // TODO: mem leak here => need to free prev image_paths/image_paths_no_dir
-        image_paths = array_insert(image_paths, &memory_filename, fill_in_array[i].position, &size_t_num_paths, sizeof(char *));
-        image_paths_no_dir = array_insert(image_paths_no_dir, &memory_filename2, fill_in_array[i].position, &size_t_num_paths_no_dir, sizeof(char *));
+        char *memory_filename = malloc(32 * sizeof(char));
+        sprintf(memory_filename, "%d:%dx%d", fill_in_array[i].position, fill_in_array[i].width, fill_in_array[i].height); // needed when freeing later to not free same memory twice
+
+        char *memory_filename2 = malloc(32 * sizeof(char));
+        sprintf(memory_filename2, "%d:%dx%d", fill_in_array[i].position, fill_in_array[i].width, fill_in_array[i].height);
+
+        if(!array_insert((void**)&image_paths, &memory_filename, fill_in_array[i].position, &size_t_num_paths, sizeof(char *))) {
+            return exit_with_error("Could not insert memory_filename at position %d\n", fill_in_array[i].position);
+        }
+        if(!array_insert((void**)&image_paths_no_dir, &memory_filename2, fill_in_array[i].position, &size_t_num_paths_no_dir, sizeof(char *))) {
+            return exit_with_error("Could not insert memory_filename2 at position %d\n", fill_in_array[i].position);
+        }
     }
 
     printf("\nFound %d files \n", num_paths);
@@ -178,9 +191,9 @@ int main(int argc, char **argv) {
     printf("Using %d entries \n", num_paths);
 
     // print info about image_paths
-    // char image_paths_info[1000] = "";
-    // arrayToString(image_paths_info, (void *)image_paths, (int[]){num_paths}, 1, 0, "string", sizeof(char *), "%s", 128);
-    // printf("image_paths: %s\n", image_paths_info);
+    char image_paths_info[1000] = "";
+    arrayToString(image_paths_info, (void *)image_paths, (int[]){num_paths}, 1, 0, "string", sizeof(char *), "%s", 128);
+    printf("image_paths: %s\n", image_paths_info);
 
     int rows = num_paths / cols + (num_paths % cols == 0 ? 0 : 1);
 

@@ -4,6 +4,7 @@
 //#define MAGICKCORE_QUANTUM_DEPTH 32
 //#define MAGICKCORE_HDRI_ENABLE 1
 #include <ImageMagick-7/MagickWand/MagickWand.h>
+#include <stdlib.h>
 
 #include "src/errors.h"
 #include "src/img_manip.h"
@@ -84,9 +85,9 @@ int main(int argc, char **argv) {
     char fill_in_color[32];
     strcpy(fill_in_color, config_find(kv_arr, config_entries, "fill_in_color")->value.s);
 
-    // TODO: define fill_in_array here
     int fill_in_array_length = 0;
     FillInEntry *fill_in_array = extract_fill_in_array(fill_in, &fill_in_array_length);
+    qsort(fill_in_array, fill_in_array_length, sizeof(FillInEntry), compareFillInEntry);
     for (int i = 0; i < fill_in_array_length; i++) {
         printf("fill_in_array[%d] = {position: %d, width: %d, height: %d}\n", i, fill_in_array[i].position, fill_in_array[i].width, fill_in_array[i].height);
     }

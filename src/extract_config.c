@@ -141,3 +141,14 @@ FillInEntry* find_fill_in_entry(FillInEntry* fill_in_array, int fill_in_array_le
     }
     return NULL;
 }
+
+
+int compareFillInEntry(const void* a, const void* b) {
+    FillInEntry _a = *((FillInEntry*)a);
+    FillInEntry _b = *((FillInEntry*)b);
+
+    // Return negative, zero, or positive based on the comparison of a and b
+    if (_a.position < _b.position) return -1;
+    else if (_a.position == _b.position) return 0;
+    else return 1;
+}

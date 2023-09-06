@@ -44,5 +44,6 @@ KeyValue* config_find(KeyValue *kvArr, int length, const char *needle);
 IntResult get_int(const char *str);
 FillInEntry* extract_fill_in_array(const char* fill_in_value, int* fill_in_array_length);
 FillInEntry* find_fill_in_entry(FillInEntry* fill_in_array, int fill_in_array_length, int position);
+int compareFillInEntry(const void* a, const void* b);
 
 #endif //ATLAS_EXTRACT_CONFIG_H

@@ -145,30 +145,30 @@ PixelChannel* get_image_channels(MagickWand *wand, int *size_out) {
     return _pixel_channels;
 
     // My heuristic approach
-    ChannelStatistics *stats = MagickGetImageStatistics(wand);
-    (*size_out) = 0;
-    for (int i = 0; i < PIXEL_CHANNELS_NUM; i++) {
-//         printf("stats[%d]: %f, %f\n",  PIXEL_CHANNELS[i], stats[PIXEL_CHANNELS[i]].minima, stats[PIXEL_CHANNELS[i]].maxima);
-        if (stats[PIXEL_CHANNELS[i]].minima == DBL_MAX || stats[PIXEL_CHANNELS[i]].maxima == DBL_MAX) continue;
-        (*size_out) += 1;
-    }
-    // printf("size_out: %d\n", *size_out);
-    PixelChannel *pixel_channels = malloc((*size_out) * sizeof(PixelChannel));
-    if (pixel_channels == NULL) {
-        printf("Memory allocation failed (get_image_channels).\n");
-        return NULL;
-    }
-    int count = 0;
-    for (int i = 0; i < PIXEL_CHANNELS_NUM; i++) {
-        if (stats[PIXEL_CHANNELS[i]].minima == MagickMaximumValue || stats[PIXEL_CHANNELS[i]].maxima == MagickMaximumValue) { // DBL_MAX
-            continue;
-        }
-        // printf("pixel_channels[%d] = %d\n", count, PIXEL_CHANNELS[i]);
-        pixel_channels[count] = PIXEL_CHANNELS[i];
-        count += 1;
-    }
-    MagickRelinquishMemory(stats);
-    return pixel_channels;
+    // ChannelStatistics *stats = MagickGetImageStatistics(wand);
+    // (*size_out) = 0;
+    // for (int i = 0; i < PIXEL_CHANNELS_NUM; i++) {
+    //     // printf("stats[%d]: %f, %f\n",  PIXEL_CHANNELS[i], stats[PIXEL_CHANNELS[i]].minima, stats[PIXEL_CHANNELS[i]].maxima);
+    //     if (stats[PIXEL_CHANNELS[i]].minima == DBL_MAX || stats[PIXEL_CHANNELS[i]].maxima == DBL_MAX) continue;
+    //     (*size_out) += 1;
+    // }
+    // // printf("size_out: %d\n", *size_out);
+    // PixelChannel *pixel_channels = malloc((*size_out) * sizeof(PixelChannel));
+    // if (pixel_channels == NULL) {
+    //     printf("Memory allocation failed (get_image_channels).\n");
+    //     return NULL;
+    // }
+    // int count = 0;
+    // for (int i = 0; i < PIXEL_CHANNELS_NUM; i++) {
+    //     if (stats[PIXEL_CHANNELS[i]].minima == MagickMaximumValue || stats[PIXEL_CHANNELS[i]].maxima == MagickMaximumValue) { // DBL_MAX
+    //         continue;
+    //     }
+    //     // printf("pixel_channels[%d] = %d\n", count, PIXEL_CHANNELS[i]);
+    //     pixel_channels[count] = PIXEL_CHANNELS[i];
+    //     count += 1;
+    // }
+    // MagickRelinquishMemory(stats);
+    // return pixel_channels;
 }
 
 double** get_min_max_for_each_band(MagickWand *wand) {
@@ -198,6 +198,64 @@ double** get_min_max_for_each_band(MagickWand *wand) {
     return channels_min_max;
 }
 
+void (*pixel_set_operation)(PixelWand *, const double);
+
+double** get_min_max_for_each_band_2(MagickWand *wand) {
+    size_t width = MagickGetImageWidth(wand);
+    size_t height = MagickGetImageHeight(wand);
+
+    int channels_num = 0;
+    PixelChannel* channels = get_image_channels(wand, &channels_num);
+    if (channels == NULL) {
+        printf("Could not get channels (print_pixel).\n");
+        return NULL;
+    }
+
+    double **channels_min_max = (double**)malloc(channels_num * sizeof(double*));
+    if(channels_min_max == NULL) {
+        printf("Could not allocate memory for channels_min_max).\n");
+        return NULL;
+    }
+
+    for (int i = 0; i < channels_num; i++) {
+        channels_min_max[i] = (double*)malloc(2 * sizeof(double));
+        channels_min_max[i][0] = DBL_MAX;
+        channels_min_max[i][1] = DBL_MIN;
+    }
+
+    PixelIterator *iterator = NewPixelIterator(wand);
+
+    for (ssize_t y = 0; y < height; y++) {
+        // Get the row of pixels from wand
+        // width gets updated to the actual row width. Probably it doesn't change, but just in case
+        PixelWand **pixels = PixelGetNextIteratorRow(iterator, &width);
+        for (ssize_t x = 0; x < width; x++) {
+            for (int i = 0; i < channels_num; i++) {
+                double value = channels[i] == RedPixelChannel ? PixelGetRed(pixels[x]) :
+                               channels[i] == GreenPixelChannel ? PixelGetGreen(pixels[x]) :
+                               channels[i] == BluePixelChannel ? PixelGetBlue(pixels[x]) :
+                               channels[i] == AlphaPixelChannel ? PixelGetAlpha(pixels[x]) :
+                               PixelGetBlack(pixels[x]);
+                if (value < channels_min_max[i][0]) channels_min_max[i][0] = value;
+                if (value > channels_min_max[i][1]) channels_min_max[i][1] = value;
+                // prove that we iterated correctly by painting pixels
+                // pixel_set_operation = channels[i] == RedChannel ? PixelSetRed :
+                //                       channels[i] == GreenChannel ? PixelSetGreen :
+                //                       channels[i] == BlueChannel ? PixelSetBlue :
+                //                       channels[i] == AlphaChannel ? PixelSetAlpha :
+                //                       PixelSetBlack;
+                //
+                // pixel_set_operation(pixels[x], (double)x/(double)width);
+            }
+        }
+        // apply changes
+        // PixelSyncIterator(iterator);
+    }
+
+    DestroyPixelIterator(iterator);
+    return channels_min_max;
+}
+
 char* print_min_max_for_each_band(MagickWand *wand) {
     int channels_num = 0;
     PixelChannel *channels = get_image_channels(wand, &channels_num);
@@ -206,26 +264,31 @@ char* print_min_max_for_each_band(MagickWand *wand) {
         return NULL;
     }
     double **bands_min_max = get_min_max_for_each_band(wand);
+    double **bands_min_max_2 = get_min_max_for_each_band_2(wand);
 
     if (bands_min_max == NULL) {
         printf("Could not get min max for each band (print_min_max_for_each_band_m).\n");
         return NULL;
     }
-    char *res = malloc(1000 * sizeof(char));
+    char *res = malloc(2048 * sizeof(char));
     res[0] = '\0';
     int bands_min_max_dimensions[] = {channels_num, 2};
-    arrayToString(res, bands_min_max, bands_min_max_dimensions, 2, 0, "double", sizeof(float), "%.8f", 64);
+    arrayToString(res, bands_min_max, bands_min_max_dimensions, 2, 0, "double", sizeof(double), "%.8f", 64);
+    strcat(res, "\n");
+    arrayToString(res, bands_min_max_2, bands_min_max_dimensions, 2, 0, "double", sizeof(double), "%.8f", 64);
     if (res == NULL) {
         printf("Could not print min max for each band.\n");
         return NULL;
     }
     for (int i = 0; i < channels_num; i++) {
         free(bands_min_max[i]);
+        free(bands_min_max_2[i]);
     }
     free(bands_min_max);
+    free(bands_min_max_2);
+
     return res;
 }
-
 
 void print_pixel(MagickWand *wand, int x, int y) {
     PixelWand *pixelWand = NewPixelWand();
@@ -262,7 +325,9 @@ void print_pixel(MagickWand *wand, int x, int y) {
 }
 
 void print_info(MagickWand *wand, int sample_pixel_x, int sample_pixel_y) {
+    char * image_file_name = MagickGetImageFilename(wand);
     char *info = print_min_max_for_each_band(wand);
+    replace_first_substring(&info, "\n", "\n\t");
     if (info == NULL) {
         printf("Could not print_min_max_for_each_band (print_info).\n");
         return;
@@ -271,10 +336,16 @@ void print_info(MagickWand *wand, int sample_pixel_x, int sample_pixel_y) {
     char* colorSpace = colorSpaceAsString(MagickGetColorspace(wand));
     char* imageType = imageTypeAsString(MagickGetImageType(wand));
     char* type = imageTypeAsString(MagickGetType(wand));
+    size_t width = MagickGetImageWidth(wand);
+    size_t height = MagickGetImageHeight(wand);
 
+    printf("Image info for %s:\n", image_file_name);
     printf("\t%s\n", info);
     printf("\t");
+    printf("Sample pixel (%d, %d): ", sample_pixel_x, sample_pixel_y);
     print_pixel(wand, sample_pixel_x, sample_pixel_y);
+    printf("\tMagickGetImageWidth: %zu\n", width);
+    printf("\tMagickGetImageHeight: %zu\n", height);
     printf("\tMagickGetImageFormat: %s\n", MagickGetImageFormat(wand));
     printf("\tMagickGetImageDepth: %zu\n", MagickGetImageDepth(wand));
     printf("\tMagickGetImageColorspace: %s\n", imageColorspace);
@@ -305,6 +376,10 @@ void print_info(MagickWand *wand, int sample_pixel_x, int sample_pixel_y) {
 }
 
 void transform_color_space_and_set_image_depth(MagickWand *wand, ColorspaceType colorspace, size_t depth) {
+    // srgb to linear rgb formula:
+    // <C-srgb> means each RGB channel is transformed separately
+    // <C-srgb>/12.92 if <C-srgb> <= 0.04045
+    // ((<C-srgb> + 0.055)/1.055)**2.4 if <C-srgb> > 0.04045
     MagickSetDepth(wand, depth);
     MagickSetImageDepth(wand, depth);
     MagickTransformImageColorspace(wand, colorspace);
@@ -312,71 +387,106 @@ void transform_color_space_and_set_image_depth(MagickWand *wand, ColorspaceType 
     MagickSetImageColorspace(wand, colorspace);
 }
 
-MagickWand * zoom_out(MagickWand *wand, double scaleFactor, FilterType filter_type) {
+ColorspaceType get_linear_color_space(ColorspaceType colorspace) {
+    switch (colorspace) {
+        case sRGBColorspace:
+            return RGBColorspace;
+        case GRAYColorspace:
+            return LinearGRAYColorspace;
+        default:
+            return colorspace;
+    }
+}
+
+MagickBooleanType resize(MagickWand *wand, size_t width, size_t height, FilterType filter_type, bool make_linear_color_space, bool debug_resizing) {
+    printf("Resizing %s to %zux%zu\n\n", MagickGetImageFilename(wand), width, height);
+
+    if (debug_resizing) print_info(wand, 0, 0);
+
     size_t original_depth = MagickGetImageDepth(wand);
     ColorspaceType original_colorspace = MagickGetImageColorspace(wand);
-    ColorspaceType temp_colorspace;
+    ColorspaceType temp_colorspace = get_linear_color_space(original_colorspace);
 
-    if (original_colorspace == sRGBColorspace) {
-        printf("Setting colorspace to RGBColorspace during zoom_out\n");
-        temp_colorspace = RGBColorspace;
-    } else if (original_colorspace == GRAYColorspace) {
-        printf("Setting colorspace to LinearGRAYColorspace during zoom_out\n");
-        temp_colorspace = LinearGRAYColorspace;
-    } else {
-        temp_colorspace = original_colorspace;
+    MagickBooleanType hasAlpha = MagickGetImageAlphaChannel(wand);
+    MagickWand *alphaWand = CloneMagickWand(wand);
+    // splitting alpha channel from the rest in order to not affect the other channels when resizing and alpha is 0
+    // (alpha gets premultiplied into other channels setting them to 0 where alpha is 0)
+    // resizing them separately then combining them back
+    hasAlpha && MagickSeparateImage(alphaWand, AlphaChannel); // alphaWand now contains just alpha channel
+    hasAlpha && MagickSetImageAlphaChannel(wand, OffAlphaChannel); // wand now contains just the other channels
+    if (make_linear_color_space && temp_colorspace != original_colorspace) {
+        printf("Setting colorspace from %s to %s only for non alpha channels during resize\n", colorSpaceAsString(original_colorspace), colorSpaceAsString(temp_colorspace));
+        transform_color_space_and_set_image_depth(wand, temp_colorspace, 32);
+        // we don't convert alpha channel to linear color space because alpha channel is already in linear space
     }
+
+    if (debug_resizing) printf("After setting linear color space\n");
+    if (debug_resizing) print_info(wand, 0, 0);
+    if (debug_resizing && hasAlpha) printf("After setting linear color space (Alpha channel)\n");
+    if (debug_resizing && hasAlpha) print_info(alphaWand, 0, 0);
+
+    MagickResizeImage(wand, width, height, filter_type);
+    hasAlpha && MagickResizeImage(alphaWand, width, height, filter_type);
+    if(make_linear_color_space && temp_colorspace != original_colorspace) {
+        printf("Reverting colorspace from %s to %s only for non alpha channels after resize\n", colorSpaceAsString(temp_colorspace), colorSpaceAsString(original_colorspace));
+        transform_color_space_and_set_image_depth(wand, original_colorspace, original_depth);
+    }
+    hasAlpha && MagickCompositeImage(wand, alphaWand, CopyAlphaCompositeOp, 1, 0, 0);
+
+    if (debug_resizing) printf("After resize and re-compositing with alpha channel if existed\n");
+    if (debug_resizing) print_info(wand, 0, 0);
+
+    DestroyMagickWand(alphaWand);
+    printf("\n");
+    return MagickTrue;
+}
+
+MagickWand * zoom_out(MagickWand *wand, double scaleFactor, FilterType filter_type, bool make_linear_color_space, bool debug_zooming_out, bool debug_resizing) {
 
     size_t originalWidth = MagickGetImageWidth(wand);
     size_t originalHeight = MagickGetImageHeight(wand);
-
     MagickWand *resizedWand = CloneMagickWand(wand);
-    transform_color_space_and_set_image_depth(resizedWand, temp_colorspace, 32);
+    printf("Zooming out %s having size %zux%zu by applying scaling factor %f\n", MagickGetImageFilename(wand), originalWidth, originalHeight, scaleFactor);
 
-    MagickBooleanType hasAlpha = MagickGetImageAlphaChannel(resizedWand);
-    MagickWand *alphaWand = CloneMagickWand(resizedWand);
-
-    hasAlpha && MagickSeparateImage(alphaWand, AlphaChannel);
-
-    // splitting alpha channel from the rest in order to not affect the other channels when resizing and alpha is 0
-    // resizing them separately then combining them back
-    hasAlpha && MagickSetImageAlphaChannel(resizedWand, OffAlphaChannel);
-    MagickResizeImage(resizedWand, originalWidth * scaleFactor, originalHeight * scaleFactor, filter_type);
-    hasAlpha && MagickResizeImage(alphaWand, originalWidth * scaleFactor, originalHeight * scaleFactor, filter_type);
-    hasAlpha && MagickCompositeImage(resizedWand, alphaWand, CopyAlphaCompositeOp, 1, 0, 0);
+    resize(resizedWand, originalWidth * scaleFactor, originalHeight * scaleFactor, filter_type, make_linear_color_space, debug_resizing);
 
     size_t tileWidth = MagickGetImageWidth(resizedWand);
     size_t tileHeight = MagickGetImageHeight(resizedWand);
 
+    int repeat = 3; // scaleFactor is assumed to be >= 0.5
+
     MagickWand *rowWand = NewMagickWand();
-    for (int col = 0; col < 3; col++) {
+    for (int col = 0; col < repeat; col++) {
         MagickAddImage(rowWand, resizedWand);
     }
+
     DestroyMagickWand(resizedWand);
-    DestroyMagickWand(alphaWand);
     MagickResetIterator(rowWand);
     MagickWand *rowWandAppended = MagickAppendImages(rowWand, MagickFalse); // false => horizontally, true => vertically
     DestroyMagickWand(rowWand);
 
     MagickWand *rowsWand = NewMagickWand();
-    for (int row = 0; row < 3; row++) {
+    for (int row = 0; row < repeat; row++) {
         MagickAddImage(rowsWand, rowWandAppended);
     }
+
     DestroyMagickWand(rowWandAppended);
     MagickResetIterator(rowsWand);
     MagickWand *outputWand = MagickAppendImages(rowsWand, MagickTrue); // false => horizontally, true => vertically
     DestroyMagickWand(rowsWand);
 
-    int offsetX = (tileWidth * 3 - originalWidth) / 2;
-    int offsetY = (tileHeight *3 - originalHeight) / 2;
+    int offsetX = (tileWidth * repeat - originalWidth) / 2;
+    int offsetY = (tileHeight * repeat - originalHeight) / 2;
     MagickCropImage(outputWand, originalWidth, originalHeight, offsetX, offsetY);
-    transform_color_space_and_set_image_depth(outputWand, original_colorspace, original_depth);
-//    print_info(outputWand, 0, 0);
+    MagickResetImagePage(outputWand, "0x0+0+0"); // Fix tiff images reporting a bigger size than it should be after cropping.
+
+    if (debug_zooming_out) printf("After zoom out\n");
+    if (debug_zooming_out) print_info(outputWand, 0, 0);
 
     return outputWand;
 }
 
-void (*pixel_set_operation)(PixelWand *, const double);
+
 
 void copy_channel(MagickWand * target_wand, MagickWand * source_wand, ChannelType target_channel_type, ChannelType source_channel_type) {
     PixelIterator *target_iterator = NewPixelIterator(target_wand);
@@ -391,7 +501,6 @@ void copy_channel(MagickWand * target_wand, MagickWand * source_wand, ChannelTyp
         PixelWand **target_pixels = PixelGetNextIteratorRow(target_iterator, &target_width);
         PixelWand **source_pixels = PixelGetNextIteratorRow(source_iterator, &target_width);
         for (ssize_t x = 0; x < target_width; x++) {
-            // Extract the alpha value from the source pixel
             double value = source_channel_type == RedChannel ? PixelGetRed(source_pixels[x]) :
                            source_channel_type == GreenChannel ? PixelGetGreen(source_pixels[x]) :
                            source_channel_type == BlueChannel ? PixelGetBlue(source_pixels[x]) :

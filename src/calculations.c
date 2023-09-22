@@ -42,8 +42,7 @@ size_t get_atlas_height(size_t*** rows_with_sizes, int rows_num, int cols_num) {
     return max_height;
 }
 
-// double*** output
-void get_rows_with_sizes_as_percentage(void* array, size_t*** rows_with_sizes, size_t* rows_height, size_t atlas_width, size_t atlas_height, int rows_num, int cols_num, double shrink) {
+void get_rows_with_sizes_as_percentage(void* array, size_t*** rows_with_sizes, size_t* rows_height, size_t atlas_width, size_t atlas_height, int rows_num, int cols_num, double shrink, bool debug_uv_help) {
     double (*output)[cols_num][4] = (double (*)[cols_num][4])array;
     for (int row = 0; row < rows_num; row++) {
         for (int col = 0; col < cols_num; col++) {
@@ -72,10 +71,10 @@ void get_rows_with_sizes_as_percentage(void* array, size_t*** rows_with_sizes, s
     }
     char rows_with_sizes_as_percentage_info[1000] = "";
     arrayToString(rows_with_sizes_as_percentage_info, array, (int[]){rows_num, cols_num, 4}, 3, 1 , "double", sizeof(double), "%.6f", 8);
-    printf("%s\n", rows_with_sizes_as_percentage_info);
+    if (debug_uv_help) printf("%s\n", rows_with_sizes_as_percentage_info);
 }
 
-UVCorners * get_uv_corners_arr(int images_num, size_t** input_sizes, int _total_cols, double shrink) {
+UVCorners * get_uv_corners_arr(int images_num, size_t** input_sizes, int _total_cols, double shrink, bool debug_uv_help) {
     // [ [ [1,2], [1,2] ], [ [1,2], [1,2] ] ]
     int total_rows = images_num / _total_cols + (images_num % _total_cols > 0);
     int total_cols = images_num < _total_cols ? images_num : _total_cols;
@@ -116,12 +115,12 @@ UVCorners * get_uv_corners_arr(int images_num, size_t** input_sizes, int _total_
 
     size_t atlas_width = get_atlas_width(rows_with_sizes, total_rows, total_cols);
     size_t atlas_height = get_atlas_height(rows_with_sizes, total_rows, total_cols);
-    printf("rows_with_sizes_as_percentage:             ");
+    if (debug_uv_help) printf("rows_with_sizes_as_percentage:             ");
     double rows_with_sizes_as_percentage[total_rows][total_cols][4];
-    get_rows_with_sizes_as_percentage(rows_with_sizes_as_percentage, rows_with_sizes, rows_height, atlas_width, atlas_height, total_rows, total_cols, 1);
-    printf("rows_with_sizes_as_percentage_with_shrink: ");
+    get_rows_with_sizes_as_percentage(rows_with_sizes_as_percentage, rows_with_sizes, rows_height, atlas_width, atlas_height, total_rows, total_cols, 1, debug_uv_help);
+    if (debug_uv_help) printf("rows_with_sizes_as_percentage_with_shrink: ");
     double rows_with_sizes_as_percentage_with_shrink[total_rows][total_cols][4];
-    get_rows_with_sizes_as_percentage(rows_with_sizes_as_percentage_with_shrink, rows_with_sizes, rows_height, atlas_width, atlas_height, total_rows, total_cols, shrink);
+    get_rows_with_sizes_as_percentage(rows_with_sizes_as_percentage_with_shrink, rows_with_sizes, rows_height, atlas_width, atlas_height, total_rows, total_cols, shrink, debug_uv_help);
 
     printf("\ntotal_cols: %d, total_rows: %d, atlas_width: %zu, atlas_height: %zu\n\n",
              total_cols, total_rows, atlas_width, atlas_height);

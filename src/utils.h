@@ -14,6 +14,7 @@ int count_char(const char *str, char c);
 char** split_string(const char *str_orig, char *delimiter, int *length);
 char *trim(char *s);
 int str_concat(char * res, int length, ...);
+int replace_first_substring(char **str, const char* old_sub, const char* new_sub);
 typedef int int_2x2x2[2][2][2];
 typedef int ***int_2_2_2;
 typedef size_t ***size_t_2_2_2;

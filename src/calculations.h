@@ -16,7 +16,7 @@ typedef struct {
     double bottomRight[2];
 } UVCorners;
 
-UVCorners* get_uv_corners_arr(int images_num, size_t** input_sizes, int _total_cols, double shrink);
+UVCorners* get_uv_corners_arr(int images_num, size_t** input_sizes, int _total_cols, double shrink, bool debug_uv_help);
 char** print_UV_help(UVCorners *uvCornersArr, int images_num, int _total_cols, int *num_lines);
 
 #endif //ATLAS_CALCULATIONS_H

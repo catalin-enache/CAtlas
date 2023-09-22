@@ -94,6 +94,42 @@ int str_concat(char * res, int length, ...) {
     return total_length;
 }
 
+// From ChatGPT
+int replace_first_substring(char **str, const char* old_sub, const char* new_sub) {
+    char* occurrence = strstr(*str, old_sub);
+    if (!occurrence) {
+        // Old substring not found.
+        return 0;  // No replacement occurred
+    }
+
+    int len_str = strlen(*str);
+    int len_old = strlen(old_sub);
+    int len_new = strlen(new_sub);
+    int new_length = len_str - len_old + len_new;
+
+    char* new_str = (char*)malloc(new_length + 1);  // +1 for the null terminator
+    if (!new_str) {
+        // Memory allocation failed.
+        return -1;  // Indicates a memory error
+    }
+
+    // Copy the part of the original string before the old_sub into the new string.
+    strncpy(new_str, *str, occurrence - *str);
+    new_str[occurrence - *str] = '\0';  // Add a null terminator to the string.
+
+    // Append the replacement substring.
+    strcat(new_str, new_sub);
+
+    // Append the rest of the original string after the old_sub.
+    strcat(new_str, occurrence + len_old);
+
+    free(*str);  // Free the original string's memory.
+
+    *str = new_str;  // Point the original string pointer to the new memory.
+
+    return 1;  // Replacement was successful
+}
+
 
 #define DEFINE_PRINT_3D_ARRAY_FUNC(type, format_specifier) \
 char* print_3d_array_of_##type(type arr, size_t size1, size_t size2, size_t size3) { \

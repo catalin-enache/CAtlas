@@ -107,6 +107,29 @@ char * compositeOperatorAsString(CompositeOperator op) {
     return str;
 }
 
+char * tifSampleFormatAsString(uint16_t sampleFormat) {
+    int str_size = 60;
+    char *str = malloc(str_size * sizeof(char));
+
+    switch (sampleFormat) {
+        case SAMPLEFORMAT_UINT:
+            snprintf(str, str_size, "Unsigned integer data"); break;
+        case SAMPLEFORMAT_INT:
+            snprintf(str, str_size, "Signed integer data"); break;
+        case SAMPLEFORMAT_IEEEFP:
+            snprintf(str, str_size, "IEEE floating point data"); break;
+        case SAMPLEFORMAT_VOID:
+            snprintf(str, str_size, "Undefined data format"); break;
+        case SAMPLEFORMAT_COMPLEXINT:
+            snprintf(str, str_size, "Complex signed integer"); break;
+        case SAMPLEFORMAT_COMPLEXIEEEFP:
+            snprintf(str, str_size, "Complex IEEE floating"); break;
+        default:
+            snprintf(str, str_size, "Unknown"); break;
+    }
+    return str;
+}
+
 ChannelType getChannelFromPixelChannel(PixelChannel pixelChannel) {
     switch (pixelChannel) {
         case RedPixelChannel:
@@ -256,6 +279,15 @@ double** get_min_max_for_each_band_2(MagickWand *wand) {
     return channels_min_max;
 }
 
+uint16_t get_tiff_sample_format(const char *image_file_name) {
+    uint16_t sampleFormat = 0;
+    TIFF* tif = NULL; tif = TIFFOpen(image_file_name, "r");
+    if (!tif) { printf("Failed to open TIFF file.\n"); return sampleFormat; }
+    TIFFGetField(tif, TIFFTAG_SAMPLEFORMAT, &sampleFormat);
+    TIFFClose(tif);
+    return sampleFormat;
+}
+
 char* print_min_max_for_each_band(MagickWand *wand) {
     int channels_num = 0;
     PixelChannel *channels = get_image_channels(wand, &channels_num);
@@ -332,6 +364,31 @@ void print_info(MagickWand *wand, int sample_pixel_x, int sample_pixel_y) {
         printf("Could not print_min_max_for_each_band (print_info).\n");
         return;
     }
+    Image *image = GetImageFromMagickWand(wand);
+    ExceptionInfo *exception = AcquireExceptionInfo();
+    const char *quantum_format = GetImageProperty(image, "quantum:format", exception);
+
+    // char **property_list;
+    // size_t number_properties;
+    // property_list = MagickGetImageProperties(wand, "tiff:*", &number_properties);
+    // for (int i = 0; i < number_properties; i++) {
+    //     printf("property_list[%d]: %s\n", i, property_list[i]);
+    // }
+
+    char *sampleFormatAsString = NULL;
+    if (
+            strcmp(MagickGetImageFormat(wand), "TIFF") == 0 ||
+            strcmp(MagickGetImageFormat(wand), "TIF") == 0 &&
+            ends_with_extension(image_file_name, "tif") &&
+            ends_with_extension(image_file_name, "tiff") &&
+            file_exists(image_file_name)
+        ) {
+        uint16_t sampleFormat = get_tiff_sample_format(image_file_name);
+        if (sampleFormat) {
+            sampleFormatAsString = tifSampleFormatAsString(sampleFormat);
+        }
+    }
+
     char* imageColorspace = colorSpaceAsString(MagickGetImageColorspace(wand));
     char* colorSpace = colorSpaceAsString(MagickGetColorspace(wand));
     char* imageType = imageTypeAsString(MagickGetImageType(wand));
@@ -344,6 +401,11 @@ void print_info(MagickWand *wand, int sample_pixel_x, int sample_pixel_y) {
     printf("\t");
     printf("Sample pixel (%d, %d): ", sample_pixel_x, sample_pixel_y);
     print_pixel(wand, sample_pixel_x, sample_pixel_y);
+    printf("\tquantum:format: %s\n", quantum_format);
+    if (sampleFormatAsString) {
+        printf("\tTiffTagSampleFormat: %s\n", sampleFormatAsString);
+        free(sampleFormatAsString);
+    }
     printf("\tMagickGetImageWidth: %zu\n", width);
     printf("\tMagickGetImageHeight: %zu\n", height);
     printf("\tMagickGetImageFormat: %s\n", MagickGetImageFormat(wand));
@@ -364,14 +426,17 @@ void print_info(MagickWand *wand, int sample_pixel_x, int sample_pixel_y) {
     for (int j = 0; j < channels_num; j++) printf("channel[%d]: %d|%d ", j, pixelChannels[j], getChannelFromPixelChannel(pixelChannels[j]));
     printf("\n");
 
-    size_t input_profile_length;
-    unsigned char *input_profile = MagickGetImageProfile(wand, "ICC", &input_profile_length); // ICC, IPTC
-    printf("\tprofile length: %zu\n", input_profile_length);
-    // print profile chunk
-    if (input_profile_length > 0) {
-        printf("\tprofile chunk: ");
-        for(int i = 0; i < input_profile_length && i < 10; i++) printf("%02x ", input_profile[i]);
-        printf("... \n");
+    char profiles[][8] = {"ICC", "IPTC", "XMP"};
+    for (int p = 0; p < 3; p++) {
+        size_t profile_length;
+        unsigned char *profile = MagickGetImageProfile(wand, profiles[p], &profile_length); // ICC, IPTC, XMP
+        printf("\t%s profile length: %zu\n", profiles[p], profile_length);
+        // print profile chunk
+        if (profile_length > 0) {
+            printf("\t%s profile chunk: ", profiles[p]);
+            for(int i = 0; i < profile_length && i < 10; i++) printf("%02x ", profile[i]);
+            printf("... \n");
+        }
     }
 }
 
@@ -405,6 +470,7 @@ MagickBooleanType resize(MagickWand *wand, size_t width, size_t height, FilterTy
 
     size_t original_depth = MagickGetImageDepth(wand);
     ColorspaceType original_colorspace = MagickGetImageColorspace(wand);
+    ImageType original_image_type = MagickGetImageType(wand);
     ColorspaceType temp_colorspace = get_linear_color_space(original_colorspace);
 
     MagickBooleanType hasAlpha = MagickGetImageAlphaChannel(wand);
@@ -432,6 +498,9 @@ MagickBooleanType resize(MagickWand *wand, size_t width, size_t height, FilterTy
         transform_color_space_and_set_image_depth(wand, original_colorspace, original_depth);
     }
     hasAlpha && MagickCompositeImage(wand, alphaWand, CopyAlphaCompositeOp, 1, 0, 0);
+    // hasAlpha && MagickSetImageAlphaChannel(wand, OnAlphaChannel);
+    // if (hasAlpha) copy_channel(wand, alphaWand, AlphaChannel, GrayChannel);
+    MagickSetImageType(wand, original_image_type);
 
     if (debug_resizing) printf("After resize and re-compositing with alpha channel if existed\n");
     if (debug_resizing) print_info(wand, 0, 0);

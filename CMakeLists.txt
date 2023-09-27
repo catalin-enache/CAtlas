@@ -19,6 +19,7 @@ add_executable(TestUtils src/utils.test.c ${SHARED_SOURCES})
 set(ImageMagick_INCLUDE_DIRS ./ImageMagick-7.1.1-Q16-HDRI/include)
 find_library(ImageMagick_LIBRARIES_MagickWand NAMES CORE_RL_MagickWand_ PATHS "./ImageMagick-7.1.1-Q16-HDRI/lib")
 find_library(ImageMagick_LIBRARIES_MagickCore NAMES CORE_RL_MagickCore_ PATHS "./ImageMagick-7.1.1-Q16-HDRI/lib")
+find_library(LibTiff_LIB NAMES libtiff PATHS "./ImageMagick-7.1.1-Q16-HDRI/lib")
 
 
 
@@ -32,11 +33,12 @@ target_include_directories(TestUtils PUBLIC ${ImageMagick_INCLUDE_DIRS})
 #link_directories(${ImageMagick_LIBRARIES})
 
 # Link your executable with the libraries
-target_link_libraries(ExtractChannels ${ImageMagick_LIBRARIES_MagickWand})
-target_link_libraries(MergeChannels ${ImageMagick_LIBRARIES_MagickWand})
-target_link_libraries(Atlas ${ImageMagick_LIBRARIES_MagickWand})
-target_link_libraries(TestUtils ${ImageMagick_LIBRARIES_MagickWand})
+target_link_libraries(ExtractChannels ${ImageMagick_LIBRARIES_MagickWand} ${ImageMagick_LIBRARIES_MagickCore} ${LibTiff_LIB})
+target_link_libraries(MergeChannels ${ImageMagick_LIBRARIES_MagickWand} ${ImageMagick_LIBRARIES_MagickCore} ${LibTiff_LIB})
+target_link_libraries(Atlas ${ImageMagick_LIBRARIES_MagickWand} ${ImageMagick_LIBRARIES_MagickCore} ${LibTiff_LIB})
+target_link_libraries(TestUtils ${ImageMagick_LIBRARIES_MagickWand} ${ImageMagick_LIBRARIES_MagickCore} ${LibTiff_LIB})
 
 message(ImageMagick_INCLUDE_DIRS ${ImageMagick_INCLUDE_DIRS})
 message(ImageMagick_LIBRARIES_MagickWand ${ImageMagick_LIBRARIES_MagickWand})
 message(ImageMagick_LIBRARIES_MagickCore ${ImageMagick_LIBRARIES_MagickCore})
+message(LibTiff_LIB ${LibTiff_LIB})

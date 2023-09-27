@@ -11,6 +11,29 @@ int extracted_tokens_size = sizeof(extracted_tokens) / sizeof(extracted_tokens[0
 char *mergeable_tokens[] = {"0.", "1.", "2.", "3."};
 int mergeable_tokens_size = sizeof(mergeable_tokens) / sizeof(mergeable_tokens[0]);
 
+unsigned char *get_file(const char *filename, size_t *length) {
+    FILE *file = fopen(filename, "rb");
+    if (!file) {
+        return NULL;
+    }
+
+    fseek(file, 0, SEEK_END);
+    *length = ftell(file);
+    fseek(file, 0, SEEK_SET);
+
+    unsigned char *buffer = malloc(*length);
+    if (!buffer) {
+        fclose(file);
+        return NULL;
+    }
+
+    fread(buffer, 1, *length, file);
+    fclose(file);
+
+    return buffer;
+}
+
+
 bool ends_with_extension(const char *filename, const char *extension) {
     size_t len_f = strlen(filename);
     size_t len_e = strlen(extension);

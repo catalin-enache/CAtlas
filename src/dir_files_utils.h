@@ -22,6 +22,7 @@ typedef enum {
     MAKE_DIR_DONE, MAKE_DIR_EXIST, MAKE_DIR_ERROR
 } MakeDirStatus;
 
+unsigned char *get_file(const char *filename, size_t *length);
 bool ends_with_extension(const char *filename, const char *extension);
 bool is_image_file(const char *file_name);
 bool is_image_file_and_not_atlas(const char *file_name);

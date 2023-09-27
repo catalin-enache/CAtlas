@@ -4,7 +4,7 @@
 
 //#define MAGICKCORE_QUANTUM_DEPTH 32
 //#define MAGICKCORE_HDRI_ENABLE 1
-#include <ImageMagick-7/MagickWand/MagickWand.h>
+#include <MagickWand/MagickWand.h>
 
 #include <stdarg.h>
 

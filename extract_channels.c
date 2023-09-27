@@ -68,8 +68,8 @@ int main(int argc, char **argv) {
     int sample_pixel_x = config_find(kv_arr, config_entries, "sample_pixel_x")->value.i;
     int sample_pixel_y = config_find(kv_arr, config_entries, "sample_pixel_y")->value.i;
     int output_bit_depth = config_find(kv_arr, config_entries, "output_bit_depth")->value.i;
-    int output_image_type = config_find(kv_arr, config_entries, "output_image_type")->value.i;
-    int output_colorspace = config_find(kv_arr, config_entries, "output_colorspace")->value.i;
+    ImageType output_image_type = (ImageType)config_find(kv_arr, config_entries, "output_image_type")->value.i;
+    ColorspaceType output_colorspace = (ColorspaceType)config_find(kv_arr, config_entries, "output_colorspace")->value.i;
 
     char output_format[16]; // png, jpg
     strcpy(output_format, config_find(kv_arr, config_entries, "output_format")->value.s);
@@ -77,7 +77,7 @@ int main(int argc, char **argv) {
     char output_quantum_format[32]; // floating-point, signed
     strcpy(output_quantum_format, config_find(kv_arr, config_entries, "output_quantum_format")->value.s);
 
-    int output_compression_algorithm = config_find(kv_arr, config_entries, "output_compression_algorithm")->value.i;
+    CompressionType output_compression_algorithm = (CompressionType)config_find(kv_arr, config_entries, "output_compression_algorithm")->value.i;
     int output_compression_strength = config_find(kv_arr, config_entries, "output_compression_strength")->value.i;
     int output_jpg_quality = config_find(kv_arr, config_entries, "output_jpg_quality")->value.i;
 

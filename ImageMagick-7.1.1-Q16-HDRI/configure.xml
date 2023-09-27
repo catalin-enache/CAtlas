@@ -11,15 +11,16 @@
 -->
 <configuremap>
   <configure name="CC" value="VS2022"/>
+  <configure name="CHANNEL_MASK_DEPTH" value="64"/>
   <configure name="COPYRIGHT" value="Copyright (C) 1999 ImageMagick Studio LLC"/>
   <configure name="CXX" value="VS2022"/>
   <configure name="DOCUMENTATION_PATH" value="unavailable"/>
-  <configure name="GIT_REVISION" value="d5974ce:20230716" />
-  <configure name="LIB_VERSION_NUMBER" value="7,1,1,13"/>
+  <configure name="GIT_REVISION" value="21316" />
+  <configure name="LIB_VERSION_NUMBER" value="7,1,1,18"/>
   <configure name="LIB_VERSION" value="0x711"/>
   <configure name="NAME" value="ImageMagick"/>
   <configure name="QuantumDepth" value="1"/>
-  <configure name="RELEASE_DATE" value="2023-07-16"/>
+  <configure name="RELEASE_DATE" value="2023-09-23"/>
   <configure name="TARGET_CPU" value="x64"/>
   <configure name="TARGET_OS" value="Windows"/>
   <configure name="VERSION" value="7.1.1"/>

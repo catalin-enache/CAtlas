@@ -1,0 +1,296 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="CMakeSettings">
+    <configurations>
+      <configuration PROFILE_NAME="Debug" ENABLED="true" CONFIG_NAME="Debug" />
+    </configurations>
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="123dbbca-4c8a-4d12-a5b4-13d2b5f7cc73" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../CMakeLists.txt" beforeDir="false" afterPath="$PROJECT_DIR$/../CMakeLists.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/.gitignore" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/aws.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/CORE_RL_Magick++_.dll" beforeDir="false" afterPath="$PROJECT_DIR$/CORE_RL_Magick++_.dll" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CORE_RL_MagickCore_.dll" beforeDir="false" afterPath="$PROJECT_DIR$/CORE_RL_MagickCore_.dll" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CORE_RL_MagickWand_.dll" beforeDir="false" afterPath="$PROJECT_DIR$/CORE_RL_MagickWand_.dll" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CORE_RL_bzlib_.dll" beforeDir="false" afterPath="$PROJECT_DIR$/CORE_RL_bzlib_.dll" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CORE_RL_cairo_.dll" beforeDir="false" afterPath="$PROJECT_DIR$/CORE_RL_cairo_.dll" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CORE_RL_exr_.dll" beforeDir="false" afterPath="$PROJECT_DIR$/CORE_RL_exr_.dll" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CORE_RL_flif_.dll" beforeDir="false" afterPath="$PROJECT_DIR$/CORE_RL_flif_.dll" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CORE_RL_freetype_.dll" beforeDir="false" afterPath="$PROJECT_DIR$/CORE_RL_freetype_.dll" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CORE_RL_fribidi_.dll" beforeDir="false" afterPath="$PROJECT_DIR$/CORE_RL_fribidi_.dll" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CORE_RL_glib_.dll" beforeDir="false" afterPath="$PROJECT_DIR$/CORE_RL_glib_.dll" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CORE_RL_harfbuzz_.dll" beforeDir="false" afterPath="$PROJECT_DIR$/CORE_RL_harfbuzz_.dll" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CORE_RL_heif_.dll" beforeDir="false" afterPath="$PROJECT_DIR$/CORE_RL_heif_.dll" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CORE_RL_jasper_.dll" beforeDir="false" afterPath="$PROJECT_DIR$/CORE_RL_jasper_.dll" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CORE_RL_jpeg-turbo_.dll" beforeDir="false" afterPath="$PROJECT_DIR$/CORE_RL_jpeg-turbo_.dll" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CORE_RL_jpeg-xl_.dll" beforeDir="false" afterPath="$PROJECT_DIR$/CORE_RL_jpeg-xl_.dll" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CORE_RL_lcms_.dll" beforeDir="false" afterPath="$PROJECT_DIR$/CORE_RL_lcms_.dll" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CORE_RL_lqr_.dll" beforeDir="false" afterPath="$PROJECT_DIR$/CORE_RL_lqr_.dll" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CORE_RL_lzma_.dll" beforeDir="false" afterPath="$PROJECT_DIR$/CORE_RL_lzma_.dll" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CORE_RL_openjpeg_.dll" beforeDir="false" afterPath="$PROJECT_DIR$/CORE_RL_openjpeg_.dll" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CORE_RL_pango_.dll" beforeDir="false" afterPath="$PROJECT_DIR$/CORE_RL_pango_.dll" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CORE_RL_png_.dll" beforeDir="false" afterPath="$PROJECT_DIR$/CORE_RL_png_.dll" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CORE_RL_raw_.dll" beforeDir="false" afterPath="$PROJECT_DIR$/CORE_RL_raw_.dll" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CORE_RL_rsvg_.dll" beforeDir="false" afterPath="$PROJECT_DIR$/CORE_RL_rsvg_.dll" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CORE_RL_tiff_.dll" beforeDir="false" afterPath="$PROJECT_DIR$/CORE_RL_tiff_.dll" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CORE_RL_webp_.dll" beforeDir="false" afterPath="$PROJECT_DIR$/CORE_RL_webp_.dll" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CORE_RL_xml_.dll" beforeDir="false" afterPath="$PROJECT_DIR$/CORE_RL_xml_.dll" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CORE_RL_zip_.dll" beforeDir="false" afterPath="$PROJECT_DIR$/CORE_RL_zip_.dll" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CORE_RL_zlib_.dll" beforeDir="false" afterPath="$PROJECT_DIR$/CORE_RL_zlib_.dll" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ChangeLog.md" beforeDir="false" afterPath="$PROJECT_DIR$/ChangeLog.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Magick++_Demo/button.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Magick++_Demo/button.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Magick++_Demo/demo.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Magick++_Demo/demo.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Magick++_Demo/piddle.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Magick++_Demo/piddle.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Magick++_Demo/shapes.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Magick++_Demo/shapes.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/NOTICE.txt" beforeDir="false" afterPath="$PROJECT_DIR$/NOTICE.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/configure.xml" beforeDir="false" afterPath="$PROJECT_DIR$/configure.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/dcraw.exe" beforeDir="false" afterPath="$PROJECT_DIR$/dcraw.exe" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/english.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/hp2xx.exe" beforeDir="false" afterPath="$PROJECT_DIR$/hp2xx.exe" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/imdisplay.exe" beforeDir="false" afterPath="$PROJECT_DIR$/imdisplay.exe" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/include/Magick++/Image.h" beforeDir="false" afterPath="$PROJECT_DIR$/include/Magick++/Image.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/include/Magick++/Include.h" beforeDir="false" afterPath="$PROJECT_DIR$/include/Magick++/Include.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/include/Magick++/STL.h" beforeDir="false" afterPath="$PROJECT_DIR$/include/Magick++/STL.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/include/MagickCore/accelerate-kernels-private.h" beforeDir="false" afterPath="$PROJECT_DIR$/include/MagickCore/accelerate-kernels-private.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/include/MagickCore/accelerate-private.h" beforeDir="false" afterPath="$PROJECT_DIR$/include/MagickCore/accelerate-private.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/include/MagickCore/colorspace-private.h" beforeDir="false" afterPath="$PROJECT_DIR$/include/MagickCore/colorspace-private.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/include/MagickCore/composite-private.h" beforeDir="false" afterPath="$PROJECT_DIR$/include/MagickCore/composite-private.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/include/MagickCore/compress.h" beforeDir="false" afterPath="$PROJECT_DIR$/include/MagickCore/compress.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/include/MagickCore/draw-private.h" beforeDir="false" afterPath="$PROJECT_DIR$/include/MagickCore/draw-private.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/include/MagickCore/draw.h" beforeDir="false" afterPath="$PROJECT_DIR$/include/MagickCore/draw.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/include/MagickCore/fx.h" beforeDir="false" afterPath="$PROJECT_DIR$/include/MagickCore/fx.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/include/MagickCore/gem-private.h" beforeDir="false" afterPath="$PROJECT_DIR$/include/MagickCore/gem-private.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/include/MagickCore/gem.h" beforeDir="false" afterPath="$PROJECT_DIR$/include/MagickCore/gem.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/include/MagickCore/image-private.h" beforeDir="false" afterPath="$PROJECT_DIR$/include/MagickCore/image-private.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/include/MagickCore/image.h" beforeDir="false" afterPath="$PROJECT_DIR$/include/MagickCore/image.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/include/MagickCore/magick-baseconfig.h" beforeDir="false" afterPath="$PROJECT_DIR$/include/MagickCore/magick-baseconfig.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/include/MagickCore/magick-config.h" beforeDir="false" afterPath="$PROJECT_DIR$/include/MagickCore/magick-config.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/include/MagickCore/magick-type.h" beforeDir="false" afterPath="$PROJECT_DIR$/include/MagickCore/magick-type.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/include/MagickCore/nt-base-private.h" beforeDir="false" afterPath="$PROJECT_DIR$/include/MagickCore/nt-base-private.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/include/MagickCore/nt-base.h" beforeDir="false" afterPath="$PROJECT_DIR$/include/MagickCore/nt-base.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/include/MagickCore/pixel-accessor.h" beforeDir="false" afterPath="$PROJECT_DIR$/include/MagickCore/pixel-accessor.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/include/MagickCore/pixel.h" beforeDir="false" afterPath="$PROJECT_DIR$/include/MagickCore/pixel.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/include/MagickCore/quantum-private.h" beforeDir="false" afterPath="$PROJECT_DIR$/include/MagickCore/quantum-private.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/include/MagickCore/quantum.h" beforeDir="false" afterPath="$PROJECT_DIR$/include/MagickCore/quantum.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/include/MagickCore/random-private.h" beforeDir="false" afterPath="$PROJECT_DIR$/include/MagickCore/random-private.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/include/MagickCore/resample-private.h" beforeDir="false" afterPath="$PROJECT_DIR$/include/MagickCore/resample-private.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/include/MagickCore/resource-private.h" beforeDir="false" afterPath="$PROJECT_DIR$/include/MagickCore/resource-private.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/include/MagickCore/resource_.h" beforeDir="false" afterPath="$PROJECT_DIR$/include/MagickCore/resource_.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/include/MagickCore/thread-private.h" beforeDir="false" afterPath="$PROJECT_DIR$/include/MagickCore/thread-private.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/include/MagickCore/utility-private.h" beforeDir="false" afterPath="$PROJECT_DIR$/include/MagickCore/utility-private.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/include/MagickCore/version.h" beforeDir="false" afterPath="$PROJECT_DIR$/include/MagickCore/version.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/include/MagickCore/xml-tree-private.h" beforeDir="false" afterPath="$PROJECT_DIR$/include/MagickCore/xml-tree-private.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/include/MagickCore/xwindow-private.h" beforeDir="false" afterPath="$PROJECT_DIR$/include/MagickCore/xwindow-private.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/include/MagickWand/mogrify-private.h" beforeDir="false" afterPath="$PROJECT_DIR$/include/MagickWand/mogrify-private.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/index.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/CORE_RL_Magick++_.lib" beforeDir="false" afterPath="$PROJECT_DIR$/lib/CORE_RL_Magick++_.lib" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/CORE_RL_MagickCore_.lib" beforeDir="false" afterPath="$PROJECT_DIR$/lib/CORE_RL_MagickCore_.lib" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/CORE_RL_MagickWand_.lib" beforeDir="false" afterPath="$PROJECT_DIR$/lib/CORE_RL_MagickWand_.lib" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/magick.exe" beforeDir="false" afterPath="$PROJECT_DIR$/magick.exe" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/modules/coders/IM_MOD_RL_aai_.dll" beforeDir="false" afterPath="$PROJECT_DIR$/modules/coders/IM_MOD_RL_aai_.dll" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/modules/coders/IM_MOD_RL_art_.dll" beforeDir="false" afterPath="$PROJECT_DIR$/modules/coders/IM_MOD_RL_art_.dll" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/modules/coders/IM_MOD_RL_ashlar_.dll" beforeDir="false" afterPath="$PROJECT_DIR$/modules/coders/IM_MOD_RL_ashlar_.dll" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/modules/coders/IM_MOD_RL_avs_.dll" beforeDir="false" afterPath="$PROJECT_DIR$/modules/coders/IM_MOD_RL_avs_.dll" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/modules/coders/IM_MOD_RL_bayer_.dll" beforeDir="false" afterPath="$PROJECT_DIR$/modules/coders/IM_MOD_RL_bayer_.dll" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/modules/coders/IM_MOD_RL_bgr_.dll" beforeDir="false" afterPath="$PROJECT_DIR$/modules/coders/IM_MOD_RL_bgr_.dll" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/modules/coders/IM_MOD_RL_bmp_.dll" beforeDir="false" afterPath="$PROJECT_DIR$/modules/coders/IM_MOD_RL_bmp_.dll" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/modules/coders/IM_MOD_RL_braille_.dll" beforeDir="false" afterPath="$PROJECT_DIR$/modules/coders/IM_MOD_RL_braille_.dll" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/modules/coders/IM_MOD_RL_cals_.dll" beforeDir="false" afterPath="$PROJECT_DIR$/modules/coders/IM_MOD_RL_cals_.dll" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/modules/coders/IM_MOD_RL_caption_.dll" beforeDir="false" afterPath="$PROJECT_DIR$/modules/coders/IM_MOD_RL_caption_.dll" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/modules/coders/IM_MOD_RL_cin_.dll" beforeDir="false" afterPath="$PROJECT_DIR$/modules/coders/IM_MOD_RL_cin_.dll" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/modules/coders/IM_MOD_RL_cip_.dll" beforeDir="false" afterPath="$PROJECT_DIR$/modules/coders/IM_MOD_RL_cip_.dll" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/modules/coders/IM_MOD_RL_clip_.dll" beforeDir="false" afterPath="$PROJECT_DIR$/modules/coders/IM_MOD_RL_clip_.dll" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/modules/coders/IM_MOD_RL_clipboard_.dll" beforeDir="false" afterPath="$PROJECT_DIR$/modules/coders/IM_MOD_RL_clipboard_.dll" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/modules/coders/IM_MOD_RL_cmyk_.dll" beforeDir="false" afterPath="$PROJECT_DIR$/modules/coders/IM_MOD_RL_cmyk_.dll" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/modules/coders/IM_MOD_RL_cube_.dll" beforeDir="false" afterPath="$PROJECT_DIR$/modules/coders/IM_MOD_RL_cube_.dll" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/modules/coders/IM_MOD_RL_cut_.dll" beforeDir="false" afterPath="$PROJECT_DIR$/modules/coders/IM_MOD_RL_cut_.dll" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/modules/coders/IM_MOD_RL_dcm_.dll" beforeDir="false" afterPath="$PROJECT_DIR$/modules/coders/IM_MOD_RL_dcm_.dll" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/modules/coders/IM_MOD_RL_dds_.dll" beforeDir="false" afterPath="$PROJECT_DIR$/modules/coders/IM_MOD_RL_dds_.dll" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/modules/coders/IM_MOD_RL_debug_.dll" beforeDir="false" afterPath="$PROJECT_DIR$/modules/coders/IM_MOD_RL_debug_.dll" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/modules/coders/IM_MOD_RL_dib_.dll" beforeDir="false" afterPath="$PROJECT_DIR$/modules/coders/IM_MOD_RL_dib_.dll" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/modules/coders/IM_MOD_RL_djvu_.dll" beforeDir="false" afterPath="$PROJECT_DIR$/modules/coders/IM_MOD_RL_djvu_.dll" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/modules/coders/IM_MOD_RL_dmr_.dll" beforeDir="false" afterPath="$PROJECT_DIR$/modules/coders/IM_MOD_RL_dmr_.dll" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/modules/coders/IM_MOD_RL_dng_.dll" beforeDir="false" afterPath="$PROJECT_DIR$/modules/coders/IM_MOD_RL_dng_.dll" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/modules/coders/IM_MOD_RL_dot_.dll" beforeDir="false" afterPath="$PROJECT_DIR$/modules/coders/IM_MOD_RL_dot_.dll" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/modules/coders/IM_MOD_RL_dps_.dll" beforeDir="false" afterPath="$PROJECT_DIR$/modules/coders/IM_MOD_RL_dps_.dll" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/modules/coders/IM_MOD_RL_dpx_.dll" beforeDir="false" afterPath="$PROJECT_DIR$/modules/coders/IM_MOD_RL_dpx_.dll" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/modules/coders/IM_MOD_RL_emf_.dll" beforeDir="false" afterPath="$PROJECT_DIR$/modules/coders/IM_MOD_RL_emf_.dll" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/modules/coders/IM_MOD_RL_ept_.dll" beforeDir="false" afterPath="$PROJECT_DIR$/modules/coders/IM_MOD_RL_ept_.dll" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/modules/coders/IM_MOD_RL_exr_.dll" beforeDir="false" afterPath="$PROJECT_DIR$/modules/coders/IM_MOD_RL_exr_.dll" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/modules/coders/IM_MOD_RL_farbfeld_.dll" beforeDir="false" afterPath="$PROJECT_DIR$/modules/coders/IM_MOD_RL_farbfeld_.dll" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/modules/coders/IM_MOD_RL_fax_.dll" beforeDir="false" afterPath="$PROJECT_DIR$/modules/coders/IM_MOD_RL_fax_.dll" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/modules/coders/IM_MOD_RL_fits_.dll" beforeDir="false" afterPath="$PROJECT_DIR$/modules/coders/IM_MOD_RL_fits_.dll" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/modules/coders/IM_MOD_RL_fl32_.dll" beforeDir="false" afterPath="$PROJECT_DIR$/modules/coders/IM_MOD_RL_fl32_.dll" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/modules/coders/IM_MOD_RL_flif_.dll" beforeDir="false" afterPath="$PROJECT_DIR$/modules/coders/IM_MOD_RL_flif_.dll" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/modules/coders/IM_MOD_RL_fpx_.dll" beforeDir="false" afterPath="$PROJECT_DIR$/modules/coders/IM_MOD_RL_fpx_.dll" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/modules/coders/IM_MOD_RL_ftxt_.dll" beforeDir="false" afterPath="$PROJECT_DIR$/modules/coders/IM_MOD_RL_ftxt_.dll" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/modules/coders/IM_MOD_RL_gif_.dll" beforeDir="false" afterPath="$PROJECT_DIR$/modules/coders/IM_MOD_RL_gif_.dll" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/modules/coders/IM_MOD_RL_gradient_.dll" beforeDir="false" afterPath="$PROJECT_DIR$/modules/coders/IM_MOD_RL_gradient_.dll" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/modules/coders/IM_MOD_RL_gray_.dll" beforeDir="false" afterPath="$PROJECT_DIR$/modules/coders/IM_MOD_RL_gray_.dll" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/modules/coders/IM_MOD_RL_hald_.dll" beforeDir="false" afterPath="$PROJECT_DIR$/modules/coders/IM_MOD_RL_hald_.dll" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/modules/coders/IM_MOD_RL_hdr_.dll" beforeDir="false" afterPath="$PROJECT_DIR$/modules/coders/IM_MOD_RL_hdr_.dll" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/modules/coders/IM_MOD_RL_heic_.dll" beforeDir="false" afterPath="$PROJECT_DIR$/modules/coders/IM_MOD_RL_heic_.dll" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/modules/coders/IM_MOD_RL_histogram_.dll" beforeDir="false" afterPath="$PROJECT_DIR$/modules/coders/IM_MOD_RL_histogram_.dll" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/modules/coders/IM_MOD_RL_hrz_.dll" beforeDir="false" afterPath="$PROJECT_DIR$/modules/coders/IM_MOD_RL_hrz_.dll" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/modules/coders/IM_MOD_RL_html_.dll" beforeDir="false" afterPath="$PROJECT_DIR$/modules/coders/IM_MOD_RL_html_.dll" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/modules/coders/IM_MOD_RL_icon_.dll" beforeDir="false" afterPath="$PROJECT_DIR$/modules/coders/IM_MOD_RL_icon_.dll" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/modules/coders/IM_MOD_RL_info_.dll" beforeDir="false" afterPath="$PROJECT_DIR$/modules/coders/IM_MOD_RL_info_.dll" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/modules/coders/IM_MOD_RL_inline_.dll" beforeDir="false" afterPath="$PROJECT_DIR$/modules/coders/IM_MOD_RL_inline_.dll" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/modules/coders/IM_MOD_RL_ipl_.dll" beforeDir="false" afterPath="$PROJECT_DIR$/modules/coders/IM_MOD_RL_ipl_.dll" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/modules/coders/IM_MOD_RL_jbig_.dll" beforeDir="false" afterPath="$PROJECT_DIR$/modules/coders/IM_MOD_RL_jbig_.dll" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/modules/coders/IM_MOD_RL_jnx_.dll" beforeDir="false" afterPath="$PROJECT_DIR$/modules/coders/IM_MOD_RL_jnx_.dll" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/modules/coders/IM_MOD_RL_jp2_.dll" beforeDir="false" afterPath="$PROJECT_DIR$/modules/coders/IM_MOD_RL_jp2_.dll" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/modules/coders/IM_MOD_RL_jpeg_.dll" beforeDir="false" afterPath="$PROJECT_DIR$/modules/coders/IM_MOD_RL_jpeg_.dll" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/modules/coders/IM_MOD_RL_json_.dll" beforeDir="false" afterPath="$PROJECT_DIR$/modules/coders/IM_MOD_RL_json_.dll" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/modules/coders/IM_MOD_RL_jxl_.dll" beforeDir="false" afterPath="$PROJECT_DIR$/modules/coders/IM_MOD_RL_jxl_.dll" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/modules/coders/IM_MOD_RL_kernel_.dll" beforeDir="false" afterPath="$PROJECT_DIR$/modules/coders/IM_MOD_RL_kernel_.dll" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/modules/coders/IM_MOD_RL_label_.dll" beforeDir="false" afterPath="$PROJECT_DIR$/modules/coders/IM_MOD_RL_label_.dll" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/modules/coders/IM_MOD_RL_mac_.dll" beforeDir="false" afterPath="$PROJECT_DIR$/modules/coders/IM_MOD_RL_mac_.dll" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/modules/coders/IM_MOD_RL_magick_.dll" beforeDir="false" afterPath="$PROJECT_DIR$/modules/coders/IM_MOD_RL_magick_.dll" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/modules/coders/IM_MOD_RL_map_.dll" beforeDir="false" afterPath="$PROJECT_DIR$/modules/coders/IM_MOD_RL_map_.dll" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/modules/coders/IM_MOD_RL_mask_.dll" beforeDir="false" afterPath="$PROJECT_DIR$/modules/coders/IM_MOD_RL_mask_.dll" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/modules/coders/IM_MOD_RL_mat_.dll" beforeDir="false" afterPath="$PROJECT_DIR$/modules/coders/IM_MOD_RL_mat_.dll" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/modules/coders/IM_MOD_RL_matte_.dll" beforeDir="false" afterPath="$PROJECT_DIR$/modules/coders/IM_MOD_RL_matte_.dll" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/modules/coders/IM_MOD_RL_meta_.dll" beforeDir="false" afterPath="$PROJECT_DIR$/modules/coders/IM_MOD_RL_meta_.dll" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/modules/coders/IM_MOD_RL_miff_.dll" beforeDir="false" afterPath="$PROJECT_DIR$/modules/coders/IM_MOD_RL_miff_.dll" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/modules/coders/IM_MOD_RL_mono_.dll" beforeDir="false" afterPath="$PROJECT_DIR$/modules/coders/IM_MOD_RL_mono_.dll" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/modules/coders/IM_MOD_RL_mpc_.dll" beforeDir="false" afterPath="$PROJECT_DIR$/modules/coders/IM_MOD_RL_mpc_.dll" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/modules/coders/IM_MOD_RL_mpr_.dll" beforeDir="false" afterPath="$PROJECT_DIR$/modules/coders/IM_MOD_RL_mpr_.dll" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/modules/coders/IM_MOD_RL_msl_.dll" beforeDir="false" afterPath="$PROJECT_DIR$/modules/coders/IM_MOD_RL_msl_.dll" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/modules/coders/IM_MOD_RL_mtv_.dll" beforeDir="false" afterPath="$PROJECT_DIR$/modules/coders/IM_MOD_RL_mtv_.dll" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/modules/coders/IM_MOD_RL_mvg_.dll" beforeDir="false" afterPath="$PROJECT_DIR$/modules/coders/IM_MOD_RL_mvg_.dll" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/modules/coders/IM_MOD_RL_null_.dll" beforeDir="false" afterPath="$PROJECT_DIR$/modules/coders/IM_MOD_RL_null_.dll" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/modules/coders/IM_MOD_RL_ora_.dll" beforeDir="false" afterPath="$PROJECT_DIR$/modules/coders/IM_MOD_RL_ora_.dll" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/modules/coders/IM_MOD_RL_otb_.dll" beforeDir="false" afterPath="$PROJECT_DIR$/modules/coders/IM_MOD_RL_otb_.dll" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/modules/coders/IM_MOD_RL_palm_.dll" beforeDir="false" afterPath="$PROJECT_DIR$/modules/coders/IM_MOD_RL_palm_.dll" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/modules/coders/IM_MOD_RL_pango_.dll" beforeDir="false" afterPath="$PROJECT_DIR$/modules/coders/IM_MOD_RL_pango_.dll" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/modules/coders/IM_MOD_RL_pattern_.dll" beforeDir="false" afterPath="$PROJECT_DIR$/modules/coders/IM_MOD_RL_pattern_.dll" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/modules/coders/IM_MOD_RL_pcd_.dll" beforeDir="false" afterPath="$PROJECT_DIR$/modules/coders/IM_MOD_RL_pcd_.dll" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/modules/coders/IM_MOD_RL_pcl_.dll" beforeDir="false" afterPath="$PROJECT_DIR$/modules/coders/IM_MOD_RL_pcl_.dll" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/modules/coders/IM_MOD_RL_pcx_.dll" beforeDir="false" afterPath="$PROJECT_DIR$/modules/coders/IM_MOD_RL_pcx_.dll" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/modules/coders/IM_MOD_RL_pdb_.dll" beforeDir="false" afterPath="$PROJECT_DIR$/modules/coders/IM_MOD_RL_pdb_.dll" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/modules/coders/IM_MOD_RL_pdf_.dll" beforeDir="false" afterPath="$PROJECT_DIR$/modules/coders/IM_MOD_RL_pdf_.dll" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/modules/coders/IM_MOD_RL_pes_.dll" beforeDir="false" afterPath="$PROJECT_DIR$/modules/coders/IM_MOD_RL_pes_.dll" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/modules/coders/IM_MOD_RL_pgx_.dll" beforeDir="false" afterPath="$PROJECT_DIR$/modules/coders/IM_MOD_RL_pgx_.dll" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/modules/coders/IM_MOD_RL_pict_.dll" beforeDir="false" afterPath="$PROJECT_DIR$/modules/coders/IM_MOD_RL_pict_.dll" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/modules/coders/IM_MOD_RL_pix_.dll" beforeDir="false" afterPath="$PROJECT_DIR$/modules/coders/IM_MOD_RL_pix_.dll" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/modules/coders/IM_MOD_RL_plasma_.dll" beforeDir="false" afterPath="$PROJECT_DIR$/modules/coders/IM_MOD_RL_plasma_.dll" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/modules/coders/IM_MOD_RL_png_.dll" beforeDir="false" afterPath="$PROJECT_DIR$/modules/coders/IM_MOD_RL_png_.dll" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/modules/coders/IM_MOD_RL_pnm_.dll" beforeDir="false" afterPath="$PROJECT_DIR$/modules/coders/IM_MOD_RL_pnm_.dll" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/modules/coders/IM_MOD_RL_ps2_.dll" beforeDir="false" afterPath="$PROJECT_DIR$/modules/coders/IM_MOD_RL_ps2_.dll" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/modules/coders/IM_MOD_RL_ps3_.dll" beforeDir="false" afterPath="$PROJECT_DIR$/modules/coders/IM_MOD_RL_ps3_.dll" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/modules/coders/IM_MOD_RL_ps_.dll" beforeDir="false" afterPath="$PROJECT_DIR$/modules/coders/IM_MOD_RL_ps_.dll" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/modules/coders/IM_MOD_RL_psd_.dll" beforeDir="false" afterPath="$PROJECT_DIR$/modules/coders/IM_MOD_RL_psd_.dll" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/modules/coders/IM_MOD_RL_pwp_.dll" beforeDir="false" afterPath="$PROJECT_DIR$/modules/coders/IM_MOD_RL_pwp_.dll" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/modules/coders/IM_MOD_RL_qoi_.dll" beforeDir="false" afterPath="$PROJECT_DIR$/modules/coders/IM_MOD_RL_qoi_.dll" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/modules/coders/IM_MOD_RL_raw_.dll" beforeDir="false" afterPath="$PROJECT_DIR$/modules/coders/IM_MOD_RL_raw_.dll" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/modules/coders/IM_MOD_RL_rgb_.dll" beforeDir="false" afterPath="$PROJECT_DIR$/modules/coders/IM_MOD_RL_rgb_.dll" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/modules/coders/IM_MOD_RL_rgf_.dll" beforeDir="false" afterPath="$PROJECT_DIR$/modules/coders/IM_MOD_RL_rgf_.dll" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/modules/coders/IM_MOD_RL_rla_.dll" beforeDir="false" afterPath="$PROJECT_DIR$/modules/coders/IM_MOD_RL_rla_.dll" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/modules/coders/IM_MOD_RL_rle_.dll" beforeDir="false" afterPath="$PROJECT_DIR$/modules/coders/IM_MOD_RL_rle_.dll" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/modules/coders/IM_MOD_RL_scr_.dll" beforeDir="false" afterPath="$PROJECT_DIR$/modules/coders/IM_MOD_RL_scr_.dll" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/modules/coders/IM_MOD_RL_screenshot_.dll" beforeDir="false" afterPath="$PROJECT_DIR$/modules/coders/IM_MOD_RL_screenshot_.dll" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/modules/coders/IM_MOD_RL_sct_.dll" beforeDir="false" afterPath="$PROJECT_DIR$/modules/coders/IM_MOD_RL_sct_.dll" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/modules/coders/IM_MOD_RL_sfw_.dll" beforeDir="false" afterPath="$PROJECT_DIR$/modules/coders/IM_MOD_RL_sfw_.dll" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/modules/coders/IM_MOD_RL_sgi_.dll" beforeDir="false" afterPath="$PROJECT_DIR$/modules/coders/IM_MOD_RL_sgi_.dll" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/modules/coders/IM_MOD_RL_sixel_.dll" beforeDir="false" afterPath="$PROJECT_DIR$/modules/coders/IM_MOD_RL_sixel_.dll" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/modules/coders/IM_MOD_RL_stegano_.dll" beforeDir="false" afterPath="$PROJECT_DIR$/modules/coders/IM_MOD_RL_stegano_.dll" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/modules/coders/IM_MOD_RL_strimg_.dll" beforeDir="false" afterPath="$PROJECT_DIR$/modules/coders/IM_MOD_RL_strimg_.dll" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/modules/coders/IM_MOD_RL_sun_.dll" beforeDir="false" afterPath="$PROJECT_DIR$/modules/coders/IM_MOD_RL_sun_.dll" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/modules/coders/IM_MOD_RL_svg_.dll" beforeDir="false" afterPath="$PROJECT_DIR$/modules/coders/IM_MOD_RL_svg_.dll" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/modules/coders/IM_MOD_RL_tga_.dll" beforeDir="false" afterPath="$PROJECT_DIR$/modules/coders/IM_MOD_RL_tga_.dll" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/modules/coders/IM_MOD_RL_thumbnail_.dll" beforeDir="false" afterPath="$PROJECT_DIR$/modules/coders/IM_MOD_RL_thumbnail_.dll" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/modules/coders/IM_MOD_RL_tiff_.dll" beforeDir="false" afterPath="$PROJECT_DIR$/modules/coders/IM_MOD_RL_tiff_.dll" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/modules/coders/IM_MOD_RL_tile_.dll" beforeDir="false" afterPath="$PROJECT_DIR$/modules/coders/IM_MOD_RL_tile_.dll" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/modules/coders/IM_MOD_RL_tim2_.dll" beforeDir="false" afterPath="$PROJECT_DIR$/modules/coders/IM_MOD_RL_tim2_.dll" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/modules/coders/IM_MOD_RL_tim_.dll" beforeDir="false" afterPath="$PROJECT_DIR$/modules/coders/IM_MOD_RL_tim_.dll" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/modules/coders/IM_MOD_RL_ttf_.dll" beforeDir="false" afterPath="$PROJECT_DIR$/modules/coders/IM_MOD_RL_ttf_.dll" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/modules/coders/IM_MOD_RL_txt_.dll" beforeDir="false" afterPath="$PROJECT_DIR$/modules/coders/IM_MOD_RL_txt_.dll" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/modules/coders/IM_MOD_RL_uil_.dll" beforeDir="false" afterPath="$PROJECT_DIR$/modules/coders/IM_MOD_RL_uil_.dll" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/modules/coders/IM_MOD_RL_url_.dll" beforeDir="false" afterPath="$PROJECT_DIR$/modules/coders/IM_MOD_RL_url_.dll" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/modules/coders/IM_MOD_RL_uyvy_.dll" beforeDir="false" afterPath="$PROJECT_DIR$/modules/coders/IM_MOD_RL_uyvy_.dll" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/modules/coders/IM_MOD_RL_vicar_.dll" beforeDir="false" afterPath="$PROJECT_DIR$/modules/coders/IM_MOD_RL_vicar_.dll" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/modules/coders/IM_MOD_RL_vid_.dll" beforeDir="false" afterPath="$PROJECT_DIR$/modules/coders/IM_MOD_RL_vid_.dll" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/modules/coders/IM_MOD_RL_video_.dll" beforeDir="false" afterPath="$PROJECT_DIR$/modules/coders/IM_MOD_RL_video_.dll" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/modules/coders/IM_MOD_RL_viff_.dll" beforeDir="false" afterPath="$PROJECT_DIR$/modules/coders/IM_MOD_RL_viff_.dll" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/modules/coders/IM_MOD_RL_vips_.dll" beforeDir="false" afterPath="$PROJECT_DIR$/modules/coders/IM_MOD_RL_vips_.dll" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/modules/coders/IM_MOD_RL_wbmp_.dll" beforeDir="false" afterPath="$PROJECT_DIR$/modules/coders/IM_MOD_RL_wbmp_.dll" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/modules/coders/IM_MOD_RL_webp_.dll" beforeDir="false" afterPath="$PROJECT_DIR$/modules/coders/IM_MOD_RL_webp_.dll" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/modules/coders/IM_MOD_RL_wpg_.dll" beforeDir="false" afterPath="$PROJECT_DIR$/modules/coders/IM_MOD_RL_wpg_.dll" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/modules/coders/IM_MOD_RL_xbm_.dll" beforeDir="false" afterPath="$PROJECT_DIR$/modules/coders/IM_MOD_RL_xbm_.dll" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/modules/coders/IM_MOD_RL_xc_.dll" beforeDir="false" afterPath="$PROJECT_DIR$/modules/coders/IM_MOD_RL_xc_.dll" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/modules/coders/IM_MOD_RL_xcf_.dll" beforeDir="false" afterPath="$PROJECT_DIR$/modules/coders/IM_MOD_RL_xcf_.dll" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/modules/coders/IM_MOD_RL_xpm_.dll" beforeDir="false" afterPath="$PROJECT_DIR$/modules/coders/IM_MOD_RL_xpm_.dll" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/modules/coders/IM_MOD_RL_xps_.dll" beforeDir="false" afterPath="$PROJECT_DIR$/modules/coders/IM_MOD_RL_xps_.dll" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/modules/coders/IM_MOD_RL_yaml_.dll" beforeDir="false" afterPath="$PROJECT_DIR$/modules/coders/IM_MOD_RL_yaml_.dll" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/modules/coders/IM_MOD_RL_ycbcr_.dll" beforeDir="false" afterPath="$PROJECT_DIR$/modules/coders/IM_MOD_RL_ycbcr_.dll" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/modules/coders/IM_MOD_RL_yuv_.dll" beforeDir="false" afterPath="$PROJECT_DIR$/modules/coders/IM_MOD_RL_yuv_.dll" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/modules/filters/FILTER_analyze_.dll" beforeDir="false" afterPath="$PROJECT_DIR$/modules/filters/FILTER_analyze_.dll" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/policy.xml" beforeDir="false" afterPath="$PROJECT_DIR$/policy.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/unins000.dat" beforeDir="false" afterPath="$PROJECT_DIR$/unins000.dat" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/unins000.exe" beforeDir="false" afterPath="$PROJECT_DIR$/unins000.exe" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="ClangdSettings">
+    <option name="formatViaClangd" value="false" />
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/.." />
+  </component>
+  <component name="MarkdownSettingsMigration">
+    <option name="stateVersion" value="1" />
+  </component>
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 2
+}</component>
+  <component name="ProjectId" id="2VyenWyoJytxRTTp3HTF7szPAZl" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "RunOnceActivity.OpenProjectViewOnStart": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.cidr.known.project.marker": "true",
+    "WebServerToolWindowFactoryState": "false",
+    "cf.first.check.clang-format": "false",
+    "cidr.known.project.marker": "true",
+    "last_opened_file_path": "D:/Projects/CAtlasIM",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "vue.rearranger.settings.migration": "true"
+  }
+}]]></component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="123dbbca-4c8a-4d12-a5b4-13d2b5f7cc73" name="Changes" comment="" />
+      <created>1695812914431</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1695812914431</updated>
+      <workItem from="1695812915444" duration="23000" />
+      <workItem from="1695812954366" duration="36000" />
+      <workItem from="1695814765410" duration="38000" />
+      <workItem from="1695815734251" duration="605000" />
+    </task>
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+</project>

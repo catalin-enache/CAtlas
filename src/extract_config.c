@@ -74,7 +74,7 @@ KeyValue* extract_config(const char *fileName, int *num_entries) {
         return NULL;
     }
 
-    KeyValue* kvArr = malloc(*num_entries * sizeof(KeyValue));
+    KeyValue* kvArr = (KeyValue*)malloc(*num_entries * sizeof(KeyValue));
     if (kvArr == NULL) {
         printf("extract_config could not allocate kvArr\n");
         return NULL;
@@ -111,7 +111,7 @@ FillInEntry* extract_fill_in_array(const char* fill_in_value, int* fill_in_array
     // arrayToString(tokens_info, (void *)tokens, (int[]){*fill_in_array_length}, 1, 0, "string", sizeof(char*), "%s", 64);
     // printf("tokens: %s\n", tokens_info);
 
-    FillInEntry* fill_in_array = malloc(*fill_in_array_length * sizeof(FillInEntry));
+    FillInEntry* fill_in_array = (FillInEntry *)malloc(*fill_in_array_length * sizeof(FillInEntry));
     if (fill_in_array == NULL) { printf("extract_fill_in_array could not allocate fill_in_array\n"); return NULL; }
 
     for (int i = 0; i < *fill_in_array_length; i++) {

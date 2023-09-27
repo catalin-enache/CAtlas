@@ -5,7 +5,7 @@ int PIXEL_CHANNELS_NUM = sizeof(PIXEL_CHANNELS) / sizeof(PIXEL_CHANNELS[0]);
 
 char* colorSpaceAsString(ColorspaceType colorspace_type) {
     int str_size = 50;
-    char *str = malloc(str_size * sizeof(char));
+    char *str = (char *)malloc(str_size * sizeof(char));
     snprintf(str, sizeof(str), "UndefinedColorspace(%d)", colorspace_type);
 
     switch (colorspace_type) {
@@ -33,7 +33,7 @@ char* colorSpaceAsString(ColorspaceType colorspace_type) {
 // map ImageType to string
 char* imageTypeAsString(ImageType image_type) {
     int str_size = 50;
-    char *str = malloc(str_size * sizeof(char));
+    char *str = (char *)malloc(str_size * sizeof(char));
 
     switch (image_type) {
         case UndefinedType:
@@ -69,7 +69,7 @@ char* imageTypeAsString(ImageType image_type) {
 
 char* channelTypeAsString(ChannelType channel) {
     int str_size = 50;
-    char *str = malloc(str_size * sizeof(char));
+    char *str = (char *)malloc(str_size * sizeof(char));
 
     switch(channel) {
         case RedChannel:
@@ -91,7 +91,7 @@ char* channelTypeAsString(ChannelType channel) {
 
 char * compositeOperatorAsString(CompositeOperator op) {
     int str_size = 50;
-    char *str = malloc(str_size * sizeof(char));
+    char *str = (char *)malloc(str_size * sizeof(char));
     switch(op) {
         case CopyRedCompositeOp:
             snprintf(str, str_size, "CopyRed/GrayCompositeOp(%d)", op); break;
@@ -109,7 +109,7 @@ char * compositeOperatorAsString(CompositeOperator op) {
 
 char * tifSampleFormatAsString(uint16_t sampleFormat) {
     int str_size = 60;
-    char *str = malloc(str_size * sizeof(char));
+    char *str = (char *)malloc(str_size * sizeof(char));
 
     switch (sampleFormat) {
         case SAMPLEFORMAT_UINT:
@@ -156,7 +156,7 @@ PixelChannel* get_image_channels(MagickWand *wand, int *size_out) {
     }
     size_t channels_num = GetPixelChannels(image);
     *size_out = channels_num;
-    PixelChannel *_pixel_channels = malloc(channels_num * sizeof(PixelChannel));
+    PixelChannel *_pixel_channels = (PixelChannel *)malloc(channels_num * sizeof(PixelChannel));
     for (int j = 0; j < channels_num; ++j) {
         PixelChannel channel = GetPixelChannelChannel(image,j);
         if (channel == IndexPixelChannel) { // cannot be used in stats as index
@@ -302,7 +302,7 @@ char* print_min_max_for_each_band(MagickWand *wand) {
         printf("Could not get min max for each band (print_min_max_for_each_band_m).\n");
         return NULL;
     }
-    char *res = malloc(2048 * sizeof(char));
+    char *res = (char *)malloc(2048 * sizeof(char));
     res[0] = '\0';
     int bands_min_max_dimensions[] = {channels_num, 2};
     arrayToString(res, bands_min_max, bands_min_max_dimensions, 2, 0, "double", sizeof(double), "%.8f", 64);
@@ -497,7 +497,7 @@ MagickBooleanType resize(MagickWand *wand, size_t width, size_t height, FilterTy
         printf("Reverting colorspace from %s to %s only for non alpha channels after resize\n", colorSpaceAsString(temp_colorspace), colorSpaceAsString(original_colorspace));
         transform_color_space_and_set_image_depth(wand, original_colorspace, original_depth);
     }
-    hasAlpha && MagickCompositeImage(wand, alphaWand, CopyAlphaCompositeOp, 1, 0, 0);
+    hasAlpha && MagickCompositeImage(wand, alphaWand, CopyAlphaCompositeOp, (MagickBooleanType)1, 0, 0);
     // hasAlpha && MagickSetImageAlphaChannel(wand, OnAlphaChannel);
     // if (hasAlpha) copy_channel(wand, alphaWand, AlphaChannel, GrayChannel);
     MagickSetImageType(wand, original_image_type);

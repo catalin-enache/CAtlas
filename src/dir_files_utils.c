@@ -5,10 +5,10 @@
 const char *extensions[] = {".png", ".apng", ".jpg", ".jpeg", ".webp", ".tif", ".tiff", ".bmp", ".gif", ".tga", ".exr"};
 const int extensions_length = sizeof(extensions) / sizeof(extensions[0]);
 
-char *extracted_tokens[] = {".0.", ".1.", ".2.", ".3.", ".4.", ".5.", ".6.", ".7.", ".8.", ".9."};
+const char *extracted_tokens[] = {".0.", ".1.", ".2.", ".3.", ".4.", ".5.", ".6.", ".7.", ".8.", ".9."};
 int extracted_tokens_size = sizeof(extracted_tokens) / sizeof(extracted_tokens[0]);
 
-char *mergeable_tokens[] = {"0.", "1.", "2.", "3."};
+const char *mergeable_tokens[] = {"0.", "1.", "2.", "3."};
 int mergeable_tokens_size = sizeof(mergeable_tokens) / sizeof(mergeable_tokens[0]);
 
 unsigned char *get_file(const char *filename, size_t *length) {
@@ -21,7 +21,7 @@ unsigned char *get_file(const char *filename, size_t *length) {
     *length = ftell(file);
     fseek(file, 0, SEEK_SET);
 
-    unsigned char *buffer = malloc(*length);
+    unsigned char *buffer = (unsigned char *)malloc(*length);
     if (!buffer) {
         fclose(file);
         return NULL;
@@ -148,7 +148,7 @@ char** list_files_with_filter(const char* dir_name, int* num_files, bool concat_
         count++;
     }
 
-    files = malloc(count * sizeof(char*));
+    files = (char **)malloc(count * sizeof(char*));
     if (files == NULL) {
         printf("Error allocating memory\n");
         return NULL;
@@ -189,7 +189,7 @@ char** read_lines(const char* filename, int* num_lines) {
 
     // Allocate an initial block of memory for the lines
     int capacity = 10;
-    char **lines = malloc(capacity * sizeof(char*));
+    char **lines = (char **)malloc(capacity * sizeof(char*));
     if (lines == NULL) {
         printf("Error allocating memory for reading lines.\n");
         return NULL;
@@ -204,7 +204,7 @@ char** read_lines(const char* filename, int* num_lines) {
         // Resize the array if necessary
         if (*num_lines >= capacity) {
             capacity *= 2;
-            lines = realloc(lines, capacity * sizeof(char*));
+            lines = (char **)realloc(lines, capacity * sizeof(char*));
             if (lines == NULL) {
                 printf("Error reallocating memory.\n");
                 return NULL;

@@ -65,7 +65,12 @@
   A value of 8 uses half the memory than 16 and typically runs 30% faster,
   but provides 256 times less color resolution than a value of 16.
 */
-#define MAGICKCORE_QUANTUM_DEPTH 16
+#define MAGICKCORE_QUANTUM_DEPTH 32
+
+/*
+  Channel mask depth
+*/
+#define MAGICKCORE_CHANNEL_MASK_DEPTH 64 // original was 64
 
 /*
   Define to enable high dynamic range imagery (HDRI)
@@ -263,15 +268,17 @@
 */
 #define MAGICKCORE_PACKAGE_NAME  "ImageMagick"
 
-/*
-  Required or InitializeCriticalSectionandSpinCount is undefined.
-*/
-#if !defined(_WIN32_WINNT)
-#  define _WIN32_WINNT  0x0502
-#endif
-
 #define _magickcore_inline __inline
 #define _magickcore_restrict __restrict
+
+/*
+  The 64-bit channel mask requires a C++ compiler
+*/
+#if MAGICKCORE_CHANNEL_MASK_DEPTH == 64
+#  if !defined(__cplusplus) && !defined(c_plusplus)
+#    error ImageMagick was build with a 64 channel bit mask and that requires a C++ compiler
+#  endif
+#endif
 
 /*
   Visual C++ does not define double_t, float_t, or ssize_t by default.
@@ -304,13 +311,11 @@ typedef long ssize_t;
 #define MAGICKCORE_SIZEOF_DOUBLE 8
 #define MAGICKCORE_SIZEOF_DOUBLE_T 8
 #define MAGICKCORE_SIZEOF_FLOAT 4
-#define MAGICKCORE_SIZEOF_FLOAT_T 8
+#define MAGICKCORE_SIZEOF_FLOAT_T 4
 
 #if defined(_WIN64)
-#define MAGICKCORE_SIZEOF_SSIZE_T 8
 #define MAGICKCORE_SIZEOF_VOID_P 8
 #else
-#define MAGICKCORE_SIZEOF_SSIZE_T 4
 #define MAGICKCORE_SIZEOF_VOID_P 4
 #endif
 
@@ -352,7 +357,6 @@ typedef long ssize_t;
 /*
   Disable specific warnings.
 */
-#ifdef _MSC_VER
 #if _MSC_VER < 1920
 #pragma warning(disable: 4101) /* 'identifier' : unreferenced local variable */
 #pragma warning(disable: 4130) /* 'operator' : logical operation on address of string constant */
@@ -360,7 +364,7 @@ typedef long ssize_t;
 #pragma warning(disable: 4204) /* nonstandard extension used: non-constant aggregate initializer */
 #pragma warning(disable: 4459) /* 'identifier' : declaration of 'foo' hides global declaration */
 #endif
-#pragma warning(disable: 6993) /* Code analysis ignores OpenMP constructs; analyzing single-threaded code */
-#endif
+#pragma warning(disable: 4611) /* interaction between '_setjmp' and C++ object destruction is non-portable */
+#pragma warning(disable: 6993) /* code analysis ignores OpenMP constructs; analyzing single-threaded code */
 
 #endif

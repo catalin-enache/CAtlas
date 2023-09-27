@@ -1,11 +1,17 @@
 
 cmake_minimum_required(VERSION 3.25)
-project(Atlas C)
+project(Atlas CXX) # CXX is required by magick-baseconfig.h => MAGICKCORE_CHANNEL_MASK_DEPTH = 64
 
 set(CMAKE_C_STANDARD 11)
 
 set(SHARED_SOURCES src/img_manip.c src/img_manip.h src/dir_files_utils.c src/dir_files_utils.h src/extract_config.c src/extract_config.h src/errors.c src/errors.h src/definitions.h src/calculations.c src/calculations.h src/utils.c src/utils.h)
 
+# these are for CXX compiler. Comment them when/if switching to C compiler
+file(GLOB_RECURSE C_SOURCES "*.c")
+set_source_files_properties(${C_SOURCES} PROPERTIES LANGUAGE CXX)
+
+# "D:\Projects\CAtlasIM\ImageMagick-7.1.1-Q16-HDRI\magick.exe" identify -verbose atlas.exr
+# "D:\Projects\CAtlasIM\ImageMagick-7.1.1-Q16-HDRI\magick.exe" output.tiff -depth 32 atlas.exr
 ############################ Using ImageMagick ###################
 
 # Add your executable

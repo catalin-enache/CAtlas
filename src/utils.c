@@ -39,20 +39,20 @@ int count_char(const char *str, char c) {
     return count;
 }
 
-char** split_string(const char *str_orig, char *delimiter, int *length) {
+char** split_string(const char *str_orig, const char *delimiter, int *length) {
     char *str = strdup(str_orig);
 
     char *token = strtok(str, delimiter);
     char **tokens = NULL;
     int i = 0;
     while (token != NULL) {
-        tokens = realloc(tokens, sizeof(char *) * (i + 1));
+        tokens = (char **)realloc(tokens, sizeof(char *) * (i + 1));
         if (tokens == NULL) { printf("Could not allocate memory for splitting string.\n"); return NULL; }
         tokens[i] = strdup(token);
         token = strtok(NULL, delimiter);
         i++;
     }
-    tokens = realloc(tokens, sizeof(char *) * (i + 1));
+    tokens = (char **)realloc(tokens, sizeof(char *) * (i + 1));
     tokens[i] = NULL;
     if (length != NULL) { *length = i; }
 
@@ -201,7 +201,7 @@ char* print_3D_array(void ***array, size_t type_size, const char *type, int is_c
                 if (is_contiguous_block_of_memory) {
                     // Stack memory case
                     // Pointer Arithmetic Version:
-                    // element = (char *)array + i * size2 * size3 * type_size + j * size3 * type_size + k * type_size; // (alternate)
+                    element = (char *)array + i * size2 * size3 * type_size + j * size3 * type_size + k * type_size; // (alternate)
                     // Type Casting Version:
                     // the array is cast to a 3d array pointer
                     // element = &((char (*)[size2][size3][type_size]) array)[i][j][k];
@@ -209,8 +209,9 @@ char* print_3D_array(void ***array, size_t type_size, const char *type, int is_c
                     // element = ((char (*)[size2][size3][type_size]) array)[i][j] + k; // when i changes it is offsetting inside the 3d array pointer with the size of [size2][size3][type_size]. That's why the first dimension (size1) is not needed.
                     // element = ((char (*)[size2][size3 * type_size]) array)[i][j] + k * type_size;
                     // element = (char*)(((char (*)[size2][size3 * type_size]) array)[i]) + j * size3 * type_size + k * type_size;
-                    char (*arrPtr)[size2][size3][type_size] = (char (*)[size2][size3][type_size]) array;
-                    element = &arrPtr[i][j][k];
+                    // The following works in C but not in C++
+                    // char (*arrPtr)[size2][size3][type_size] = (char (*)[size2][size3][type_size]) array;
+                    // element = &arrPtr[i][j][k];
                 } else {
                     // Heap memory case
                     // array[i] has precedence, we cast (char **) on array[i]
@@ -269,16 +270,16 @@ void _arrayToString(char *output, void *array, int dimensions[], int num_dimensi
         }
 
         if (curr_dimension == num_dimensions - 1) { // last dimension / innermost dimension
-            char *buffer = malloc(buff_size * sizeof(char));
+            char *buffer = (char *)malloc(buff_size * sizeof(char));
             void *element;
 
             if (is_contiguous_block_of_memory) {
-                element = ((void *)array) + (*index) * type_size;
+                element = ((char *)array) + (*index) * type_size;
             } else {
                 if (strcmp(type, "string") == 0) {
-                    element = *((void **)array + i); // pointer to string pointer
+                    element = *((char **)array + i); // pointer to string pointer
                 } else {
-                    element = ((void *)array + i * type_size); // pointer to data
+                    element = ((char *)array + i * type_size); // pointer to data
                 }
             }
 
@@ -323,5 +324,42 @@ void arrayToString(char *output, void *array, int dimensions[], int num_dimensio
     int index = 0;
     int curr_dimension = 0;
     _arrayToString(output, array, dimensions, num_dimensions, curr_dimension, &index, is_contiguous_block_of_memory, type, type_size, format, buff_size);
+}
+
+// void initialize_multi_dimensional_array(void **pointer, int *dimensions, int dimensions_length, size_t elem_size) {
+//     for (int i = 0; i < dimensions_length; i++) {
+//         if (i == 0) {
+//             *pointer = (char **)malloc(dimensions[i] * sizeof(char*));
+//         } else if (i < dimensions_length - 1) {
+//             for(int j = 0; j < dimensions[i-1]; j++) {
+//                 ((char **)(*pointer))[j] = (char**)malloc(dimensions[j] * sizeof(char*));
+//             }
+//         } else {
+//             for(int j = 0; j < dimensions[i-1]; j++) {
+//                 ((void **)(*pointer))[j] = (char*)malloc(dimensions[j] * elem_size);
+//             }
+//         }
+//     }
+// }
+
+char *initialize_dimension(int *dimensions, int current_dimension, int dimensions_length, size_t elem_size) {
+    // Base case: if the last dimension, allocate memory for actual elements
+    if (current_dimension == dimensions_length - 1) {
+        return (char*)malloc(dimensions[current_dimension] * elem_size);
+    }
+
+    // Otherwise, allocate memory for pointers to the next dimension
+    char **arr = (char **)malloc(dimensions[current_dimension] * sizeof(char*));
+    if (!arr) return NULL;
+
+    for (int i = 0; i < dimensions[current_dimension]; i++) {
+        arr[i] = initialize_dimension(dimensions, current_dimension + 1, dimensions_length, elem_size);
+    }
+
+    return (char *)arr;
+}
+
+void initialize_multi_dimensional_array(void **pointer, int *dimensions, int dimensions_length, size_t elem_size) {
+    *pointer = initialize_dimension(dimensions, 0, dimensions_length, elem_size);
 }
 

@@ -99,8 +99,8 @@ int main(int argc, char **argv) {
 
     int cols = config_find(kv_arr, config_entries, "cols")->value.i;
     double shrink = config_find(kv_arr, config_entries, "shrink")->value.d;
-    int shrink_filter = config_find(kv_arr, config_entries, "shrink_filter")->value.i;
-    int downscale_to_min_size_filter = config_find(kv_arr, config_entries, "downscale_to_min_size_filter")->value.i;
+    FilterType shrink_filter = (FilterType)config_find(kv_arr, config_entries, "shrink_filter")->value.i;
+    FilterType downscale_to_min_size_filter = (FilterType)config_find(kv_arr, config_entries, "downscale_to_min_size_filter")->value.i;
 
     char fill_in[256];
     strcpy(fill_in, config_find(kv_arr, config_entries, "fill_in")->value.s);
@@ -113,13 +113,13 @@ int main(int argc, char **argv) {
     char output_format[16]; // png, jpg
     strcpy(output_format, config_find(kv_arr, config_entries, "output_format")->value.s);
 
-    int output_compression_algorithm = config_find(kv_arr, config_entries, "output_compression_algorithm")->value.i;
+    CompressionType output_compression_algorithm = (CompressionType)config_find(kv_arr, config_entries, "output_compression_algorithm")->value.i;
     int output_compression_strength = config_find(kv_arr, config_entries, "output_compression_strength")->value.i;
     int output_jpg_quality = config_find(kv_arr, config_entries, "output_jpg_quality")->value.i;
 
     int output_bit_depth = config_find(kv_arr, config_entries, "output_bit_depth")->value.i;
-    int output_image_type = config_find(kv_arr, config_entries, "output_image_type")->value.i;
-    int output_colorspace = config_find(kv_arr, config_entries, "output_colorspace")->value.i;
+    ImageType output_image_type = (ImageType)config_find(kv_arr, config_entries, "output_image_type")->value.i;
+    ColorspaceType output_colorspace = (ColorspaceType)config_find(kv_arr, config_entries, "output_colorspace")->value.i;
 
     bool prevent_gray_channel_optimization = config_find(kv_arr, config_entries, "prevent_gray_channel_optimization")->value.i;
 
@@ -265,10 +265,10 @@ int main(int argc, char **argv) {
     size_t size_t_num_paths = (size_t)num_paths;
     size_t size_t_num_paths_no_dir = (size_t)num_paths;
     for (int i = 0; i < fill_in_array_length; i++) {
-        char *memory_filename = malloc(32 * sizeof(char));
+        char *memory_filename = (char *)malloc(32 * sizeof(char));
         sprintf(memory_filename, "%d:%dx%d", fill_in_array[i].position, fill_in_array[i].width, fill_in_array[i].height); // needed when freeing later to not free same memory twice
 
-        char *memory_filename2 = malloc(32 * sizeof(char));
+        char *memory_filename2 = (char *)malloc(32 * sizeof(char));
         sprintf(memory_filename2, "%d:%dx%d", fill_in_array[i].position, fill_in_array[i].width, fill_in_array[i].height);
 
         if(!array_insert((void**)&image_paths, &memory_filename, fill_in_array[i].position, &size_t_num_paths, sizeof(char *))) {
@@ -285,7 +285,8 @@ int main(int argc, char **argv) {
 
     // print info about image_paths
     char image_paths_info[1000] = "";
-    arrayToString(image_paths_info, (void *)image_paths, (int[]){num_paths}, 1, 0, "string", sizeof(char *), "%s", 128);
+    int dimensions[] = {num_paths};
+    arrayToString(image_paths_info, (void *)image_paths, dimensions, 1, 0, "string", sizeof(char *), "%s", 128);
     printf("\nimage_paths: %s\n\n", image_paths_info);
 
     int rows = num_paths / cols + (num_paths % cols == 0 ? 0 : 1);
@@ -377,7 +378,7 @@ int main(int argc, char **argv) {
     if(downscale_to_min_size_filter) {
         int new_width = resize_all_images_to_width ? resize_all_images_to_width :  min_width;
         int new_height = resize_all_images_to_height ? resize_all_images_to_height : min_height;
-        char *operation = resize_all_images_to_width || resize_all_images_to_height ? "Resizing" : "Downscaling";
+        const char *operation = resize_all_images_to_width || resize_all_images_to_height ? "Resizing" : "Downscaling";
         printf("======================== %s all images to min size %zux%zu using filter %d ==================\n\n", operation, new_width, new_height, downscale_to_min_size_filter);
 
         for(int i = 0; i < num_paths; i++) {
@@ -446,6 +447,8 @@ int main(int argc, char **argv) {
         // Note: Tiff alpha channel looks to be changed when saving from 32 bit depth (floating-point) to 16 bit depth (floating-point)
         // but only in Windows Image Viewer
         // In Gimp/Blender they look the same.
+        // Also NOTE: IM cannot save exr files with 32 bit depth. It saves them as 16 bit depth.
+        // However, tiff files can be saved with 32 bit depth.
     }
 
     if (output_colorspace) {

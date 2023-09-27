@@ -1,7 +1,7 @@
 #include <stddef.h>
 #include "calculations.h"
 
-size_t get_rows_height(size_t *output, size_t*** rows_with_sizes, int rows_num, int cols_num) {
+void get_rows_height(size_t *output, size_t*** rows_with_sizes, int rows_num, int cols_num) {
     for (int row = 0; row < rows_num; row++) {
         size_t row_height = 0;
         for (int col = 0; col < cols_num; col++) {
@@ -12,7 +12,8 @@ size_t get_rows_height(size_t *output, size_t*** rows_with_sizes, int rows_num, 
         output[row] = row_height;
     }
     char rows_height_info[1000] = "";
-    arrayToString(rows_height_info, (void *)output, (int[]){rows_num}, 1, 0, "size_t", sizeof(size_t), "%zu", 8);
+    int dimensions[] = {rows_num};
+    arrayToString(rows_height_info, (void *)output, dimensions, 1, 0, "size_t", sizeof(size_t), "%zu", 8);
     printf("rows_height: %s\n", rows_height_info);
 }
 
@@ -43,7 +44,11 @@ size_t get_atlas_height(size_t*** rows_with_sizes, int rows_num, int cols_num) {
 }
 
 void get_rows_with_sizes_as_percentage(void* array, size_t*** rows_with_sizes, size_t* rows_height, size_t atlas_width, size_t atlas_height, int rows_num, int cols_num, double shrink, bool debug_uv_help) {
-    double (*output)[cols_num][4] = (double (*)[cols_num][4])array;
+    // this works in C but not in C++ (VLAs - Variable Length Arrays) are not supported in C++
+    // double (*output)[cols_num][4] = (double (*)[cols_num][4])array;
+    double ***output = NULL;
+    int _dimensions[] = {rows_num, cols_num, 4};
+    initialize_multi_dimensional_array((void **)&output, _dimensions, 3, sizeof(double));
     for (int row = 0; row < rows_num; row++) {
         for (int col = 0; col < cols_num; col++) {
             double width = (double)rows_with_sizes[row][col][0] / (double)atlas_width;
@@ -70,7 +75,8 @@ void get_rows_with_sizes_as_percentage(void* array, size_t*** rows_with_sizes, s
         }
     }
     char rows_with_sizes_as_percentage_info[1000] = "";
-    arrayToString(rows_with_sizes_as_percentage_info, array, (int[]){rows_num, cols_num, 4}, 3, 1 , "double", sizeof(double), "%.6f", 8);
+    int dimensions[] = {rows_num, cols_num, 4};
+    arrayToString(rows_with_sizes_as_percentage_info, array, dimensions, 3, 1 , "double", sizeof(double), "%.6f", 8);
     if (debug_uv_help) printf("%s\n", rows_with_sizes_as_percentage_info);
 }
 
@@ -107,7 +113,8 @@ UVCorners * get_uv_corners_arr(int images_num, size_t** input_sizes, int _total_
     }
 
     char rows_with_sizes_info[1000] = "";
-    arrayToString(rows_with_sizes_info, (void *)rows_with_sizes, (int[]){total_rows, total_cols, 2}, 3, 0, "size_t", sizeof(size_t), "%zu", 8);
+    int _dimensions[] = {total_rows, total_cols, 2};
+    arrayToString(rows_with_sizes_info, (void *)rows_with_sizes, _dimensions, 3, 0, "size_t", sizeof(size_t), "%zu", 8);
     printf("rows_with_sizes: %s\n", rows_with_sizes_info);
 
     size_t* rows_height = (size_t*)malloc(total_rows * sizeof(size_t));
@@ -125,7 +132,7 @@ UVCorners * get_uv_corners_arr(int images_num, size_t** input_sizes, int _total_
     printf("\ntotal_cols: %d, total_rows: %d, atlas_width: %zu, atlas_height: %zu\n\n",
              total_cols, total_rows, atlas_width, atlas_height);
 
-    UVCorners *uvCornersArr = malloc(images_num * sizeof(UVCorners));
+    UVCorners *uvCornersArr = (UVCorners *)malloc(images_num * sizeof(UVCorners));
     if (uvCornersArr == NULL) {printf("Could not allocate uvCornersArr\n"); return NULL; }
     for (int i = 0; i < images_num; i++) {
         int curr_row = i / _total_cols;
@@ -158,10 +165,10 @@ char** print_UV_help(UVCorners *uvCornersArr, int images_num, int _total_cols, i
     int total_cols = images_num < _total_cols ? images_num : _total_cols;
 
     *num_lines = 1 + images_num;
-    char **lines = malloc(*num_lines * sizeof(char*));
+    char **lines = (char**)malloc(*num_lines * sizeof(char*));
     if (lines == NULL) {printf("Could not allocate uv_help lines\n"); return NULL; }
 
-    lines[0] = malloc(MAX_UV_HELP_LINE_LENGTH * sizeof(char*));
+    lines[0] = (char*)malloc(MAX_UV_HELP_LINE_LENGTH * sizeof(char*));
     if (lines[0] == NULL) {printf("Could not allocate uv_help lines[0]\n"); return NULL; }
 
     snprintf(lines[0], MAX_UV_HELP_LINE_LENGTH, "\ntotal_cols: %d, total_rows: %d\n\n",
@@ -171,7 +178,7 @@ char** print_UV_help(UVCorners *uvCornersArr, int images_num, int _total_cols, i
         int curr_row = i / _total_cols;
         int curr_col = i % _total_cols;
         UVCorners imageUVCorners = uvCornersArr[i];
-        lines[i+1] = malloc(MAX_UV_HELP_LINE_LENGTH * sizeof(char*));
+        lines[i+1] = (char *)malloc(MAX_UV_HELP_LINE_LENGTH * sizeof(char*));
         if (lines[i+1] == NULL) { printf("Could not allocate uv_help lines[%d]\n", i+1); return NULL; }
         snprintf(lines[i+1], MAX_UV_HELP_LINE_LENGTH,"Image: %d (row: %d, col: %d) =>\n\ttop_left: (x: %.6f, y: %.6f),\n\ttop_right: (x: %.6f, y: %.6f),\n\tbottom_left: (x: %.6f, y: %.6f),\n\tbottom_right: (x: %.6f, y: %.6f),\n\n",
                  i, curr_row, curr_col,

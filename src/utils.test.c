@@ -239,7 +239,7 @@ void test_arrayToString() {
 
 void test_print_3D_array() {
     char**** heapString3DArr = getHeapString3DArray();
-    char *heapString3DArrAsString = print_3D_array((void*)heapString3DArr, sizeof(char*), "string", 0, "%s", 2,2,2);
+    char *heapString3DArrAsString = print_3D_array((void***)heapString3DArr, sizeof(char*), "string", 0, "%s", 2,2,2);
     if (strcmp(heapString3DArrAsString, "[[[aaaa, bbbb], [cccc, dddd]], [[eeee, ffff], [gggg, hhhh]]]") == 0) {
         printf("print_3D_array(success) = %s\n", heapString3DArrAsString);
     } else {
@@ -247,7 +247,7 @@ void test_print_3D_array() {
     }
 
     char stackString3dArr[][2][2][64] = {{{"AAAA", "BBBB"}, {"CCCC", "DDDD"}}, {{"EEEE", "FFFF"}, {"GGGG", "HHHH"}}};
-    char *stackString3dArrAsString = print_3D_array((void*)stackString3dArr, 64, "string", 1, "%s", 2,2,2);
+    char *stackString3dArrAsString = print_3D_array((void***)stackString3dArr, 64, "string", 1, "%s", 2,2,2);
     if (strcmp(stackString3dArrAsString, "[[[AAAA, BBBB], [CCCC, DDDD]], [[EEEE, FFFF], [GGGG, HHHH]]]") == 0) {
         printf("print_3D_array(success) = %s\n", stackString3dArrAsString);
     } else {
@@ -255,7 +255,7 @@ void test_print_3D_array() {
     }
 
     int*** heapInt3DArr = getHeapInt3DArray();
-    char *heapInt3DArrAsString = print_3D_array((void*)heapInt3DArr, sizeof(int), "int", 0, "%d", 2,2,2);
+    char *heapInt3DArrAsString = print_3D_array((void***)heapInt3DArr, sizeof(int), "int", 0, "%d", 2,2,2);
     if (strcmp(heapInt3DArrAsString, "[[[1, 2], [3, 4]], [[5, 6], [7, 8]]]") == 0) {
         printf("print_3D_array(success) = %s\n", heapInt3DArrAsString);
     } else {
@@ -263,7 +263,7 @@ void test_print_3D_array() {
     }
 
     int stackInt3dArr[][2][2] = {{{11, 12}, {13, 14}}, {{15, 16}, {17, 18}}};
-    char *stackInt3dArrAsString = print_3D_array((void*)stackInt3dArr, sizeof(int), "int", 1, "%d", 2,2,2);
+    char *stackInt3dArrAsString = print_3D_array((void***)stackInt3dArr, sizeof(int), "int", 1, "%d", 2,2,2);
     if (strcmp(stackInt3dArrAsString, "[[[11, 12], [13, 14]], [[15, 16], [17, 18]]]") == 0) {
         printf("print_3D_array(success) = %s\n", stackInt3dArrAsString);
     } else {
@@ -271,7 +271,7 @@ void test_print_3D_array() {
     }
 
     float*** heapFloat3DArr = getHeapFloat3DArray();
-    char *heapFloat3DArrAsString = print_3D_array((void*)heapFloat3DArr, sizeof(float), "float", 0, "%.2f", 2,2,2);
+    char *heapFloat3DArrAsString = print_3D_array((void***)heapFloat3DArr, sizeof(float), "float", 0, "%.2f", 2,2,2);
     if (strcmp(heapFloat3DArrAsString, "[[[1.10, 2.20], [3.30, 4.40]], [[5.50, 6.60], [7.70, 8.80]]]") == 0) {
         printf("print_3D_array(success) = %s\n", heapFloat3DArrAsString);
     } else {
@@ -279,7 +279,7 @@ void test_print_3D_array() {
     }
 
     float stackFloat3dArr[][2][2] = {{{11.11, 11.12}, {11.13, 11.14}}, {{11.15, 11.16}, {11.17, 11.18}}};
-    char *stackFloat3dArrAsString = print_3D_array((void*)stackFloat3dArr, sizeof(float), "float", 1, "%.2f", 2,2,2);
+    char *stackFloat3dArrAsString = print_3D_array((void***)stackFloat3dArr, sizeof(float), "float", 1, "%.2f", 2,2,2);
     if (strcmp(stackFloat3dArrAsString, "[[[11.11, 11.12], [11.13, 11.14]], [[11.15, 11.16], [11.17, 11.18]]]") == 0) {
         printf("print_3D_array(success) = %s\n", stackFloat3dArrAsString);
     } else {
@@ -287,7 +287,7 @@ void test_print_3D_array() {
     }
 
     char*** heapChar3DArr = getHeapChar3DArray();
-    char *heapChar3DArrAsString = print_3D_array((void*)heapChar3DArr, sizeof(char), "char", 0, "%c", 2,2,2);
+    char *heapChar3DArrAsString = print_3D_array((void***)heapChar3DArr, sizeof(char), "char", 0, "%c", 2,2,2);
     if (strcmp(heapChar3DArrAsString, "[[[a, b], [c, d]], [[e, f], [g, h]]]") == 0) {
         printf("print_3D_array(success) = %s\n", heapChar3DArrAsString);
     } else {
@@ -295,7 +295,7 @@ void test_print_3D_array() {
     }
 
     char stackChar3dArr[][2][2] = {{{'A', 'B'}, {'C', 'D'}}, {{'E', 'F'}, {'G', 'H'}}};
-    char *stackChar3dArrAsString = print_3D_array((void*)stackChar3dArr, sizeof(char), "char", 1, "%c", 2,2,2);
+    char *stackChar3dArrAsString = print_3D_array((void***)stackChar3dArr, sizeof(char), "char", 1, "%c", 2,2,2);
     if (strcmp(stackChar3dArrAsString, "[[[A, B], [C, D]], [[E, F], [G, H]]]") == 0) {
         printf("print_3D_array(success) = %s\n", stackChar3dArrAsString);
     } else {
@@ -323,7 +323,7 @@ void test_print_3d_array_of_define_template() {
 
 void test_array_insert() {
     size_t int_arr_size = 5;
-    int *heap_int_arr = malloc(int_arr_size * sizeof(int));
+    int *heap_int_arr = (int *)malloc(int_arr_size * sizeof(int));
     for(int i = 0; i < int_arr_size; i++) {
         heap_int_arr[i] = i + 1;
     }
@@ -336,7 +336,8 @@ void test_array_insert() {
     array_insert((void**)&heap_int_arr, &insertIntAt3, 3, &int_arr_size, sizeof(int));
 
     char heapInt1dArrAsString[1024] = "";
-    arrayToString(heapInt1dArrAsString, (void*)heap_int_arr, (int[]){int_arr_size}, 1, 0, "int", sizeof(int), "%d", 8);
+    int dimensions[] = {(int)int_arr_size};
+    arrayToString(heapInt1dArrAsString, (void*)heap_int_arr, dimensions, 1, 0, "int", sizeof(int), "%d", 8);
     if (strcmp(heapInt1dArrAsString, "[9, 1, 2, 8, 3, 4, 5, 11]") == 0) {
         printf("array_insert(success) = %s\n", heapInt1dArrAsString);
     } else {
@@ -349,19 +350,56 @@ void test_array_insert() {
     str_int_arr[1] = strdup("bb");
     str_int_arr[2] = strdup("cc");
 
-    char *insertStrAt0 = "dd";
+    const char *insertStrAt0 = "dd";
     array_insert((void**)&str_int_arr, &insertStrAt0, 0, &str_arr_size, sizeof(char(*)));
-    char *insertStrAt3 = "ee";
+    const char *insertStrAt3 = "ee";
     array_insert((void**)&str_int_arr, &insertStrAt3, 3, &str_arr_size, sizeof(char(*)));
-    char *insertStrAt5 = "ff";
+    const char *insertStrAt5 = "ff";
     array_insert((void**)&str_int_arr, &insertStrAt5, 5, &str_arr_size, sizeof(char(*)));
 
     char heapStr1dArrAsString[1024] = "";
-    arrayToString(heapStr1dArrAsString, (void*)str_int_arr, (int[]){str_arr_size}, 1, 0, "string", sizeof(char(*)), "%s", 8);
+    int dimensions2[] = {(int)str_arr_size};
+    arrayToString(heapStr1dArrAsString, (void*)str_int_arr, dimensions2, 1, 0, "string", sizeof(char(*)), "%s", 8);
     if (strcmp(heapStr1dArrAsString, "[dd, aa, bb, ee, cc, ff]") == 0) {
         printf("array_insert(success) = %s\n", heapStr1dArrAsString);
     } else {
         printf("array_insert(failure) = %s\n", heapStr1dArrAsString);
+    }
+}
+
+void test_initialize_multi_dimensional_array() {
+    double ***test_double;
+    int dimensions[] = {2, 2, 2};
+    initialize_multi_dimensional_array((void **)&test_double, dimensions, 3, sizeof(double));
+    test_double[0][0][0] = 1.0;
+    test_double[0][0][1] = 2.0;
+    test_double[0][1][0] = 3.0;
+    test_double[0][1][1] = 4.0;
+    test_double[1][0][0] = 5.0;
+    test_double[1][0][1] = 6.0;
+    test_double[1][1][0] = 7.0;
+    test_double[1][1][1] = 8.0;
+    char str[1024] = "";
+    arrayToString(str, (void*)test_double, dimensions, 3, 0, "double", sizeof(double), "%f", 8);
+    if (strcmp(str, "[[[1.00000, 2.00000], [3.00000, 4.00000]], [[5.00000, 6.00000], [7.00000, 8.00000]]]") == 0) {
+        printf("initialize_multi_dimensional_array(success) = %s\n", str);
+    } else {
+        printf("initialize_multi_dimensional_array(failure) = %s\n", str);
+    }
+
+    char ***test_string;
+    int dimensions2[] = {2, 2};
+    initialize_multi_dimensional_array((void **)&test_string, dimensions2, 2, sizeof(char *));
+    test_string[0][0] = strdup("aa");
+    test_string[0][1] = strdup("bb");
+    test_string[1][0] = strdup("cc");
+    test_string[1][1] = strdup("dd");
+    char str2[1024] = "";
+    arrayToString(str2, (void*)test_string, dimensions2, 2, 0, "string", sizeof(char *), "%s", 8);
+    if (strcmp(str2, "[[aa, bb], [cc, dd]]") == 0) {
+        printf("initialize_multi_dimensional_array(success) = %s\n", str2);
+    } else {
+        printf("initialize_multi_dimensional_array(failure) = %s\n", str2);
     }
 }
 
@@ -370,5 +408,6 @@ int main() {
     test_print_3D_array();
     test_print_3d_array_of_define_template();
     test_array_insert();
+    test_initialize_multi_dimensional_array();
     return 0;
 }

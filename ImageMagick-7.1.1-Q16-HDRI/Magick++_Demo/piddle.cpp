@@ -40,7 +40,8 @@ int main( int /*argc*/, char ** argv)
     // Start drawing by pushing a drawing context with specified
     // viewbox size
     drawList.push_back(DrawablePushGraphicContext());
-    drawList.push_back(DrawableViewbox(0,0,image.columns(),image.rows()));
+    drawList.push_back(DrawableViewbox(0,0,(ssize_t) image.columns(),
+      (ssize_t) image.rows()));
 
     //
     // Draw blue grid
@@ -146,7 +147,7 @@ int main( int /*argc*/, char ** argv)
     //
     // Draw text.
     //
-#if MAGICKCORE_FREETYPE_DELEGATE
+#if defined(MAGICKCORE_FREETYPE_DELEGATE)
     if (getenv("MAGICK_FONT") != 0)
       drawList.push_back(DrawableFont(string(getenv("MAGICK_FONT"))));
     drawList.push_back(DrawableFillColor("green"));

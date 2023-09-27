@@ -28,7 +28,8 @@ extern "C" {
 #endif
 
 #define magick_number_threads(source,destination,chunk,multithreaded) \
-  num_threads(GetMagickNumberThreads(source,destination,chunk,multithreaded))
+  num_threads(GetMagickNumberThreads((source),(destination),(chunk), \
+    (multithreaded)))
 #if defined(__clang__) || (__GNUC__ > 3) || ((__GNUC__ == 3) && (__GNUC_MINOR__ > 10))
 #define MagickCachePrefetch(address,mode,locality) \
   __builtin_prefetch(address,mode,locality)
@@ -127,7 +128,7 @@ static inline MagickBooleanType IsMagickThreadEqual(const MagickThreadType id)
 static inline size_t GetOpenMPMaximumThreads(void)
 {
 #if defined(MAGICKCORE_OPENMP_SUPPORT)
-  return(omp_get_max_threads());
+  return((size_t) omp_get_max_threads());
 #else
   return(1);
 #endif

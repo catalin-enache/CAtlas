@@ -326,21 +326,48 @@ void arrayToString(char *output, void *array, int dimensions[], int num_dimensio
     _arrayToString(output, array, dimensions, num_dimensions, curr_dimension, &index, is_contiguous_block_of_memory, type, type_size, format, buff_size);
 }
 
-// void initialize_multi_dimensional_array(void **pointer, int *dimensions, int dimensions_length, size_t elem_size) {
-//     for (int i = 0; i < dimensions_length; i++) {
-//         if (i == 0) {
-//             *pointer = (char **)malloc(dimensions[i] * sizeof(char*));
-//         } else if (i < dimensions_length - 1) {
-//             for(int j = 0; j < dimensions[i-1]; j++) {
-//                 ((char **)(*pointer))[j] = (char**)malloc(dimensions[j] * sizeof(char*));
-//             }
-//         } else {
-//             for(int j = 0; j < dimensions[i-1]; j++) {
-//                 ((void **)(*pointer))[j] = (char*)malloc(dimensions[j] * elem_size);
-//             }
-//         }
-//     }
-// }
+// this works but is hardcoded to 1 - 4 dimensions
+void initialize_multi_dimensional_array_(void **pointer, int *dimensions, int dimensions_length, size_t elem_size) {
+    if (dimensions_length < 1 || dimensions_length > 4) {
+        // This approach is designed only for 1D, 2D, and 3D arrays.
+        return;
+    }
+
+    if (dimensions_length == 1) {
+        *pointer = (char *)malloc(dimensions[0] * elem_size);
+    }
+
+    if (dimensions_length == 2) {
+        *pointer = (char **)malloc(dimensions[0] * sizeof(char*));
+        for (int i = 0; i < dimensions[0]; i++) {
+            ((char **)(*pointer))[i] = (char *)malloc(dimensions[1] * elem_size);
+        }
+    }
+
+    if (dimensions_length == 3) {
+        *pointer = (char *)malloc(dimensions[0] * sizeof(char *));
+        for (int i = 0; i < dimensions[0]; i++) {
+            ((char **)*pointer)[i] = (char *)malloc(dimensions[1] * sizeof(char *));
+            for (int j = 0; j < dimensions[1]; j++) {
+                ((char ***)*pointer)[i][j] = (char *)malloc(dimensions[2] * elem_size);
+            }
+        }
+    }
+
+
+    if (dimensions_length == 4) {
+        *pointer = (char *)malloc(dimensions[0] * sizeof(char *));
+        for (int i = 0; i < dimensions[0]; i++) {
+            ((char **)*pointer)[i] = (char *)malloc(dimensions[1] * sizeof(char *));
+            for (int j = 0; j < dimensions[1]; j++) {
+                ((char ***)*pointer)[i][j] = (char *)malloc(dimensions[2] * sizeof(char *));
+                for (int k = 0; k < dimensions[2]; k++) {
+                    ((char ****)*pointer)[i][j][k] = (char *)malloc(dimensions[3] * elem_size);
+                }
+            }
+        }
+    }
+}
 
 char *initialize_dimension(int *dimensions, int current_dimension, int dimensions_length, size_t elem_size) {
     // Base case: if the last dimension, allocate memory for actual elements

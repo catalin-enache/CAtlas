@@ -401,6 +401,21 @@ void test_initialize_multi_dimensional_array() {
     } else {
         printf("initialize_multi_dimensional_array(failure) = %s\n", str2);
     }
+
+    int ****test_int;
+    int dimensions__[] = {1, 1, 2, 2};
+    initialize_multi_dimensional_array((void **)&test_int, dimensions__, 4, sizeof(int));
+    test_int[0][0][0][0] = 1;
+    test_int[0][0][0][1] = 2;
+    test_int[0][0][1][0] = 3;
+    test_int[0][0][1][1] = 4;
+    char str_[1024] = "";
+    arrayToString(str_, (void*)test_int, dimensions__, 4, 0, "int", sizeof(int), "%d", 8);
+    if (strcmp(str_, "[[[[1, 2], [3, 4]]]]") == 0) {
+        printf("initialize_multi_dimensional_array(success) = %s\n", str_);
+    } else {
+        printf("initialize_multi_dimensional_array(failure) = %s\n", str_);
+    }
 }
 
 int main() {

@@ -43,12 +43,16 @@ size_t get_atlas_height(size_t*** rows_with_sizes, int rows_num, int cols_num) {
     return max_height;
 }
 
-void get_rows_with_sizes_as_percentage(void* array, size_t*** rows_with_sizes, size_t* rows_height, size_t atlas_width, size_t atlas_height, int rows_num, int cols_num, double shrink, bool debug_uv_help) {
-    // this works in C but not in C++ (VLAs - Variable Length Arrays) are not supported in C++
-    // double (*output)[cols_num][4] = (double (*)[cols_num][4])array;
+double *** get_rows_with_sizes_as_percentage(size_t*** rows_with_sizes, size_t* rows_height, size_t atlas_width, size_t atlas_height, int rows_num, int cols_num, double shrink, bool debug_uv_help) {
+    // If the initialised array be passed in, this would work in C but not in C++ (VLAs - Variable Length Arrays) are not supported in C++
+    // double (*output)[cols_num][4] = (double (*)[cols_num][4])array; // C (not working in C++ due to VLAs)
+    // double ***output = (double ***)array; // C++
+    // Anyways, we're initializing it internally and returning it.
     double ***output = NULL;
+
     int _dimensions[] = {rows_num, cols_num, 4};
     initialize_multi_dimensional_array((void **)&output, _dimensions, 3, sizeof(double));
+
     for (int row = 0; row < rows_num; row++) {
         for (int col = 0; col < cols_num; col++) {
             double width = (double)rows_with_sizes[row][col][0] / (double)atlas_width;
@@ -76,8 +80,9 @@ void get_rows_with_sizes_as_percentage(void* array, size_t*** rows_with_sizes, s
     }
     char rows_with_sizes_as_percentage_info[1000] = "";
     int dimensions[] = {rows_num, cols_num, 4};
-    arrayToString(rows_with_sizes_as_percentage_info, array, dimensions, 3, 1 , "double", sizeof(double), "%.6f", 8);
+    arrayToString(rows_with_sizes_as_percentage_info, output, dimensions, 3, 0 , "double", sizeof(double), "%.6f", 8);
     if (debug_uv_help) printf("%s\n", rows_with_sizes_as_percentage_info);
+    return output;
 }
 
 UVCorners * get_uv_corners_arr(int images_num, size_t** input_sizes, int _total_cols, double shrink, bool debug_uv_help) {
@@ -122,12 +127,12 @@ UVCorners * get_uv_corners_arr(int images_num, size_t** input_sizes, int _total_
 
     size_t atlas_width = get_atlas_width(rows_with_sizes, total_rows, total_cols);
     size_t atlas_height = get_atlas_height(rows_with_sizes, total_rows, total_cols);
+
     if (debug_uv_help) printf("rows_with_sizes_as_percentage:             ");
-    double rows_with_sizes_as_percentage[total_rows][total_cols][4];
-    get_rows_with_sizes_as_percentage(rows_with_sizes_as_percentage, rows_with_sizes, rows_height, atlas_width, atlas_height, total_rows, total_cols, 1, debug_uv_help);
+    double *** rows_with_sizes_as_percentage = get_rows_with_sizes_as_percentage(rows_with_sizes, rows_height, atlas_width, atlas_height, total_rows, total_cols, 1, debug_uv_help);
+
     if (debug_uv_help) printf("rows_with_sizes_as_percentage_with_shrink: ");
-    double rows_with_sizes_as_percentage_with_shrink[total_rows][total_cols][4];
-    get_rows_with_sizes_as_percentage(rows_with_sizes_as_percentage_with_shrink, rows_with_sizes, rows_height, atlas_width, atlas_height, total_rows, total_cols, shrink, debug_uv_help);
+    double *** rows_with_sizes_as_percentage_with_shrink = get_rows_with_sizes_as_percentage(rows_with_sizes, rows_height, atlas_width, atlas_height, total_rows, total_cols, shrink, debug_uv_help);
 
     printf("\ntotal_cols: %d, total_rows: %d, atlas_width: %zu, atlas_height: %zu\n\n",
              total_cols, total_rows, atlas_width, atlas_height);
@@ -157,6 +162,12 @@ UVCorners * get_uv_corners_arr(int images_num, size_t** input_sizes, int _total_
         };
 
     }
+    int rows_with_sizes_dimensions[] = {total_rows, total_cols, 4};
+    free_multi_dimensional_array((void **)&rows_with_sizes_as_percentage, rows_with_sizes_dimensions, 3, "");
+    free_multi_dimensional_array((void **)&rows_with_sizes_as_percentage_with_shrink, rows_with_sizes_dimensions, 3, "");
+    free_multi_dimensional_array((void **)&rows_with_sizes, rows_with_sizes_dimensions, 3, "");
+    free(rows_height);
+
     return uvCornersArr;
 }
 

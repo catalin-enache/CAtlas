@@ -390,3 +390,69 @@ void initialize_multi_dimensional_array(void **pointer, int *dimensions, int dim
     *pointer = initialize_dimension(dimensions, 0, dimensions_length, elem_size);
 }
 
+void free_dimension(void **pointer, int *dimensions, int current_dimension, int dimensions_length, const char *debug) {
+    // [[1,2,3],[1,2,3]]
+    // Base case: if the last dimension, just free the memory and return
+    if (current_dimension == dimensions_length - 1) {
+        char str[1024] = "";
+        int dim[] = {dimensions[current_dimension]};
+        if (strcmp(debug, "int") == 0) {
+            arrayToString(str, *pointer, dim, 1, 1, "int", sizeof(int), "%d", 32);
+        } else if (strcmp(debug, "double") == 0) {
+            arrayToString(str, *pointer, dim, 1, 1, "double", sizeof(double), "%f", 32);
+        } else if (strcmp(debug, "string") == 0) {
+            arrayToString(str, *pointer, dim, 1, 0, "string", sizeof(char *), "%s", 32);
+        }
+
+        if (debug[0]) printf("freeing dimension %d %s\n", current_dimension, str);
+
+        free(*pointer);
+        return;
+    }
+
+    // Otherwise, recursively free the next dimension
+    for (int i = 0; i < dimensions[current_dimension]; i++) {
+        free_dimension((void **) &(((char **)(*pointer))[i]), dimensions, current_dimension + 1, dimensions_length, debug);
+    }
+
+    // another valid way is:
+    // char ***current_arr = (char ***)pointer;
+    // for (int i = 0; i < dimensions[current_dimension]; i++) {
+    //     free_dimension((void **) &((*current_arr)[i]), dimensions, current_dimension + 1, dimensions_length, debug);
+    // }
+
+    if (debug[0]) printf("freeing dimension %d\n", current_dimension);
+
+    // Free the current array of pointers
+    free(*pointer);
+    *pointer = NULL;
+}
+
+void free_multi_dimensional_array(void **pointer, int *dimensions, int dimensions_length, const char *debug) {
+    free_dimension(pointer, dimensions, 0, dimensions_length, debug);
+}
+
+
+// suggested by ChatGPT:
+void free_dimension_(void *arr, int *dimensions, int current_dimension, int dimensions_length) {
+    // Base case: if the last dimension, just free the memory and return
+    if (current_dimension == dimensions_length - 1) {
+        free(arr);
+        return;
+    }
+
+    // Otherwise, recursively free the next dimension
+    char **current_arr = (char **)arr;
+    for (int i = 0; i < dimensions[current_dimension]; i++) {
+        free_dimension_(current_arr[i], dimensions, current_dimension + 1, dimensions_length);
+    }
+
+    // Free the current array of pointers
+    free(arr);
+}
+
+void free_multi_dimensional_array_(void *pointer, int *dimensions, int dimensions_length) {
+    free_dimension_(pointer, dimensions, 0, dimensions_length);
+}
+
+

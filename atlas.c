@@ -447,8 +447,8 @@ int main(int argc, char **argv) {
         // Note: Tiff alpha channel looks to be changed when saving from 32 bit depth (floating-point) to 16 bit depth (floating-point)
         // but only in Windows Image Viewer
         // In Gimp/Blender they look the same.
-        // Also NOTE: IM cannot save exr files with 32 bit depth. It saves them as 16 bit depth.
-        // However, tiff files can be saved with 32 bit depth.
+        // Also NOTE: IM cannot save exr files with 32 bit depth or 8 bit depth. It saves them as 16 bit depth.
+        // However, tiff files can be saved with 32 bit depth or 8 bit depth.
     }
 
     if (output_colorspace) {

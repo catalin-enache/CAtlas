@@ -386,6 +386,7 @@ void test_initialize_multi_dimensional_array() {
     } else {
         printf("initialize_multi_dimensional_array(failure) = %s\n", str);
     }
+    free_multi_dimensional_array((void **)&test_double, dimensions, 3, "");
 
     char ***test_string;
     int dimensions2[] = {2, 2};
@@ -401,6 +402,7 @@ void test_initialize_multi_dimensional_array() {
     } else {
         printf("initialize_multi_dimensional_array(failure) = %s\n", str2);
     }
+    free_multi_dimensional_array((void **)&test_string, dimensions2, 2, "");
 
     int ****test_int;
     int dimensions__[] = {1, 1, 2, 2};
@@ -416,6 +418,7 @@ void test_initialize_multi_dimensional_array() {
     } else {
         printf("initialize_multi_dimensional_array(failure) = %s\n", str_);
     }
+    free_multi_dimensional_array((void **)&test_int, dimensions__, 4, "");
 }
 
 int main() {

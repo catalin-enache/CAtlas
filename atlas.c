@@ -45,7 +45,7 @@ int main(int argc, char **argv) {
             "## ZipCompression(20)/ZipSCompression(21)/PizCompression(17 lossy)/Pxr24Compression(18 lossy)/DWAACompression(24 lossy)/DWABCompression(25 lossy) (EXR) \n\n",
             "output_compression_strength 100 // 0 default compression strength \n",
             "## (100 strong compression smaller size, 1 soft compression larger size) \n",
-            "## affects png size and tif size with ZipCompression (not with LZWCompression) - does not apply to jpg\n\n",
+            "## affects png size and tif size with ZipCompression (not with LZWCompression) - does not apply to jpg, exr \n\n",
             "output_jpg_quality 100 // affects jpg size (100 higher Q larger size, 1 lower Q smaller size)\n\n",
 
             "\n\n## ------------------ The followings need not be touched in general ------------------ \n\n\n\n",
@@ -491,7 +491,11 @@ int main(int argc, char **argv) {
         PixelWand **pixels = PixelGetNextIteratorRow(iterator, &_width);
         // Slightly adjust the red value of the first pixel to prevent optimising into one gray channel
         double red = PixelGetRed(pixels[0]);
-        PixelSetRed(pixels[0], red + (1.0/255.0));
+        if (red < 0.5) {
+            PixelSetRed(pixels[0], red + (1.0/255.0));
+        } else {
+            PixelSetRed(pixels[0], red - (1.0/255.0));
+        }
         PixelSyncIterator(iterator);
         DestroyPixelIterator(iterator);
     }
@@ -502,11 +506,11 @@ int main(int argc, char **argv) {
             MagickSetOption(output_wand, "png:bit-depth", "16");
         }
         // Math.floor(1/100 * output_compression_strength * 9)
-        int png_compression = (int)floor(1.0 / 100.0 * output_compression_strength * 9);
+        int png_compression = (int)floor(1.0 / 100.0 * output_compression_strength * 9); // LERP calculation
         char png_compression_str[2];
         sprintf(png_compression_str, "%d", png_compression);
         MagickSetOption(output_wand, "png:compression-level", png_compression_str); // 0 - 100 => 0 - 9
-        // MagickSetOption(output_wand, "png:color-type", "TrueColor"); // this does not work
+        // MagickSetOption(output_wand, "png:color-type", "TrueColor"); // this does not work // the intent is to prevent gray channel optimization, but we're doing this later as a hack
     }
 
     if (strcmp(output_format, "tif") == 0) {
@@ -521,13 +525,15 @@ int main(int argc, char **argv) {
              If -depth 16 is included, the result is a single precision floating point format.
              If -depth 32 is included, the result is double precision floating point format.
              For signed pixel data, use -define quantum:format=signed
+             Note: signed pixel data is less likely to be encountered.
+             There is also the "unsigned" option which should be used for 8 bit depth.
              */
         }
         else {
             if (any_floating_point_tiff && (MagickGetImageDepth(output_wand) == 32 || MagickGetImageDepth(output_wand) == 16)) {
                 MagickSetOption(output_wand, "quantum:format", "floating-point");
             } else if (any_signed_tiff && (MagickGetImageDepth(output_wand) == 32 || MagickGetImageDepth(output_wand) == 16)) {
-                MagickSetOption(output_wand, "quantum:format", "signed");
+                MagickSetOption(output_wand, "quantum:format", "signed"); // less likely to encounter this
             } else if (MagickGetImageDepth(output_wand) == 8) {
                 MagickSetOption(output_wand, "quantum:format", "unsigned");
             }
@@ -569,6 +575,7 @@ int main(int argc, char **argv) {
     if (output_compression_strength && is_tiff_or_exr) {
         // (100 smaller, 1 bigger)
         // affects png size  / tif size with ZipCompression (not with LZWCompression)
+        // it seems it doesn't apply to exr
         MagickSetCompressionQuality(output_wand, output_compression_strength);
         MagickSetImageCompressionQuality(output_wand, output_compression_strength);
     }

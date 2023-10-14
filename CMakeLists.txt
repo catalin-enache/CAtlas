@@ -4,7 +4,7 @@ project(Atlas CXX) # CXX is required by magick-baseconfig.h => MAGICKCORE_CHANNE
 
 set(CMAKE_C_STANDARD 11)
 
-set(SHARED_SOURCES src/img_manip.c src/img_manip.h src/dir_files_utils.c src/dir_files_utils.h src/extract_config.c src/extract_config.h src/errors.c src/errors.h src/definitions.h src/calculations.c src/calculations.h src/utils.c src/utils.h)
+set(SHARED_SOURCES src/img_manip.c src/img_manip.h src/dir_files_utils.c src/dir_files_utils.h src/extract_config.c src/extract_config.h src/errors.c src/errors.h src/definitions.h src/shared_types.h src/calculations.c src/calculations.h src/utils.c src/utils.h)
 
 # these are for CXX compiler. Comment them when/if switching to C compiler
 file(GLOB_RECURSE C_SOURCES "*.c")

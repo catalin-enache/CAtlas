@@ -248,11 +248,11 @@ double** get_min_max_for_each_band_2(MagickWand *wand) {
 
     PixelIterator *iterator = NewPixelIterator(wand);
 
-    for (ssize_t y = 0; y < height; y++) {
+    for (size_t y = 0; y < height; y++) {
         // Get the row of pixels from wand
         // width gets updated to the actual row width. Probably it doesn't change, but just in case
         PixelWand **pixels = PixelGetNextIteratorRow(iterator, &width);
-        for (ssize_t x = 0; x < width; x++) {
+        for (size_t x = 0; x < width; x++) {
             for (int i = 0; i < channels_num; i++) {
                 double value = channels[i] == RedPixelChannel ? PixelGetRed(pixels[x]) :
                                channels[i] == GreenPixelChannel ? PixelGetGreen(pixels[x]) :
@@ -564,12 +564,12 @@ void copy_channel(MagickWand * target_wand, MagickWand * source_wand, ChannelTyp
     size_t target_width = MagickGetImageWidth(target_wand);
     size_t target_height = MagickGetImageHeight(target_wand);
 
-    for (ssize_t y = 0; y < target_height; y++) {
+    for (size_t y = 0; y < target_height; y++) {
         // Get the row of pixels from target and source
         // target_width gets updated to the actual row width. Probably it doesn't change, but just in case
         PixelWand **target_pixels = PixelGetNextIteratorRow(target_iterator, &target_width);
         PixelWand **source_pixels = PixelGetNextIteratorRow(source_iterator, &target_width);
-        for (ssize_t x = 0; x < target_width; x++) {
+        for (size_t x = 0; x < target_width; x++) {
             double value = source_channel_type == RedChannel ? PixelGetRed(source_pixels[x]) :
                            source_channel_type == GreenChannel ? PixelGetGreen(source_pixels[x]) :
                            source_channel_type == BlueChannel ? PixelGetBlue(source_pixels[x]) :
@@ -592,16 +592,82 @@ void copy_channel(MagickWand * target_wand, MagickWand * source_wand, ChannelTyp
     DestroyPixelIterator(source_iterator);
 }
 
+MagickBooleanType are_rgb_channels_equal(MagickWand *wand) {
+    PixelIterator *iterator;
+    PixelWand **pixels;
+    size_t x;
+    size_t width;
+    size_t y;
+
+    if (!wand)
+        return MagickFalse;
+
+    iterator = NewPixelIterator(wand);
+    if (iterator == NULL)
+        return MagickFalse;
+
+    for (y = 0; y < MagickGetImageHeight(wand); y++) {
+        pixels = PixelGetNextIteratorRow(iterator, &width);
+        if (pixels == NULL)
+            break;
+
+        for (x = 0; x < width; x++) {
+            double red   = PixelGetRed(pixels[x]);
+            double green = PixelGetGreen(pixels[x]);
+            double blue  = PixelGetBlue(pixels[x]);
+
+            if (red != green || red != blue) {
+                DestroyPixelIterator(iterator);
+                return MagickFalse;
+            }
+        }
+    }
+
+    DestroyPixelIterator(iterator);
+    return MagickTrue;
+}
+
+MagickBooleanType has_alpha_channel_in_practice(MagickWand *wand) {
+    PixelIterator *iterator;
+    PixelWand **pixels;
+    size_t width;
+    size_t y;
+
+    if (!wand)
+        return MagickFalse;
+
+    iterator = NewPixelIterator(wand);
+    if (iterator == NULL)
+        return MagickFalse;
+
+    for (y = 0; y < MagickGetImageHeight(wand); y++) {
+        pixels = PixelGetNextIteratorRow(iterator, &width);
+        if (pixels == NULL)
+            break;
+
+        for (size_t x = 0; x < width; x++) {
+            double alpha = PixelGetAlpha(pixels[x]);
+
+            if (alpha != 1.0)
+            {
+                DestroyPixelIterator(iterator);
+                return MagickTrue;
+            }
+        }
+    }
+
+    DestroyPixelIterator(iterator);
+    return MagickFalse;
+}
+
 void draw_UVCorners_on_atlas(MagickWand *wand, UVCorners *uvCorners, int num_images, const char* uv_rect_color) {
     size_t atlas_width = MagickGetImageWidth(wand);
     size_t atlas_height = MagickGetImageHeight(wand);
 
-    DrawingWand *drawing_wand = NewDrawingWand();
-
     // Set the fill color
     PixelWand *fill_color = NewPixelWand();
-    PixelSetColor(fill_color, uv_rect_color);
-    DrawSetFillColor(drawing_wand, fill_color);
+    // PixelSetColor(fill_color, uv_rect_color);
+    // DrawSetFillColor(drawing_wand, fill_color);
 
     PixelWand *stroke_color = NewPixelWand();
     PixelSetColor(stroke_color, "black");
@@ -609,6 +675,12 @@ void draw_UVCorners_on_atlas(MagickWand *wand, UVCorners *uvCorners, int num_ima
     // DrawSetStrokeWidth(drawing_wand, 2);
 
     for (int i = 0; i < num_images; i++) {
+        DrawingWand *drawing_wand = NewDrawingWand();
+        DrawSetFontSize(drawing_wand, 20);
+
+        PixelSetColor(fill_color, uv_rect_color);
+        DrawSetFillColor(drawing_wand, fill_color);
+
         UVCorners corners = uvCorners[i];
         double top_left_x = corners.topLeft[0] * atlas_width;
         double top_left_y = corners.topLeft[1] * atlas_height;
@@ -621,12 +693,22 @@ void draw_UVCorners_on_atlas(MagickWand *wand, UVCorners *uvCorners, int num_ima
         size_t rect_width = top_right_x - top_left_x;
         size_t rect_height = bottom_left_y - top_left_y;
         DrawRectangle(drawing_wand, top_left_x, top_left_y, top_left_x + rect_width, top_left_y + rect_height);
+
+        PixelSetColor(fill_color, "white");
+        DrawSetFillColor(drawing_wand, fill_color);
+        DrawRectangle(drawing_wand, top_left_x + rect_width/2 - 50, top_left_y + rect_height/2 - 25, top_left_x + rect_width/2 + 60, top_left_y + rect_height/2 + 10);
+
+        MagickDrawImage(wand, drawing_wand);
+
+        PixelSetColor(fill_color, "black");
+        DrawSetFillColor(drawing_wand, fill_color);
+        char text[20] = "\0";
+        sprintf(text, "%d", i);
+        MagickAnnotateImage(wand, drawing_wand, top_left_x + rect_width/2, top_left_y + rect_height/2, 0, text);
+
+        DestroyDrawingWand(drawing_wand);
     }
 
-    // Render the drawing onto the image
-    MagickDrawImage(wand, drawing_wand);
-
-    DestroyDrawingWand(drawing_wand);
     DestroyPixelWand(fill_color);
     DestroyPixelWand(stroke_color);
 }

@@ -26,5 +26,7 @@ void print_info(MagickWand *wand, int sample_pixel_x, int sample_pixel_y);
 MagickWand * zoom_out(MagickWand *wand, double scaleFactor, FilterType filter_type, bool make_linear_color_space, bool debug_zooming_out, bool debug_resizing);
 MagickBooleanType resize(MagickWand *wand, size_t width, size_t height, FilterType filter_type, bool make_linear_color_space, bool debug_resizing);
 void copy_channel(MagickWand * target_wand, MagickWand * source_wand, ChannelType target_channel_type, ChannelType source_channel_type);
+MagickBooleanType are_rgb_channels_equal(MagickWand *wand);
+MagickBooleanType has_alpha_channel_in_practice(MagickWand *wand);
 void draw_UVCorners_on_atlas(MagickWand *wand, UVCorners *uvCorners, int num_images, const char* uv_rect_color);
 #endif //ATLAS_IMG_MANIP_H

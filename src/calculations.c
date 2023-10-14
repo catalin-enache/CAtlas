@@ -85,7 +85,7 @@ double *** get_rows_with_sizes_as_percentage(size_t*** rows_with_sizes, size_t* 
     return output;
 }
 
-UVCorners * get_uv_corners_arr(int images_num, size_t** input_sizes, int _total_cols, double shrink, bool debug_uv_help) {
+UVCorners * get_uv_corners_arr(size_t** input_sizes, int images_num, int _total_cols, double shrink, bool debug_uv_help) {
     // [ [ [1,2], [1,2] ], [ [1,2], [1,2] ] ]
     int total_rows = images_num / _total_cols + (images_num % _total_cols > 0);
     int total_cols = images_num < _total_cols ? images_num : _total_cols;
@@ -171,30 +171,74 @@ UVCorners * get_uv_corners_arr(int images_num, size_t** input_sizes, int _total_
     return uvCornersArr;
 }
 
+UVCorners* get_abs_uv_corners_arr(AbsolutePositioningEntry * array, int array_length, int canvas_width, int canvas_height, double shrink, bool debug_uv_help) {
+    UVCorners *uvCornersArr = (UVCorners *)malloc(array_length * sizeof(UVCorners));
+    if (uvCornersArr == NULL) {printf("Could not allocate uvCornersArr\n"); return NULL; }
+
+    for (int i = 0; i < array_length; i++) {
+        AbsolutePositioningEntry entry = array[i];
+        double width = (double)entry.width / (double)canvas_width;
+        double height = (double)entry.height / (double)canvas_height;
+        double x = (double)entry.offset_x / (double)canvas_width;
+        double y = (double)entry.offset_y / (double)canvas_height;
+
+        double offset_horizontal_unit = width * ((1 - shrink) / 2); // width * 0.04 when shrink is 0.92
+        double offset_vertical_unit = height * ((1 - shrink) / 2); // width * 0.04 when shrink is 0.92
+        x += offset_horizontal_unit;
+        y += offset_vertical_unit;
+        width -= offset_horizontal_unit * 2;
+        height -= offset_vertical_unit * 2;
+
+        uvCornersArr[i] = (UVCorners) {
+                .topLeft = {x, y},
+                .topRight = {x + width, y},
+                .bottomLeft = {x, y + height},
+                .bottomRight = {x + width, y + height}
+        };
+    }
+    return uvCornersArr;
+}
+
 char** print_UV_help(UVCorners *uvCornersArr, int images_num, int _total_cols, int *num_lines) {
-    int total_rows = images_num / _total_cols + (images_num % _total_cols > 0);
-    int total_cols = images_num < _total_cols ? images_num : _total_cols;
+    // this function is reused between using cols or using absolute positioning
+    // when using cols, _total_cols is not 0, when using absolute positioning, _total_cols is 0
+    int total_rows = _total_cols ? (images_num / _total_cols + (images_num % _total_cols > 0)) : 0;
+    int total_cols = _total_cols ? (images_num < _total_cols ? images_num : _total_cols) : 0;
 
     *num_lines = 1 + images_num;
     char **lines = (char**)malloc(*num_lines * sizeof(char*));
     if (lines == NULL) {printf("Could not allocate uv_help lines\n"); return NULL; }
 
-    lines[0] = (char*)malloc(MAX_UV_HELP_LINE_LENGTH * sizeof(char*));
+    lines[0] = (char*)malloc(MAX_UV_HELP_LINE_LENGTH * sizeof(char));
     if (lines[0] == NULL) {printf("Could not allocate uv_help lines[0]\n"); return NULL; }
 
-    snprintf(lines[0], MAX_UV_HELP_LINE_LENGTH, "\ntotal_cols: %d, total_rows: %d\n\n",
-             total_cols, total_rows);
+    if (_total_cols) {
+        snprintf(lines[0], MAX_UV_HELP_LINE_LENGTH, "\ntotal_cols: %d, total_rows: %d\n\n",
+                 total_cols, total_rows);
+    } else {
+        snprintf(lines[0], MAX_UV_HELP_LINE_LENGTH, "\n");
+    }
+
 
     for (int i = 0; i < images_num; i++) {
-        int curr_row = i / _total_cols;
-        int curr_col = i % _total_cols;
+        int curr_row = _total_cols ? i / _total_cols : 0;
+        int curr_col = _total_cols ? i % _total_cols : 0;
         UVCorners imageUVCorners = uvCornersArr[i];
-        lines[i+1] = (char *)malloc(MAX_UV_HELP_LINE_LENGTH * sizeof(char*));
+        lines[i+1] = (char *)malloc(MAX_UV_HELP_LINE_LENGTH * sizeof(char));
         if (lines[i+1] == NULL) { printf("Could not allocate uv_help lines[%d]\n", i+1); return NULL; }
-        snprintf(lines[i+1], MAX_UV_HELP_LINE_LENGTH,"Image: %d (row: %d, col: %d) =>\n\ttop_left: (x: %.6f, y: %.6f),\n\ttop_right: (x: %.6f, y: %.6f),\n\tbottom_left: (x: %.6f, y: %.6f),\n\tbottom_right: (x: %.6f, y: %.6f),\n\n",
-                 i, curr_row, curr_col,
-                 imageUVCorners.topLeft[0], imageUVCorners.topLeft[1], imageUVCorners.topRight[0], imageUVCorners.topRight[1], imageUVCorners.bottomLeft[0], imageUVCorners.bottomLeft[1], imageUVCorners.bottomRight[0], imageUVCorners.bottomRight[1]
-        );
+        if (_total_cols) {
+            snprintf(lines[i+1], MAX_UV_HELP_LINE_LENGTH,"Image: %d (row: %d, col: %d) =>\n\ttop_left: (x: %.6f, y: %.6f),\n\ttop_right: (x: %.6f, y: %.6f),\n\tbottom_left: (x: %.6f, y: %.6f),\n\tbottom_right: (x: %.6f, y: %.6f),\n\n",
+                     i, curr_row, curr_col,
+                     imageUVCorners.topLeft[0], imageUVCorners.topLeft[1], imageUVCorners.topRight[0], imageUVCorners.topRight[1], imageUVCorners.bottomLeft[0], imageUVCorners.bottomLeft[1], imageUVCorners.bottomRight[0], imageUVCorners.bottomRight[1]
+            );
+        } else {
+            snprintf(lines[i+1], MAX_UV_HELP_LINE_LENGTH,"Image: %d =>\n\ttop_left: (x: %.6f, y: %.6f),\n\ttop_right: (x: %.6f, y: %.6f),\n\tbottom_left: (x: %.6f, y: %.6f),\n\tbottom_right: (x: %.6f, y: %.6f),\n\n",
+                     i,
+                     imageUVCorners.topLeft[0], imageUVCorners.topLeft[1], imageUVCorners.topRight[0], imageUVCorners.topRight[1], imageUVCorners.bottomLeft[0], imageUVCorners.bottomLeft[1], imageUVCorners.bottomRight[0], imageUVCorners.bottomRight[1]
+            );
+        }
+
     }
     return lines;
 }
+

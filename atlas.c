@@ -24,31 +24,39 @@ int main(int argc, char **argv) {
 
     // =========================== >> Write config ========================================
 
-    int config_entries_total = 28;
+    int config_entries_total = 31;
     const char *lines[] = {
-            "cols 2\n\n",
-            "shrink 0.92 // 0.5 - 1.0\n",
+            "inputs_are_non_color 0 // 0 or 1\n\n",
+            "cols 2 // it is ignored when using absolute_positioning\n\n",
+            "shrink 0.92 // 0.5 - 1.0 // it is ignored when using absolute_positioning\n",
             "## between 0.5 and 1.0, where 1.0 means no downscale (important to not omit the decimal - e.g. not 1 but 1.0)\n\n",
-            "shrink_filter 22 // 0 - 31\n",
-            "## LanczosFilter(22)\n\n",
-            "downscale_to_min_size_filter 0 // 0 - 31\n",
-            "## if greater than 0 all images will be downscaled according with smallest image size using this filter\n\n",
-            "fill_in none\n",
+            "fill_in none // it is ignored when using absolute_positioning\n",
             "## none | 0:2048x2048 | 2:2048x2048,4:1024x1024 | e.t.c.\n\n",
             "fill_in_color #000000ff\n",
             "## #ffffffff (white opaque) | #000000FF (black opaque) | #7F7F7FFF (0.5 gray opaque) | #7F7F7F00 (0.5 gray transparent) | e.t.c.\n\n",
-            "inputs_are_non_color 0 // 0 or 1\n\n",
+            "absolute_positioning none\n",
+            "## none || img1.png:512x512(1.0)/0-0,img2.png(0.5):512x512/512-512 // the images must exist in directory\n",
+            "## <img_name>:<width>x<height>(zoom_out)/offsetX-offsetY\n\n",
             "output_format png // png, tif, exr, jpg\n\n",
+
+            "\n\n## ------------------ The followings need not be touched in general ------------------ \n\n\n\n",
+
+            "shrink_filter 22 // 0 - 31 // the filter used for shrinking (zooming out)\n",
+            "## LanczosFilter(22)\n\n",
+            "downscale_to_min_size 0 // 0 or 1 // is ignored when absolute_positioning is not none\n",
+            "## if 1 then all images will be downscaled according with smallest image size using resize_filter\n\n",
+            "resize_filter 22 // 0 - 31 // applied when downscale_to_min_size is 1 or for absolute_positioning\n",
+            "## LanczosFilter(22)\n\n",
+
+            "force_non_linear_colorspace_on_input_images 1 // 0 or 1\n\n",
 
             "output_compression_algorithm 20 // 0 no compression algorithm \n",
             "## ZipCompression(20)/LZWCompression(15) (TIFF) || \n",
             "## ZipCompression(20)/ZipSCompression(21)/PizCompression(17 lossy)/Pxr24Compression(18 lossy)/DWAACompression(24 lossy)/DWABCompression(25 lossy) (EXR) \n\n",
-            "output_compression_strength 100 // 0 default compression strength \n",
+            "output_compression_strength 1 // 0 default compression strength \n",
             "## (100 strong compression smaller size, 1 soft compression larger size) \n",
             "## affects png size and tif size with ZipCompression (not with LZWCompression) - does not apply to jpg, exr \n\n",
             "output_jpg_quality 100 // affects jpg size (100 higher Q larger size, 1 lower Q smaller size)\n\n",
-
-            "\n\n## ------------------ The followings need not be touched in general ------------------ \n\n\n\n",
 
             "output_bit_depth 0 // 0, 8, 16, 32 (0 means auto) - auto means the greatest bit depth wil be used \n\n",
             "output_image_type 0 // this should be let as 0 (auto)\n",
@@ -59,8 +67,8 @@ int main(int argc, char **argv) {
 
             "prevent_gray_channel_optimization 0 // 0 or 1\n\n",
 
-            "resize_all_images_to_width 0 // (integer) - requires downscale_to_min_size_filter \n\n",
-            "resize_all_images_to_height 0 // (integer) - requires downscale_to_min_size_filter \n\n",
+            "resize_all_images_to_width 0 // (integer) // is ignored when absolute_positioning is not none \n\n",
+            "resize_all_images_to_height 0 // (integer) // is ignored when absolute_positioning is not none \n\n",
 
             "output_quantum_format floating-point // floating-point(works with 16/32 bits), unsigned, signed\n\n",
             "output_quantum_format_apply 0 // 0, 1\n\n",
@@ -97,10 +105,10 @@ int main(int argc, char **argv) {
         print_key_value(kv_arr[i]);
     }
 
+    bool inputs_are_non_color = config_find(kv_arr, config_entries, "inputs_are_non_color")->value.i;
+
     int cols = config_find(kv_arr, config_entries, "cols")->value.i;
     double shrink = config_find(kv_arr, config_entries, "shrink")->value.d;
-    FilterType shrink_filter = (FilterType)config_find(kv_arr, config_entries, "shrink_filter")->value.i;
-    FilterType downscale_to_min_size_filter = (FilterType)config_find(kv_arr, config_entries, "downscale_to_min_size_filter")->value.i;
 
     char fill_in[256];
     strcpy(fill_in, config_find(kv_arr, config_entries, "fill_in")->value.s);
@@ -108,10 +116,43 @@ int main(int argc, char **argv) {
     char fill_in_color[32];
     strcpy(fill_in_color, config_find(kv_arr, config_entries, "fill_in_color")->value.s);
 
-    bool inputs_are_non_color = config_find(kv_arr, config_entries, "inputs_are_non_color")->value.i;
+    int fill_in_array_length = 0;
+    FillInEntry *fill_in_array = extract_fill_in_array(fill_in, &fill_in_array_length);
+    qsort(fill_in_array, fill_in_array_length, sizeof(FillInEntry), compareFillInEntry);
+    for (int i = 0; i < fill_in_array_length; i++) {
+        printf("fill_in_array[%d] = {position: %d, width: %d, height: %d}\n", i, fill_in_array[i].position, fill_in_array[i].width, fill_in_array[i].height);
+    }
+
+    char absolute_positioning[1024];
+    strcpy(absolute_positioning, config_find(kv_arr, config_entries, "absolute_positioning")->value.s);
+
+    int absolute_positioning_array_length = 0;
+    AbsolutePositioningEntry *absolute_positioning_array = extract_absolute_positioning_array(absolute_positioning, &absolute_positioning_array_length);
+    int absolute_positioning_canvas_width = get_absolute_position_canvas_width(absolute_positioning_array, absolute_positioning_array_length);
+    int absolute_positioning_canvas_height = get_absolute_position_canvas_height(absolute_positioning_array, absolute_positioning_array_length);
+
+    if (absolute_positioning_array_length) {
+        printf("\nAbsolute positioning: \n");
+        for (int i = 0; i < absolute_positioning_array_length; i++) {
+            printf("absolute_positioning_array[%d] = {name: %s, width: %d, height: %d, shrink: %.2f, offset_x: %d, offset_y: %d}\n", i, absolute_positioning_array[i].name, absolute_positioning_array[i].width, absolute_positioning_array[i].height, absolute_positioning_array[i].shrink, absolute_positioning_array[i].offset_x, absolute_positioning_array[i].offset_y);
+        }
+        printf("absolute_positioning_canvas_width: %d\n", absolute_positioning_canvas_width);
+        printf("absolute_positioning_canvas_height: %d\n", absolute_positioning_canvas_height);
+
+        // if we use absolute positioning then we don't need fill_in_array
+        free(fill_in_array);
+        fill_in_array_length = 0;
+    }
 
     char output_format[16]; // png, jpg
     strcpy(output_format, config_find(kv_arr, config_entries, "output_format")->value.s);
+
+
+    FilterType shrink_filter = (FilterType)config_find(kv_arr, config_entries, "shrink_filter")->value.i;
+    bool downscale_to_min_size = config_find(kv_arr, config_entries, "downscale_to_min_size")->value.i;
+    FilterType resize_filter = (FilterType)config_find(kv_arr, config_entries, "resize_filter")->value.i;
+
+    bool force_non_linear_colorspace_on_input_images = (bool)config_find(kv_arr, config_entries, "force_non_linear_colorspace_on_input_images")->value.i;
 
     CompressionType output_compression_algorithm = (CompressionType)config_find(kv_arr, config_entries, "output_compression_algorithm")->value.i;
     int output_compression_strength = config_find(kv_arr, config_entries, "output_compression_strength")->value.i;
@@ -136,12 +177,6 @@ int main(int argc, char **argv) {
 
     bool output_exr_color_type_apply = config_find(kv_arr, config_entries, "output_exr_color_type_apply")->value.i;
 
-    int fill_in_array_length = 0;
-    FillInEntry *fill_in_array = extract_fill_in_array(fill_in, &fill_in_array_length);
-    qsort(fill_in_array, fill_in_array_length, sizeof(FillInEntry), compareFillInEntry);
-    for (int i = 0; i < fill_in_array_length; i++) {
-        printf("fill_in_array[%d] = {position: %d, width: %d, height: %d}\n", i, fill_in_array[i].position, fill_in_array[i].width, fill_in_array[i].height);
-    }
 
     int sample_pixel_x = config_find(kv_arr, config_entries, "sample_pixel_x")->value.i;
     int sample_pixel_y = config_find(kv_arr, config_entries, "sample_pixel_y")->value.i;
@@ -159,14 +194,16 @@ int main(int argc, char **argv) {
     free(kv_arr);
 
     printf("\nConfig values: \n"
+           "\tinputs_are_non_color %d \n"
            "\tcols %d \n"
            "\tshrink %f \n"
-           "\tshrink_filter %d \n"
-           "\tdownscale_to_min_size_filter %d \n"
            "\tfill_in %s \n"
            "\tfill_in_color %s \n"
-           "\tinputs_are_non_color %d \n"
+           "\tabsolute_positioning %s \n"
            "\toutput_format %s \n"
+           "\tshrink_filter %d \n"
+           "\tdownscale_to_min_size %d \n"
+           "\tresize_filter %d \n"
            "\toutput_compression_algorithm %d \n"
            "\toutput_compression_strength %d \n"
            "\toutput_jpg_quality %d \n"
@@ -187,14 +224,16 @@ int main(int argc, char **argv) {
            "\tdebug_uv_help %d \n"
            "\tuv_rect_color %s, \n"
            "\tprint_uv_help %d \n",
+           inputs_are_non_color,
            cols,
            shrink,
-           shrink_filter,
-           downscale_to_min_size_filter,
            fill_in,
            fill_in_color,
-           inputs_are_non_color,
+           absolute_positioning,
            output_format,
+           shrink_filter,
+           downscale_to_min_size,
+           resize_filter,
            output_compression_algorithm,
            output_compression_strength,
            output_jpg_quality,
@@ -225,7 +264,7 @@ int main(int argc, char **argv) {
     if (cols < 1) return exit_with_error("cols must be greater than 0\n");
     if (shrink < 0.5 || shrink > 1) return exit_with_error("shrink must be between 0.5 and 1. Current value is: %f\n", shrink);
     if (shrink_filter < 0 || shrink_filter > 31) return exit_with_error("shrink_filter must be between 0 and 31\n");
-    if (downscale_to_min_size_filter < 0 || downscale_to_min_size_filter > 31) return exit_with_error("downscale_to_min_size_filter must be between 0 and 31\n");
+    if (resize_filter < 0 || resize_filter > 31) return exit_with_error("resize_filter must be between 0 and 31\n");
     if (sample_pixel_x < 0) return exit_with_error("sample_pixel_x must be greater than 0\n");
     if (sample_pixel_y < 0) return exit_with_error("sample_pixel_y must be greater than 0\n");
     if (output_bit_depth != 0 && output_bit_depth != 8 && output_bit_depth != 16 && output_bit_depth != 32) return exit_with_error("output_bit_depth must be 0, 8, 16 or 32\n");
@@ -250,13 +289,26 @@ int main(int argc, char **argv) {
     int num_paths = 0;
     char **image_paths = list_files_with_filter(IMAGES_DIR, &num_paths, true, is_image_file_and_not_atlas);
     char **image_paths_no_dir = list_files_with_filter(IMAGES_DIR, &num_paths, false, is_image_file_and_not_atlas);
+    if (absolute_positioning_array_length) {
+        // validate that all images in absolute_positioning_array exist in image_paths_no_dir
+        for (int i = 0; i < absolute_positioning_array_length; i++) {
+            bool exists = false;
+            for (int j = 0; j < num_paths; j++) {
+                if (strcmp(absolute_positioning_array[i].name, image_paths_no_dir[j]) == 0) {
+                    exists = true;
+                }
+            }
+            if (!exists) return exit_with_error("Image %s does has not been listed in directory %s\n", absolute_positioning_array[i].name, IMAGES_DIR);
+        }
+    }
     if (image_paths == NULL)
         return exit_with_error("Could not list files.\n");
     if (num_paths == 0) {
         return exit_with_error("No image found.\n");
     }
 
-    if (fill_in_array) {
+    if (fill_in_array_length) {
+        // validating fill_in entry positions to not overflow
         if (fill_in_array[fill_in_array_length - 1].position > num_paths + fill_in_array_length - 1) {
             return exit_with_error("Fill in position %d is greater than number of images + prev fill_in_array entries = %d.\n", fill_in_array[fill_in_array_length - 1].position, num_paths + fill_in_array_length - 1);
         }
@@ -298,14 +350,6 @@ int main(int argc, char **argv) {
     MagickWand * wand = NewMagickWand();
     if(wand == NULL) return exit_with_error("Unable to create wand\n");
 
-    MagickWand * output_rows[rows];
-
-    printf("Creating %d output rows...\n\n", rows);
-    for(int i = 0; i < rows; i++) {
-        output_rows[i] = NewMagickWand();
-        if(output_rows[i] == NULL) return exit_with_error("Unable to create output_rows[%d]\n", i);
-    }
-
     // MagickWand **input_wands = (MagickWand**)malloc(num_paths * sizeof(MagickWand*));
     MagickWand* input_wands[num_paths];
     size_t min_width = SIZE_MAX;
@@ -317,8 +361,9 @@ int main(int argc, char **argv) {
     bool any_true_color_type = false;
     bool any_gray_alpha_type = false;
     bool any_gray_type = false;
+    bool any_exr_file = false;
     for(int i = 0; i < num_paths; i++) {
-        // =========================== >> Read each image ========================================
+        // =========================== >> Read or fill_in each image ========================================
         FillInEntry *fill_in_entry = find_fill_in_entry(fill_in_array, fill_in_array_length, i);
 
         input_wands[i] = NewMagickWand();
@@ -336,107 +381,238 @@ int main(int argc, char **argv) {
             printf("Reading image path[%d] = %s\n", i, image_paths[i]);
             if (MagickReadImage(input_wands[i], image_paths[i]) == MagickFalse)
                 return exit_with_error("Unable to read image %s \n", image_paths[i]);
-            if (strcmp(MagickGetImageFormat(input_wands[i]), "TIFF") == 0 || strcmp(MagickGetImageFormat(input_wands[i]), "TIF") == 0) {
-                uint16_t sampleFormat = get_tiff_sample_format(image_paths[i]);
-                if (sampleFormat == SAMPLEFORMAT_IEEEFP) {
-                    any_floating_point_tiff = true;
-                } else if (sampleFormat == SAMPLEFORMAT_UINT) {
-                    any_unsigned_tiff = true;
-                } else if (sampleFormat == SAMPLEFORMAT_INT) {
-                    any_signed_tiff = true;
-                }
-            }
-            if (MagickGetImageType(input_wands[i]) == TrueColorAlphaType) {
-                any_true_color_alpha_type = true;
-            } else if (MagickGetImageType(input_wands[i]) == TrueColorType) {
-                any_true_color_type = true;
-            } else if (MagickGetImageType(input_wands[i]) == GrayscaleAlphaType) {
-                any_gray_alpha_type = true;
-            } else if (MagickGetImageType(input_wands[i]) == GrayscaleType) {
-                any_gray_type = true;
-            }
         }
 
         printf("Original image[%d] %s\n", i, image_paths[i]);
         print_info(input_wands[i], sample_pixel_x, sample_pixel_y);
+
+        // ================================= >> Enforce colorspace and image_type optimisations =================================
+
+        // force non-linear colorspace especially for exr to tif conversion (exr seems to be assumed as linear by imagemagick)
+        if (force_non_linear_colorspace_on_input_images) {
+            ColorspaceType colorspace = sRGBColorspace;
+            // it seems to be safe for grayscale/grayscaleAlpha images too
+            // but just in case if the image is grayscale or grayscaleAlpha we use GRAYColorspace
+            if (MagickGetImageColorspace(input_wands[i]) == GRAYColorspace || MagickGetImageColorspace(input_wands[i]) == LinearGRAYColorspace) {
+                colorspace = GRAYColorspace;
+            } else if (MagickGetImageColorspace(input_wands[i]) == CMYKColorspace) {
+                colorspace = CMYKColorspace; // should not be encountered
+            }
+
+            printf("\nApplying forced non_linear_colorspace %s to image[%d] %s\n", colorSpaceAsString(colorspace), i, image_paths[i]);
+            MagickSetImageColorspace(input_wands[i], colorspace);
+            MagickSetColorspace(input_wands[i], colorspace);
+            printf("New colorspace is %s\n", colorSpaceAsString(MagickGetImageColorspace(input_wands[i])));
+        }
+
+        bool _has_alpha_channel_in_theory = (bool)MagickGetImageAlphaChannel(input_wands[i]);
+        bool _has_alpha_channel_in_practice = (bool)has_alpha_channel_in_practice(input_wands[i]);
+        bool _are_rgb_channels_equal_in_theory =
+                MagickGetImageType(input_wands[i]) == GrayscaleType || MagickGetImageType(input_wands[i]) == GrayscaleAlphaType;
+        bool _are_rgb_channels_equal_in_practice = (bool)are_rgb_channels_equal(input_wands[i]);
+
+        if (_has_alpha_channel_in_theory) {
+            printf("Image[%d] %s has alpha channel in theory\n", i, image_paths[i]);
+        } else {
+            printf("Image[%d] %s has no alpha channel in theory\n", i, image_paths[i]);
+        }
+
+        if (_has_alpha_channel_in_practice) {
+            printf("Image[%d] %s has alpha channel in practice\n", i, image_paths[i]);
+        } else {
+            printf("Image[%d] %s has no alpha channel in practice\n", i, image_paths[i]);
+            if (_has_alpha_channel_in_theory) {
+                printf("Deactivating alpha channel for image[%d] %s\n", i, image_paths[i]);
+                MagickSetImageAlphaChannel(input_wands[i], OffAlphaChannel);
+            }
+        }
+
+        if (_are_rgb_channels_equal_in_theory) {
+            printf("Image[%d] %s has equal RGB channels in theory\n", i, image_paths[i]);
+        } else {
+            printf("Image[%d] %s has different RGB channels in theory\n", i, image_paths[i]);
+        }
+
+        if (_are_rgb_channels_equal_in_practice) {
+            bool _has_alpha_channel = (bool)has_alpha_channel_in_practice(input_wands[i]);
+            printf("Image[%d] %s has equal RGB channels in practice\n", i, image_paths[i]);
+            if (_has_alpha_channel_in_practice) {
+                printf("Setting image type to %s\n", imageTypeAsString(GrayscaleAlphaType));
+                MagickSetImageType(input_wands[i], GrayscaleAlphaType);
+                MagickSetType(input_wands[i], GrayscaleAlphaType);
+            } else {
+                printf("Setting image type to %s\n", imageTypeAsString(GrayscaleType));
+                MagickSetImageType(input_wands[i], GrayscaleType);
+                MagickSetType(input_wands[i], GrayscaleType);
+            }
+            printf("New image type is %s\n", imageTypeAsString(MagickGetImageType(input_wands[i])));
+        }
+
+        // ================================= << Enforce colorspace and image_type optimisations =================================
+
+        // ============================== >> Collect statistics ===============================
+        if (strcmp(MagickGetImageFormat(input_wands[i]), "TIFF") == 0 || strcmp(MagickGetImageFormat(input_wands[i]), "TIF") == 0) {
+            uint16_t sampleFormat = get_tiff_sample_format(image_paths[i]);
+            if (sampleFormat == SAMPLEFORMAT_IEEEFP) {
+                any_floating_point_tiff = true;
+            } else if (sampleFormat == SAMPLEFORMAT_UINT) {
+                any_unsigned_tiff = true;
+            } else if (sampleFormat == SAMPLEFORMAT_INT) {
+                any_signed_tiff = true;
+            }
+        }
+        if (strcmp(MagickGetImageFormat(input_wands[i]), "EXR") == 0) {
+            any_exr_file = true;
+        }
+        if (MagickGetImageType(input_wands[i]) == TrueColorAlphaType) {
+            any_true_color_alpha_type = true;
+        } else if (MagickGetImageType(input_wands[i]) == TrueColorType) {
+            any_true_color_type = true;
+        } else if (MagickGetImageType(input_wands[i]) == GrayscaleAlphaType) {
+            any_gray_alpha_type = true;
+        } else if (MagickGetImageType(input_wands[i]) == GrayscaleType) {
+            any_gray_type = true;
+        }
 
         size_t width = MagickGetImageWidth(input_wands[i]);
         size_t height = MagickGetImageHeight(input_wands[i]);
         if (width < min_width) min_width = width;
         if (height < min_height) min_height = height;
 
-        // used with alternate way to create atlas using MagickMontageImage (see code after)
-        // printf("Adding image[%d] %s to wand\n", i, image_paths[i]);
-        // if(MagickAddImage(wand, input_wands[i]) == MagickFalse) {
-        //    return exit_with_error("Unable to add image %s to wand\n", image_paths[i]);
-        // }
+        // ============================== << Collect statistics ===============================
+        // =========================== << Read or fill_in each image ========================================
+
         printf("\n--------------------------------\n\n");
     }
 
     printf("\nFound => Min width: %zu, Min height: %zu\n\n", min_width, min_height);
 
-    if(downscale_to_min_size_filter) {
-        int new_width = resize_all_images_to_width ? resize_all_images_to_width :  min_width;
-        int new_height = resize_all_images_to_height ? resize_all_images_to_height : min_height;
-        const char *operation = resize_all_images_to_width || resize_all_images_to_height ? "Resizing" : "Downscaling";
-        printf("======================== %s all images to min size %zux%zu using filter %d ==================\n\n", operation, new_width, new_height, downscale_to_min_size_filter);
-
+    if(downscale_to_min_size && !absolute_positioning_array_length) {
+        printf("======================== Downscaling all images to min size %zux%zu using filter %d ==================\n\n",  min_width, min_height, resize_filter);
         for(int i = 0; i < num_paths; i++) {
-            resize(input_wands[i], new_width, new_height, downscale_to_min_size_filter, !inputs_are_non_color, debug_resizing);
+            resize(input_wands[i], min_width, min_height, resize_filter, !inputs_are_non_color, debug_resizing);
+            printf("\n-------------------------------\n\n");
+        }
+    }
+
+    if(resize_all_images_to_width && resize_all_images_to_height && !absolute_positioning_array_length) {
+        printf("======================== Resizing all images to min size %zux%zu using filter %d ==================\n\n", resize_all_images_to_width, resize_all_images_to_height, resize_filter);
+        for(int i = 0; i < num_paths; i++) {
+            resize(input_wands[i], resize_all_images_to_width, resize_all_images_to_height, resize_filter, !inputs_are_non_color, debug_resizing);
+            printf("\n-------------------------------\n\n");
+        }
+    }
+
+    if (absolute_positioning_array_length) {
+        printf("\n================================ Absolute resizing ======================================\n\n");
+        for(int i = 0; i < num_paths; i++) {
+            AbsolutePositioningEntry *absolute_positioning_entry = find_absolute_positioning_entry_by_name(
+                    absolute_positioning_array, absolute_positioning_array_length, image_paths_no_dir[i]);
+            if (absolute_positioning_entry) {
+                // printf("Absolute resizing image[%d] %s to %dx%d\n", i, image_paths_no_dir[i], absolute_positioning_entry->width, absolute_positioning_entry->height);
+                resize(input_wands[i], absolute_positioning_entry->width, absolute_positioning_entry->height, resize_filter, !inputs_are_non_color, debug_resizing);
+            }
             printf("\n-------------------------------\n\n");
         }
     }
 
     size_t** input_sizes = (size_t**)malloc(num_paths * sizeof(size_t*));
 
-    printf("\n================================ Zooming out ======================================\n\n");
 
-    for(int i = 0; i < num_paths; i++) {
-        input_sizes[i] = (size_t *) malloc(2 * sizeof(size_t));
-        input_sizes[i][0] = MagickGetImageWidth(input_wands[i]);
-        input_sizes[i][1] = MagickGetImageHeight(input_wands[i]);
-        // =========================== >> Zoom out ========================================
-        MagickWand * zoomed_out_wand = zoom_out(input_wands[i], shrink, shrink_filter, !inputs_are_non_color, debug_zooming_out, debug_resizing); // LanczosFilter
-        DestroyMagickWand(input_wands[i]);
-        input_wands[i] = zoomed_out_wand;
-        // =========================== << Zoom out ========================================
-        int curr_row = i / cols;
-        printf("Adding image[%d] %s to output_rows[%d]\n", i, image_paths[i], curr_row);
-        if(MagickAddImage(output_rows[curr_row], input_wands[i]) == MagickFalse) {
-            return exit_with_error("Unable to add image %s to output_rows[%d]\n", image_paths[i], i/rows);
+    MagickWand * output_wand = NULL;
+
+    if (absolute_positioning_array_length) {
+        printf("\nZoom out and compositing absolute positioning ...\n\n");
+        // =========================== >> Zoom out and compositing absolute positioning ========================================
+        size_t canvasWidth = absolute_positioning_canvas_width;
+        size_t canvasHeight = absolute_positioning_canvas_height;
+        output_wand = NewMagickWand();
+        PixelWand *background = NewPixelWand();
+        PixelSetColor(background, fill_in_color);
+        MagickNewImage(output_wand, canvasWidth, canvasHeight, background);
+
+
+        for(int i = 0; i < num_paths; i++) {
+            char *image_name = image_paths_no_dir[i];
+
+            AbsolutePositioningEntry *absolute_positioning_entry = find_absolute_positioning_entry_by_name(absolute_positioning_array, absolute_positioning_array_length, image_name);
+            if (!absolute_positioning_entry) continue; // for the case where absolute positioning images are less than loaded images
+
+            MagickWand * zoomed_out_wand = zoom_out(input_wands[i], absolute_positioning_entry->shrink, shrink_filter, !inputs_are_non_color, debug_zooming_out, debug_resizing); // LanczosFilter
+            DestroyMagickWand(input_wands[i]);
+            input_wands[i] = zoomed_out_wand;
+
+
+            printf("Compositing image[%d] %s %dx%d at %d,%d\n", i, image_name, absolute_positioning_entry->width, absolute_positioning_entry->height, absolute_positioning_entry->offset_x, absolute_positioning_entry->offset_y);
+            if(MagickCompositeImage(output_wand, input_wands[i], CopyCompositeOp, MagickTrue , absolute_positioning_entry->offset_x, absolute_positioning_entry->offset_y) == MagickFalse) {
+                return exit_with_error("Unable to composite image %s\n", absolute_positioning_entry->name);
+            }
+            printf("\n-------------------------------\n\n");
         }
-        printf("\n-------------------------------\n\n");
-        // =========================== << Read each image ========================================
-    }
-
-    // END of input_wands iteration : for(int i = 0; i < num_paths; i++) input_wands[i] = NewMagickWand();
-    printf("Creating rows by appending output_rows[i] and replacing output_rows[i] with the result\n");
-    for(int i = 0; i < rows; i++) {
-        MagickResetIterator(output_rows[i]);
-        MagickWand * output_rows_i_collage = MagickAppendImages(output_rows[i], MagickFalse); // false => horizontally, true => vertically
-        if (output_rows_i_collage == NULL) return exit_with_error("Unable to append images to output_rows[%d]\n", i);
-        DestroyMagickWand(output_rows[i]);
-        output_rows[i] = output_rows_i_collage;
-    }
-
-    MagickWand * atlas = NewMagickWand();
-    if(atlas == NULL) return exit_with_error("Unable to create atlas\n");
-    printf("Adding rows to atlas\n");
-    for(int i = 0; i < rows; i++) {
-        if (MagickAddImage(atlas, output_rows[i]) == MagickFalse) {
-            return exit_with_error("Unable to add image to atlas\n");
+        DestroyPixelWand(background);
+        // =========================== << Zoom out and compositing absolute positioning ========================================
+    } else {
+        // =========================== >> Zoom out and adding images to rows and rows to canvas  ========================================
+        printf("Creating %d output rows...\n\n", rows);
+        MagickWand * output_rows[rows];
+        for(int i = 0; i < rows; i++) {
+            output_rows[i] = NewMagickWand();
+            if(output_rows[i] == NULL) return exit_with_error("Unable to create output_rows[%d]\n", i);
         }
+        printf("Zoom out and adding images to output rows ...\n\n");
+        for(int i = 0; i < num_paths; i++) {
+            input_sizes[i] = (size_t *) malloc(2 * sizeof(size_t));
+            input_sizes[i][0] = MagickGetImageWidth(input_wands[i]);
+            input_sizes[i][1] = MagickGetImageHeight(input_wands[i]);
+
+            MagickWand * zoomed_out_wand = zoom_out(input_wands[i], shrink, shrink_filter, !inputs_are_non_color, debug_zooming_out, debug_resizing); // LanczosFilter
+            DestroyMagickWand(input_wands[i]);
+            input_wands[i] = zoomed_out_wand;
+
+            int curr_row = i / cols;
+            printf("Adding image[%d] %s to output_rows[%d]\n", i, image_paths[i], curr_row);
+            if(MagickAddImage(output_rows[curr_row], input_wands[i]) == MagickFalse) {
+                return exit_with_error("Unable to add image %s to output_rows[%d]\n", image_paths[i], i/rows);
+            }
+            printf("\n-------------------------------\n\n");
+        }
+
+        printf("Creating rows by appending output_rows[i] and replacing output_rows[i] with the result\n");
+        for(int i = 0; i < rows; i++) {
+            MagickResetIterator(output_rows[i]);
+            // creating rows
+            MagickWand * output_rows_i_collage = MagickAppendImages(output_rows[i], MagickFalse); // false => horizontally, true => vertically
+            if (output_rows_i_collage == NULL) return exit_with_error("Unable to append images to output_rows[%d]\n", i);
+            DestroyMagickWand(output_rows[i]);
+            output_rows[i] = output_rows_i_collage;
+        }
+
+        MagickWand * atlas = NewMagickWand();
+        if(atlas == NULL) return exit_with_error("Unable to create atlas\n");
+        printf("Adding rows to atlas\n");
+
+        for(int i = 0; i < rows; i++) {
+            if (MagickAddImage(atlas, output_rows[i]) == MagickFalse) {
+                return exit_with_error("Unable to add image to atlas\n");
+            }
+        }
+
+        printf("Creating output_wand by appending atlas rows\n");
+        MagickResetIterator(atlas);
+        // filling canvas with rows
+        output_wand = MagickAppendImages(atlas, MagickTrue); // false => horizontally, true => vertically
+        if (output_wand == NULL) return exit_with_error("Unable to append images to output_wand\n");
+
+        DestroyMagickWand(atlas);
+        for(int i = 0; i < rows; i++) {
+            DestroyMagickWand(output_rows[i]);
+        }
+        // =========================== << Zoom out and adding images to rows and rows to canvas  ========================================
     }
-
-    printf("Creating output_wand by appending atlas rows\n");
-    MagickResetIterator(atlas);
-    MagickWand * output_wand = MagickAppendImages(atlas, MagickTrue); // false => horizontally, true => vertically
-    if (output_wand == NULL) return exit_with_error("Unable to append images to output_wand\n");
-
-    printf("output_wand created\n");
 
     // =========================== >> Config Output Wand ==================
     printf("Configuring output wand\n");
+    MagickSetImageFilename(output_wand, "output_wand");
     MagickSetImageFormat(output_wand, output_format);
     // "C:\z\msys64\mingw64\bin\convert.exe" output.tiff -define png:bit-depth=16 output.png
     if (output_bit_depth) {
@@ -456,7 +632,6 @@ int main(int argc, char **argv) {
         MagickSetImageColorspace(output_wand, output_colorspace);
     }
 
-    // TODO: further testing each image type (png/exr/tif) and see how ImageType is inferred automatically
     if (output_image_type) {
         // GrayscaleType GrayscaleAlphaType TrueColorType TrueColorAlphaType ColorSeparationType
         // This does NOT work for saving exr as one grayscale image.
@@ -484,6 +659,7 @@ int main(int argc, char **argv) {
         }
     }
 
+    // Not sure when this is actually needed
     if (prevent_gray_channel_optimization && (MagickGetImageType(output_wand) == TrueColorAlphaType || MagickGetImageType(output_wand) == TrueColorType)) {
         PixelIterator *iterator = NewPixelIterator(output_wand);
         // Get the first row of pixels
@@ -530,7 +706,7 @@ int main(int argc, char **argv) {
              */
         }
         else {
-            if (any_floating_point_tiff && (MagickGetImageDepth(output_wand) == 32 || MagickGetImageDepth(output_wand) == 16)) {
+            if ((any_floating_point_tiff /*|| any_exr_file*/) && (MagickGetImageDepth(output_wand) == 32 || MagickGetImageDepth(output_wand) == 16)) {
                 MagickSetOption(output_wand, "quantum:format", "floating-point");
             } else if (any_signed_tiff && (MagickGetImageDepth(output_wand) == 32 || MagickGetImageDepth(output_wand) == 16)) {
                 MagickSetOption(output_wand, "quantum:format", "signed"); // less likely to encounter this
@@ -603,25 +779,15 @@ int main(int argc, char **argv) {
 
     // =========================== << Saving Output Wand ==================
 
-    /*
-    // Alternate way to create atlas using MagickMontageImage
-    MagickResetIterator(wand);
-    DrawingWand *drawing_wand = NewDrawingWand();
-    // tile("2x2+0+0") Set the montage grid size and spacing
-    // geometry("2048x2048+0+0") Set the tile size and offset inside final frame
-    // frame("0x0+0+0") Surround the image with an ornamental border (e.g. 15x15+3+3). The frame color is that of the thumbnail's matte color.
-    // MagickMontageImage(wand, drawing_wand, tile("2x2+0+0"), geometry("2048x2048+0+0"), UnframeMode, frame("0x0+0+0"))
-    MagickWand *montage_wand = MagickMontageImage(wand, drawing_wand, "2x2+0+0", "2048x2048+0+0", ConcatenateMode, "0x0+0+0");
-    if (montage_wand == NULL) return exit_with_error("Unable to create montage_wand\n");
 
-    MagickWriteImage(montage_wand, "./atlas/montage_wand.atlas.png");
-    DestroyMagickWand(montage_wand);
-    DestroyDrawingWand(drawing_wand);
-    */
+
+    // =========================== >> Generating UV corners ==================
 
     int uv_help_lines_num = 0;
-    UVCorners* uvCornersArr = get_uv_corners_arr(num_paths, input_sizes, cols, shrink, debug_uv_help);
-    char **uv_help_lines = print_UV_help(uvCornersArr, num_paths, cols, &uv_help_lines_num);
+    UVCorners* uvCornersArr = absolute_positioning_array_length ?
+            get_abs_uv_corners_arr(absolute_positioning_array, absolute_positioning_array_length, absolute_positioning_canvas_width, absolute_positioning_canvas_height, shrink, debug_uv_help)
+            : get_uv_corners_arr(input_sizes, num_paths, cols, shrink, debug_uv_help);
+    char **uv_help_lines = print_UV_help(uvCornersArr, absolute_positioning_array_length ? absolute_positioning_array_length : num_paths, absolute_positioning_array_length ? 0 : cols, &uv_help_lines_num);
     if (uv_help_lines == NULL) return exit_with_error("Could not get uv_help_lines.\n");
 
     if (WRITE_LINES_ERROR == write_lines(ATLAS_UV_HELP_FILE, (const char**)uv_help_lines, uv_help_lines_num, false))
@@ -646,14 +812,13 @@ int main(int argc, char **argv) {
     printf("Saving output wand (UV) %s\n", atlas_file_name_uv);
     MagickWriteImage(output_wand, atlas_file_name_uv);
 
+    // =========================== << Generating UV corners ==================
+
     // =========================== >> Remaining cleanup ========================================
     printf("Cleaning up\n");
     DestroyMagickWand(output_wand);
     DestroyMagickWand(wand);
-    DestroyMagickWand(atlas);
-    for(int i = 0; i < rows; i++) {
-        DestroyMagickWand(output_rows[i]);
-    }
+
     for(int i = 0; i < num_paths; i++) {
         DestroyMagickWand(input_wands[i]);
         free(image_paths[i]);
@@ -663,6 +828,12 @@ int main(int argc, char **argv) {
     free(image_paths);
     free(image_paths_no_dir);
     free(input_sizes);
+    free(fill_in_array);
+    for (int i = 0; i < absolute_positioning_array_length; i++) {
+        free(absolute_positioning_array[i].name);
+    }
+    free(absolute_positioning_array);
+    free(uvCornersArr);
 
     MagickWandTerminus();
     // =========================== << Remaining cleanup ========================================

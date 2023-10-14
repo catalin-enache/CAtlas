@@ -35,7 +35,7 @@ int main(int argc, char **argv) {
             "fill_in_color #000000ff\n",
             "## #ffffffff (white opaque) | #000000FF (black opaque) | #7F7F7FFF (0.5 gray opaque) | #7F7F7F00 (0.5 gray transparent) | e.t.c.\n\n",
             "absolute_positioning none\n",
-            "## none || img1.png:512x512(1.0)/0-0,img2.png(0.5):512x512/512-512 // the images must exist in directory\n",
+            "## none || 1.png:512x512(1.0)/0-0,1.tif:512x512(1.0)/256-256 // the images must exist in directory\n",
             "## <img_name>:<width>x<height>(zoom_out)/offsetX-offsetY\n\n",
             "output_format png // png, tif, exr, jpg\n\n",
 
@@ -67,8 +67,9 @@ int main(int argc, char **argv) {
 
             "prevent_gray_channel_optimization 0 // 0 or 1\n\n",
 
-            "resize_all_images_to_width 0 // (integer) // is ignored when absolute_positioning is not none \n\n",
-            "resize_all_images_to_height 0 // (integer) // is ignored when absolute_positioning is not none \n\n",
+            "resize_all_images_to_width 0 // (integer) // is ignored when absolute_positioning is not none \n",
+            "resize_all_images_to_height 0 // (integer) // is ignored when absolute_positioning is not none \n",
+            "## both need to be set to be considered \n\n",
 
             "output_quantum_format floating-point // floating-point(works with 16/32 bits), unsigned, signed\n\n",
             "output_quantum_format_apply 0 // 0, 1\n\n",

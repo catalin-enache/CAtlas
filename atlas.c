@@ -380,8 +380,14 @@ int main(int argc, char **argv) {
             DestroyPixelWand(pixel_wand);
         } else {
             printf("Reading image path[%d] = %s\n", i, image_paths[i]);
-            if (MagickReadImage(input_wands[i], image_paths[i]) == MagickFalse)
+            if (MagickReadImage(input_wands[i], image_paths[i]) == MagickFalse) {
+                char *description;
+                ExceptionType severity;
+                description = MagickGetException(input_wands[i], &severity);
+                fprintf(stderr, "Error: %s\n", description);
+                description = (char *)MagickRelinquishMemory(description);
                 return exit_with_error("Unable to read image %s \n", image_paths[i]);
+            }
         }
 
         printf("Original image[%d] %s\n", i, image_paths[i]);

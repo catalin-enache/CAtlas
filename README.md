@@ -1,4 +1,15 @@
 
+## Installation
+
+MAGIC_HOME
+C:\CAtlasIM\ImageMagick-7.1.1-Q16-HDRI
+
+MAGICK_CODER_MODULE_PATH
+C:\CAtlasIM\ImageMagick-7.1.1-Q16-HDRI\modules\coders
+
+Add to PATH:
+C:\CAtlasIM\ImageMagick-7.1.1-Q16-HDRI
+
 ## Input Output
 
 #### Working (tested)

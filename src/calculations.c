@@ -31,16 +31,17 @@ size_t get_atlas_width(size_t*** rows_with_sizes, int rows_num, int cols_num) {
 }
 
 size_t get_atlas_height(size_t*** rows_with_sizes, int rows_num, int cols_num) {
-    size_t max_height = 0;
-    for (int col = 0; col < cols_num; col++) {
-        size_t col_height = 0;
-        for (int row = 0; row < rows_num; row++) {
-            col_height += rows_with_sizes[row][col][1];
+    size_t atlas_height = 0;
+    for (int row = 0; row < rows_num; row++) {
+        size_t row_height = 0;
+        for (int col = 0; col < cols_num; col++) {
+            size_t col_height = rows_with_sizes[row][col][1];
+            if (col_height > row_height) row_height = col_height;
         }
-        if (col_height > max_height) max_height = col_height;
+        atlas_height += row_height;
     }
-    printf("atlas_height: %zu\n", max_height);
-    return max_height;
+    printf("atlas_height: %zu\n", atlas_height);
+    return atlas_height;
 }
 
 double *** get_rows_with_sizes_as_percentage(size_t*** rows_with_sizes, size_t* rows_height, size_t atlas_width, size_t atlas_height, int rows_num, int cols_num, double shrink, bool debug_uv_help) {

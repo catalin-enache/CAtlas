@@ -445,11 +445,19 @@ void transform_color_space_and_set_image_depth(MagickWand *wand, ColorspaceType 
     // <C-srgb> means each RGB channel is transformed separately
     // <C-srgb>/12.92 if <C-srgb> <= 0.04045
     // ((<C-srgb> + 0.055)/1.055)**2.4 if <C-srgb> > 0.04045
-    MagickSetDepth(wand, depth);
-    MagickSetImageDepth(wand, depth);
+    bool depth_is_increased = MagickGetImageDepth(wand) < depth;
+    bool depth_is_decreased = MagickGetImageDepth(wand) > depth;
+    if (depth_is_increased) { // if depth is increased apply it before transformation
+        MagickSetImageDepth(wand, depth);
+        MagickSetDepth(wand, depth);
+    }
     MagickTransformImageColorspace(wand, colorspace);
     MagickSetColorspace(wand, colorspace);
     MagickSetImageColorspace(wand, colorspace);
+    if (depth_is_decreased) { // if depth is decreased apply it after transformation
+        MagickSetImageDepth(wand, depth);
+        MagickSetDepth(wand, depth);
+    }
 }
 
 ColorspaceType get_linear_color_space(ColorspaceType colorspace) {

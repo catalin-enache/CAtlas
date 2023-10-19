@@ -26,7 +26,7 @@ int main(int argc, char **argv) {
 
     int config_entries_total = 31;
     const char *lines[] = {
-            "inputs_are_non_color 0 // 0 or 1\n\n",
+            "inputs_are_non_color 1 // 0 or 1 // it seems 1 is always the good choice\n\n",
             "cols 2 // it is ignored when using absolute_positioning\n\n",
             "shrink 0.92 // 0.5 - 1.0 // it is ignored when using absolute_positioning\n",
             "## between 0.5 and 1.0, where 1.0 means no downscale (important to not omit the decimal - e.g. not 1 but 1.0)\n\n",
@@ -37,7 +37,7 @@ int main(int argc, char **argv) {
             "absolute_positioning none\n",
             "## none || 1.png:512x512(1.0)/0-0,1.tif:512x512(1.0)/256-256 // the images must exist in directory\n",
             "## <img_name>:<width>x<height>(zoom_out)/offsetX-offsetY\n\n",
-            "output_format png // png, tif, exr, jpg\n\n",
+            "output_format png // png, tif, exr, tga, jpg\n\n",
 
             "\n\n## ------------------ The followings need not be touched in general ------------------ \n\n\n\n",
 
@@ -223,7 +223,7 @@ int main(int argc, char **argv) {
            "\tdebug_zooming_out %d \n"
            "\tdebug_resizing %d \n"
            "\tdebug_uv_help %d \n"
-           "\tuv_rect_color %s, \n"
+           "\tuv_rect_color %s \n"
            "\tprint_uv_help %d \n",
            inputs_are_non_color,
            cols,
